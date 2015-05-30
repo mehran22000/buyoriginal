@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 // Database
 var mongo = require('mongoskin');
-var db = mongo.db("mongodb://mehran22000:mehrdad781@ds041432.mongolab.com:41432/heroku_app37028845", {native_parser:true});
+var db = mongo.db("mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797", {native_parser:true});
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
