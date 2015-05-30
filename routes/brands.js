@@ -5,6 +5,7 @@ var router = express.Router();
  * GET userlist.
  */
 router.get('/brandlist', function(req, res) {
+    res.setHeader('Content-Type', 'text/json; charset=utf-8')
     var db = req.db;
     db.collection('brands').find().toArray(function (err, items) {
         res.json(items);
