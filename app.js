@@ -11,6 +11,7 @@ var db = mongo.db("mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var brands = require('./routes/brands');
+var stores = require('./routes/stores');
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use(function(req,res,next){
 app.use('/', routes);
 app.use('/users', users);
 app.use('/brands',brands);
+app.use('/stores',stores);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
