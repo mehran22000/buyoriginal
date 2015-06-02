@@ -36,15 +36,15 @@ function populateTable() {
         $.each(data, function(){
             tableContent += '<tr>';
             tableContent += '<td>' + this.bId + '</td>';
-            tableContent += '<td>' + this.sId + '</td>';
             tableContent += '<td>' + this.bName + '</td>';
-            tableContent += '<td>' + this.sName + '</td>';
             tableContent += '<td>' + this.bCategory + '</td>';
+            tableContent += '<td>' + this.sId + '</td>';
+            tableContent += '<td>' + this.sName + '</td>';
             tableContent += '<td>' + this.bDistributor + '</td>';
             tableContent += '<td>' + this.sCity + '</td>';
             tableContent += '<td>' + this.sAddress + '</td>';
-            tableContent += '<td>' + this.sAreaCode + '</td>';
             tableContent += '<td>' + this.sHours + '</td>';
+            tableContent += '<td>' + this.sAreaCode + '</td>';
             tableContent += '<td>' + this.sTel1 + '</td>';
             tableContent += '<td>' + this.sTel2 + '</td>';
             tableContent += '<td>' + this.sLat + '</td>';
