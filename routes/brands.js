@@ -13,14 +13,16 @@ router.get('/brandlist', function(req, res) {
     		db.collection('categories').find({cId:brand.bCategoryId}).toArray(function (e,categories) {
     		    categories.forEach(function(cat) {
     		    	var result = {bName:brand.bName, cName:cat.cName, bLogo:brand.bLogo};
+    		    	console.log(result);
     				items.push (result);
     				console.log(result);
-    				var myJsonString = JSON.stringify(items);
     				console.log(myJsonString);
     				console.log(items.length);
     				console.log(brands.length);
-    				if (items.length == brands.length)
-    					res.json(myJsonString);
+    				if (items.length == brands.length){
+    				    var myJsonString = JSON.stringify(items);
+    					res.json(items);
+    				}
     			});
     		});
 		});
