@@ -12,6 +12,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var brands = require('./routes/brands');
 var stores = require('./routes/stores');
+var categories = require('./routes/categories');
 
 var app = express();
 

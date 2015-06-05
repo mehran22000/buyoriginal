@@ -7,10 +7,29 @@ var router = express.Router();
 router.get('/brandlist', function(req, res) {
     res.setHeader('Content-Type', 'text/json; charset=utf-8')
     var db = req.db;
-    db.collection('brands').find().toArray(function (err, items) {
-        res.json(items);
+    var items = [];
+    db.collection('brands').find().toArray(function (err, brands) {   
+        brands.forEach(function(brand) {
+    		db.collection('categories').find({cId:brand.bCategoryId}).toArray(function (e,categories) {
+    		    categories.forEach(function(cat) {
+    		    	var result = {bName:brand.bName, cName:cat.cName, bLogo:brand.bLogo};
+    				items.push (result);
+    				console.log(result);
+    				var myJsonString = JSON.stringify(items);
+    				console.log(myJsonString);
+    				console.log(items.length);
+    				console.log(brands.length);
+    				if (items.length == brands.length)
+    					res.json(myJsonString);
+    			});
+    		});
+		});
     });
 });
+
+
+
+
 
 /*
  * POST to adduser.
