@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 /*
- * GET userlist.
+ * GET storelist.
  */
 router.get('/storelist', function(req, res) {
     var db = req.db;
@@ -10,6 +10,21 @@ router.get('/storelist', function(req, res) {
         res.json(items);
     });
 });
+
+
+/*
+ * GET storelist by Id.
+ */
+router.get('/storelist/:id', function(req, res) {
+    var db = req.db;
+    console.log(req.params.id);
+    db.collection('stores').find({sId:req.params.id}).toArray(function (err, items) {
+        res.json(items);
+    });
+});
+
+
+
 
 /*
  * POST to adduser.
