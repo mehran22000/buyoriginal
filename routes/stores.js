@@ -18,7 +18,7 @@ router.get('/storelist', function(req, res) {
 router.get('/storelist/:id', function(req, res) {
     var db = req.db;
     console.log(req.params.id);
-    db.collection('stores').find({sId:req.params.id}).toArray(function (err, items) {
+    db.collection('stores').find({bId:req.params.id}).toArray(function (err, items) {
         res.json(items);
     });
 });
