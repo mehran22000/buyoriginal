@@ -12,7 +12,7 @@ router.get('/brandlist', function(req, res) {
         brands.forEach(function(brand) {
     		db.collection('categories').find({cId:brand.bCategoryId}).toArray(function (e,categories) {
     		    categories.forEach(function(cat) {
-    		    	var result = {bName:brand.bName, cName:cat.cName, bLogo:brand.bLogo};
+    		    	var result = {bId:brand.bId, bName:brand.bName, cName:cat.cName, bLogo:brand.bLogo};
     		    	console.log(result);
     				items.push (result);
     				console.log(result);
