@@ -3,10 +3,32 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-header {
-    background-color:black;
+#header {
+    background-color:#000033;
+    color:white;
+    text-align:left;
+    padding:0px;
+    font: 18px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#blankSection {
+    background-color:white;
     color:white;
     text-align:center;
+    padding:5px;	 	 
+}
+
+#addSection {
+    background-color:gray;
+    color:white;
+    text-align:center;
+    padding:5px;	 	 
+}
+
+#tableSection {
+    background-color:gray;
+    color:white;
+    text-align:left;
     padding:5px;
 }
 

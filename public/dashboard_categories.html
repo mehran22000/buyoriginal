@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+	<div id="header">
+	<h1> Buy Original </h1>
+	<a href="/dashboard_brands.html">Brands</a>
+	<a href="/dashboard_stores.html">Stores</a>
+	<a href="/dashboard_categories.html">Categories</a>	
+	</div>
+	
+	<div id="blankSection" >
+	<p></p>
+	<p></p>
+	<p></p>
+	</div>
+	
+	<div id="boList">
+	<table id="myTable"></table>
+	</div>
+		
+
+<script>
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+
+        
+function populateTable() {
+
+    // Empty content string
+    var tableContent = '<tr><td>CATEGORY ID</td><td>CATEGORY NAME</td><td></td></tr>';
+    // jQuery AJAX call for JSON
+    $.getJSON( '/categories/categorylist', function( data ) {
+	
+        // For each item in our JSON, add a table row and cells to the content string
+        $.each(data, function(){
+            tableContent += '<tr>';
+            tableContent += '<td>' + this.cId + '</td>';
+            tableContent += '<td>' + this.cName + '</td>';
+            tableContent += '<td> <a href="#" class="linkdeletestore" rel="' + this._id + '">delete</a></td>';
+            tableContent += '</tr>';         
+        });
+        document.getElementById("myTable").innerHTML= tableContent;
+
+        // Inject the whole content string into our existing HTML table;
+    });
+};
+        
+                
+</script>
+</body>
+</html>
