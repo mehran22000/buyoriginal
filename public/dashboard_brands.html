@@ -19,6 +19,17 @@
 	<p></p>
 	</div>
 	
+	<div id="blackSection" >
+	<p>
+	Id: <input type="text" name="bId" value="" id="bId">
+	Name: <input type="text" name="bName" value="" id="bName">
+	Category Id: <input type="text" name="cId" value="" id="cId">
+	Logo: <input type="text" name="bLogo" value="" id="bLogo">
+	</p>
+    <a href="#" class="myButton" onclick="addBrand()">Add</a>	
+    <p></p>
+	</div>
+	
 	<div id="boList">
 	<table id="myTable"></table>
 	</div>
@@ -45,13 +56,95 @@ function populateTable() {
             tableContent += '<td>' + this.bName + '</td>';
             tableContent += '<td>' + this.cName + '</td>';
             tableContent += '<td>' + this.bLogo + '</td>';
-            tableContent += '<td> <a href="#" class="linkdeletestore" rel="' + this._id + '">delete</a></td>';
+            tableContent += '<td> <a href="#" onclick=deleteBrand("'+this._id+'");>delete</a></td>';
             tableContent += '</tr>';         
         });
         document.getElementById("myTable").innerHTML= tableContent;
 
         // Inject the whole content string into our existing HTML table;
     });
+};
+  
+function addBrand() {
+    event.preventDefault();
+
+    // Super basic validation - increase errorCount variable if any fields are blank
+    var errorCount = 0;
+  
+
+    // If it is, compile all user info into one object
+    var bId = document.getElementById("bId").value;
+    var bName = document.getElementById("bName").value;
+    var cId = document.getElementById("cId").value;
+    var bLogo = document.getElementById("bLogo").value;
+    var newBrand = {
+        'bId': bId,
+        'bName': bName,
+        'bCategoryId':cId,
+        'bLogo':bLogo
+    }
+
+    // Use AJAX to post the object to our addstore service
+    $.ajax({
+            type: 'POST',
+            data: newBrand,
+            url: '/brands/addbrand',
+            dataType: 'JSON'
+    }).done(function( response ) {
+
+    // Check for successful (blank) response
+    if (response.msg === '') {
+    	document.getElementById("bId").value = "";
+    	document.getElementById("bName").value="";
+    	document.getElementById("cId").value="";
+    	document.getElementById("bLogo").value="";
+         // Update the table
+        populateTable();
+
+    }
+    else {
+		// If something goes wrong, alert the error message that our service returned
+        alert('Error: ' + response.msg);
+    	}
+    });
+};
+
+function deleteBrand(rowId) {
+
+    event.preventDefault();
+
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to delete this category?');
+
+    // Check and make sure the user confirmed
+    if (confirmation === true) {
+
+        // If they did, do our delete
+        $.ajax({
+            type: 'DELETE',
+            url: '/brands/deletebrand/' + rowId
+        }).done(function( response ) {
+
+            // Check for a successful (blank) response
+            if (response.msg === '') {
+            }
+            else {
+                alert('Error: ' + response.msg);
+            }
+
+            // Update the table
+            populateTable();
+
+        });
+
+    }
+    else {
+
+        // If they said no to the confirm, do nothing
+        return false;
+
+    }
+
 };
         
                 

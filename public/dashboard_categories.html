@@ -19,6 +19,15 @@
 	<p></p>
 	</div>
 	
+	<div id="blackSection" >
+	<p>
+	Id: <input type="text" name="cId" value="" id="cId">
+	Name: <input type="text" name="cName" value="" id="cName">
+	</p>
+    <a href="#" class="myButton" onclick="addCategory()">Add</a>	
+    <p></p>
+	</div>
+	
 	<div id="boList">
 	<table id="myTable"></table>
 	</div>
@@ -43,7 +52,7 @@ function populateTable() {
             tableContent += '<tr>';
             tableContent += '<td>' + this.cId + '</td>';
             tableContent += '<td>' + this.cName + '</td>';
-            tableContent += '<td> <a href="#" class="linkdeletestore" rel="' + this._id + '">delete</a></td>';
+            tableContent += '<td> <a href="#" onclick=deleteCategory("'+this._id+'");>delete</a></td>';
             tableContent += '</tr>';         
         });
         document.getElementById("myTable").innerHTML= tableContent;
@@ -51,7 +60,83 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table;
     });
 };
-        
+         
+function addCategory() {
+    event.preventDefault();
+
+    // Super basic validation - increase errorCount variable if any fields are blank
+    var errorCount = 0;
+  
+
+    // If it is, compile all user info into one object
+    var cId = document.getElementById("cId").value;
+    var cName = document.getElementById("cName").value;
+    var newCategory = {
+        'cId': cId,
+        'cName': cName
+    }
+
+    // Use AJAX to post the object to our addstore service
+    $.ajax({
+            type: 'POST',
+            data: newCategory,
+            url: '/categories/addCategory',
+            dataType: 'JSON'
+    }).done(function( response ) {
+
+    // Check for successful (blank) response
+    if (response.msg === '') {
+    	document.getElementById("cId").value = "";
+    	document.getElementById("cName").value="";
+         // Update the table
+        populateTable();
+
+    }
+    else {
+		// If something goes wrong, alert the error message that our service returned
+        alert('Error: ' + response.msg);
+    	}
+    });
+};
+
+function deleteCategory(rowId) {
+
+    event.preventDefault();
+
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to delete this category?');
+
+    // Check and make sure the user confirmed
+    if (confirmation === true) {
+
+        // If they did, do our delete
+        $.ajax({
+            type: 'DELETE',
+            url: '/categories/deletecategory/' + rowId
+        }).done(function( response ) {
+
+            // Check for a successful (blank) response
+            if (response.msg === '') {
+            }
+            else {
+                alert('Error: ' + response.msg);
+            }
+
+            // Update the table
+            populateTable();
+
+        });
+
+    }
+    else {
+
+        // If they said no to the confirm, do nothing
+        return false;
+
+    }
+
+};
+ 
                 
 </script>
 </body>

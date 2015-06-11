@@ -4,6 +4,7 @@ var brandListData = [];
 var storeListData = [];
 var categoryListData = [];
 
+
 // DOM Ready =============================================================
 $(document).ready(function() {
 

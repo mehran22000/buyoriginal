@@ -12,7 +12,7 @@ router.get('/brandlist', function(req, res) {
         brands.forEach(function(brand) {
     		db.collection('categories').find({cId:brand.bCategoryId}).toArray(function (e,categories) {
     		    categories.forEach(function(cat) {
-    		    	var result = {bId:brand.bId, bName:brand.bName, cName:cat.cName, bLogo:brand.bLogo};
+    		    	var result = {_id:brand._id, bId:brand.bId, bName:brand.bName, cName:cat.cName, bLogo:brand.bLogo};
     		    	console.log(result);
     				items.push (result);
     				console.log(result);
@@ -38,7 +38,7 @@ router.get('/brandlist', function(req, res) {
  */
 router.post('/addbrand', function(req, res) {
     var db = req.db;
-    db.collection('brandlist').insert(req.body, function(err, result){
+    db.collection('brands').insert(req.body, function(err, result){
         res.send(
             (err === null) ? { msg: '' } : { msg: err }
         );
@@ -51,7 +51,7 @@ router.post('/addbrand', function(req, res) {
 router.delete('/deletebrand/:id', function(req, res) {
     var db = req.db;
     var userToDelete = req.params.id;
-    db.collection('brandlist').removeById(userToDelete, function(err, result) {
+    db.collection('brands').removeById(userToDelete, function(err, result) {
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
 });
