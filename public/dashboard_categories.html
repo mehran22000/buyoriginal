@@ -21,7 +21,7 @@
 	
 	<div id="blackSection" >
 	<p>
-	Id: <input type="text" name="cId" value="" id="cId">
+	Id: <input type="text" name="cId" value="" id="cId" placeholder="(Unique Namber)">
 	Name: <input type="text" name="cName" value="" id="cName">
 	</p>
     <a href="#" class="myButton" onclick="addCategory()">Add</a>	
@@ -66,37 +66,41 @@ function addCategory() {
 
     // Super basic validation - increase errorCount variable if any fields are blank
     var errorCount = 0;
-  
-
     // If it is, compile all user info into one object
     var cId = document.getElementById("cId").value;
     var cName = document.getElementById("cName").value;
-    var newCategory = {
-        'cId': cId,
-        'cName': cName
-    }
-
-    // Use AJAX to post the object to our addstore service
-    $.ajax({
-            type: 'POST',
-            data: newCategory,
-            url: '/categories/addCategory',
-            dataType: 'JSON'
-    }).done(function( response ) {
-
-    // Check for successful (blank) response
-    if (response.msg === '') {
-    	document.getElementById("cId").value = "";
-    	document.getElementById("cName").value="";
-         // Update the table
-        populateTable();
-
-    }
-    else {
-		// If something goes wrong, alert the error message that our service returned
-        alert('Error: ' + response.msg);
+    
+    if (!isNumeric(cId))
+   		alert ("Category Id must be numeric");
+   	else if (cName=='')
+   		alert ("Category name can not be empty");
+	else {
+    	var newCategory = {
+        	'cId': cId,
+        	'cName': cName
     	}
-    });
+
+    	// Use AJAX to post the object to our addstore service
+    	$.ajax({
+        	    type: 'POST',
+            	data: newCategory,
+            	url: '/categories/addCategory',
+            	dataType: 'JSON'
+    	}).done(function( response ) {
+
+    	// Check for successful (blank) response
+    	if (response.msg === '') {
+    		document.getElementById("cId").value = "";
+    		document.getElementById("cName").value="";
+         	// Update the table
+        	populateTable();
+		}
+    	else {
+			// If something goes wrong, alert the error message that our service returned
+        	alert('Error: ' + response.msg);
+    		}
+    	});
+    }
 };
 
 function deleteCategory(rowId) {
@@ -137,6 +141,9 @@ function deleteCategory(rowId) {
 
 };
  
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
                 
 </script>
 </body>

@@ -21,12 +21,12 @@
 	
 	<div id="blackSection" >
 	<p>
-	Store Id:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sId" value="" id="sId" placeholder="Unique Id">
+	Store Id:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sId" value="" id="sId" placeholder="(Unique Id)">
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	Store Name: &nbsp; <input type="text" name="sName" value="" id="sName"> </br>
 	</p>
 	<p>
-	Brand Id:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="bId" value="" id="bId">
+	Brand Id:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="bId" value="" id="bId" placeholder="(Unique Namber)">
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	Distributor:&nbsp;&nbsp;&nbsp; <input type="text" name="bDistributor" value="" id="bDistributor"> </br>
 	</p>
@@ -41,9 +41,9 @@
 	<p>
 	Area Code:&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sAreaCode" value="" id="sAreaCode"> 
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	Tel #1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sTel1" value="" id="sTel1" placeholder="12345678">
+	Tel #1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sTel1" value="" id="sTel1" placeholder="(Without Area Code)">
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	Tel #2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sTel2" value="" id="sTel2" placeholder="12345678"> </br>
+	Tel #2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sTel2" value="" id="sTel2" placeholder="(Without Area Code)"> </br>
 	</p>
 	<p>
 	Latitude:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="text" name="sLat" value="" id="sLat"> 
@@ -130,55 +130,72 @@ function addStore() {
     	sVerified = "YES";
     
     
-    var newStore = {
-        'bId': bId,
-        'sId':sId,
-        'sName':sName,
-        'bDistributor':bDistributor,
-        'sCity':sCity,
-        'sAddress':sAddress,
-        'sHours':sHours,
-        'sAreaCode':sAreaCode,
-        'sTel1':sTel1,
-        'sTel2':sTel2,
-        'sLat':sLat,
-        'sLong':sLong,
-        'sVerified':sVerified
-    }
-
-    // Use AJAX to post the object to our addstore service
-    $.ajax({
-            type: 'POST',
-            data: newStore,
-            url: '/stores/addstore',
-            dataType: 'JSON'
-    }).done(function( response ) {
-
-    // Check for successful (blank) response
-    if (response.msg === '') {
-    	document.getElementById("bId").value = "";
-    	document.getElementById("sId").value="";
-        document.getElementById("sName").value = "";
-    	document.getElementById("bDistributor").value="";
-    	document.getElementById("sCity").value="";
-    	document.getElementById("sAddress").value="";
-    	document.getElementById("sHours").value="";
-    	document.getElementById("sAreaCode").value="";
-    	document.getElementById("sTel1").value="";
-    	document.getElementById("sTel2").value="";
-    	document.getElementById("sLat").value="";
-    	document.getElementById("sLong").value="";
-    	document.getElementById("sVerified").checked=false;
-    	
-         // Update the table
-        populateTable();
-
-    }
-    else {
-		// If something goes wrong, alert the error message that our service returned
-        alert('Error: ' + response.msg);
+    if (!isNumeric(bId))
+   		alert ("Brand Id must be numeric");
+   	else if (!isNumeric(sId))
+   		alert ("Store Id must be numeric");
+   	else if (sName=='')
+   		alert ("Store name can not be empty");
+   	else if (sCity=='')
+   		alert ("City can not be empty");
+   	else if (sAddress=='')
+   		alert ("Address can not be empty");
+    else if (!isNumeric(sAreaCode))
+   		alert ("Area Code must be numeric");
+    else if (!isNumeric(sTel1))
+   		alert ("Tel 1 must be numeric");
+   	else if (!isNumeric(sLat))
+   		alert ("Latitude must be numeric");
+   	else if (!isNumeric(sLong))
+   		alert ("Longitude must be numeric");
+   	else {
+    	var newStore = {
+        	'bId': bId,
+        	'sId':sId,
+        	'sName':sName,
+        	'bDistributor':bDistributor,
+        	'sCity':sCity,
+        	'sAddress':sAddress,
+        	'sHours':sHours,
+        	'sAreaCode':sAreaCode,
+        	'sTel1':sTel1,
+        	'sTel2':sTel2,
+        	'sLat':sLat,
+        	'sLong':sLong,
+        	'sVerified':sVerified
     	}
-    });
+		// Use AJAX to post the object to our addstore service
+    	$.ajax({
+        	    type: 'POST',
+           	 data: newStore,
+           	 url: '/stores/addstore',
+           	 dataType: 'JSON'
+    	}).done(function( response ) {
+
+    	// Check for successful (blank) response
+    	if (response.msg === '') {
+    		document.getElementById("bId").value = "";
+    		document.getElementById("sId").value="";
+        	document.getElementById("sName").value = "";
+    		document.getElementById("bDistributor").value="";
+    		document.getElementById("sCity").value="";
+    		document.getElementById("sAddress").value="";
+    		document.getElementById("sHours").value="";
+    		document.getElementById("sAreaCode").value="";
+    		document.getElementById("sTel1").value="";
+    		document.getElementById("sTel2").value="";
+    		document.getElementById("sLat").value="";
+    		document.getElementById("sLong").value="";
+    		document.getElementById("sVerified").checked=false;
+    		// Update the table
+        	populateTable();
+		}
+    	else {
+			// If something goes wrong, alert the error message that our service returned
+        	alert('Error: ' + response.msg);
+    		}
+    	});
+    }
 };
 
 function deleteStore(rowId) {
@@ -219,7 +236,9 @@ function deleteStore(rowId) {
 
 };
    
-   
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}   
                 
 </script>
 </body>

@@ -21,10 +21,10 @@
 	
 	<div id="blackSection" >
 	<p>
-	Brand Id: <input type="text" name="bId" value="" id="bId">
+	Brand Id: <input type="text" name="bId" value="" id="bId" placeholder="(Unique Namber)">
 	Name: <input type="text" name="bName" value="" id="bName">
-	Category Id: <input type="text" name="cId" value="" id="cId">
-	Logo: <input type="text" name="bLogo" value="" id="bLogo">
+	Category Id: <input type="text" name="cId" value="" id="cId" placeholder="(Unique Namber)">
+	Logo: <input type="text" name="bLogo" value="" id="bLogo" placeholder="(all letters lowercase)">
 	</p>
     <a href="#" class="myButton" onclick="addBrand()">Add</a>	
     <p></p>
@@ -77,36 +77,45 @@ function addBrand() {
     var bName = document.getElementById("bName").value;
     var cId = document.getElementById("cId").value;
     var bLogo = document.getElementById("bLogo").value;
-    var newBrand = {
-        'bId': bId,
-        'bName': bName,
-        'bCategoryId':cId,
-        'bLogo':bLogo
-    }
-
-    // Use AJAX to post the object to our addstore service
-    $.ajax({
-            type: 'POST',
-            data: newBrand,
-            url: '/brands/addbrand',
-            dataType: 'JSON'
-    }).done(function( response ) {
-
-    // Check for successful (blank) response
-    if (response.msg === '') {
-    	document.getElementById("bId").value = "";
-    	document.getElementById("bName").value="";
-    	document.getElementById("cId").value="";
-    	document.getElementById("bLogo").value="";
-         // Update the table
-        populateTable();
-
-    }
-    else {
-		// If something goes wrong, alert the error message that our service returned
-        alert('Error: ' + response.msg);
+    
+    if (!isNumeric(bId))
+   		alert ("Brand Id must be numeric");
+   	else if (bName=='')
+   		alert ("Brand name can not be empty");
+   	else if (!isNumeric(cId))
+   		alert ("Category Id must be numeric");
+   	else if (bLogo=='')
+   		alert ("Logo name can not be empty");
+	else {
+    	var newBrand = {
+        	'bId': bId,
+        	'bName': bName,
+        	'bCategoryId':cId,
+        	'bLogo':bLogo
     	}
-    });
+		// Use AJAX to post the object to our addstore service
+    	$.ajax({
+        	    type: 'POST',
+           	    data: newBrand,
+                url: '/brands/addbrand',
+                dataType: 'JSON'
+    	}).done(function( response ) {
+
+    	// Check for successful (blank) response
+    	if (response.msg === '') {
+    		document.getElementById("bId").value = "";
+    		document.getElementById("bName").value="";
+    		document.getElementById("cId").value="";
+    		document.getElementById("bLogo").value="";
+         	// Update the table
+        	populateTable();
+		}
+    	else {
+			// If something goes wrong, alert the error message that our service returned
+        	alert('Error: ' + response.msg);
+    		}
+    	});
+    }
 };
 
 function deleteBrand(rowId) {
@@ -146,6 +155,10 @@ function deleteBrand(rowId) {
     }
 
 };
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
         
                 
 </script>
