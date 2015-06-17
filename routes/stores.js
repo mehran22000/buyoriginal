@@ -23,6 +23,25 @@ router.get('/storelist/:id', function(req, res) {
     });
 });
 
+router.get('/storelist/:id/:lat/:lon/:km', function(req, res) {
+    var db = req.db;
+    var items = [];
+    console.log(req.params.id);
+    db.collection('stores').find({bId:req.params.id}).toArray(function (err, stores) {
+
+    	stores.forEach(function(store) {
+    		console.log("lat"+req.params.lat);
+    		console.log("lon"+req.params.lon);
+    		var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    		console.log(req.params.dist);
+    		if (dist < req.params.km)
+    			items.push(store);
+    	});
+        res.json(items);
+    });
+});
+
+
 
 function distance(lat1, lon1, lat2, lon2, unit) {
 	var radlat1 = Math.PI * lat1/180
