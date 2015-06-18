@@ -23,22 +23,43 @@ router.get('/storelist/:id', function(req, res) {
     });
 });
 
-router.get('/storelist/:id/:lat/:lon/:km', function(req, res) {
+// http://localhost:5000/stores/storelist/3/32.637817/51.658522/10
+// http://localhost:5000/stores/storelist/all/32.637817/51.658522/10
+
+router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     var db = req.db;
     var items = [];
-    console.log(req.params.id);
-    db.collection('stores').find({bId:req.params.id}).toArray(function (err, stores) {
-
-    	stores.forEach(function(store) {
-    		console.log("lat"+req.params.lat);
-    		console.log("lon"+req.params.lon);
-    		var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
-    		console.log(req.params.dist);
-    		if (dist < req.params.km)
-    			items.push(store);
+    var bId = req.params.bId;
+	console.log(bId);
+	    
+    if (isNumeric(bId)){
+        console.log("storeID available");
+    	db.collection('stores').find({bId:req.params.bId}).toArray(function (err, stores) {
+			stores.forEach(function(store) {
+    			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    			if (dist < req.params.km){	
+    				store.distance=dist.toString();
+    				items.push(store);
+    			}
+    		});
+    		res.json(items);
     	});
-        res.json(items);
-    });
+    }
+    else {
+    	db.collection('stores').find().toArray(function (err, stores) {
+			stores.forEach(function(store) {
+    			console.log("lat"+req.params.lat);
+    			console.log("lon"+req.params.lon);
+    			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    			console.log(dist);
+    			if (dist < req.params.km){
+    				store.distance=dist.toString();
+    				items.push(store);
+    			}
+    		});
+    		res.json(items);
+    	});
+    }
 });
 
 
@@ -58,6 +79,10 @@ function distance(lat1, lon1, lat2, lon2, unit) {
 	if (unit=="N") { dist = dist * 0.8684 }
 	return dist
 }       
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 
 /*
