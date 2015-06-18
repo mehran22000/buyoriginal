@@ -37,8 +37,9 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     	db.collection('stores').find({bId:req.params.bId}).toArray(function (err, stores) {
 			stores.forEach(function(store) {
     			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
-    			if (dist < req.params.km){	
-    				store.distance=dist.toString();
+    			if (dist < req.params.km){
+    			    var distNum = dist.toFixed(2);
+    			     store.distance=distNum.toString();
     				items.push(store);
     			}
     		});
@@ -53,8 +54,9 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
     			console.log(dist);
     			if (dist < req.params.km){
-    				store.distance=dist.toString();
-    				items.push(store);
+    			    var distNum = dist.toFixed(2);
+    			    store.distance=distNum.toString();
+      			  	items.push(store);
     			}
     		});
     		res.json(items);
