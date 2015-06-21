@@ -28,9 +28,9 @@ router.get('/storelist/:id', function(req, res) {
  */
 
 
-router.get('/storelist/:areacode', function(req, res) {
+router.get('/storelist/city/:areacode', function(req, res) {
     var db = req.db;
-    console.log(req.params.id);
+    console.log(req.params.areacode);
     db.collection('stores').find({sAreaCode:req.params.areacode}).toArray(function (err, items) {
         res.json(items);
     });
