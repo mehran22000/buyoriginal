@@ -23,6 +23,21 @@ router.get('/storelist/:id', function(req, res) {
     });
 });
 
+/*
+ * GET storelist by Area Code.
+ */
+
+
+router.get('/storelist/:areacode', function(req, res) {
+    var db = req.db;
+    console.log(req.params.id);
+    db.collection('stores').find({sAreaCode:req.params.areacode}).toArray(function (err, items) {
+        res.json(items);
+    });
+});
+
+
+
 // http://localhost:5000/stores/storelist/3/32.637817/51.658522/10
 // http://localhost:5000/stores/storelist/all/32.637817/51.658522/10
 
