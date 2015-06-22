@@ -37,6 +37,17 @@ router.get('/storelist/city/:areacode', function(req, res) {
 });
 
 
+router.get('/storelist/city/:areacode/:id', function(req, res) {
+    var db = req.db;
+    console.log(req.params.areacode);
+    console.log(req.params.id);
+    db.collection('stores').find({sAreaCode:req.params.areacode, bId:req.params.id}).toArray(function (err, items) {
+        res.json(items);
+    });
+});
+
+
+
 
 // http://localhost:5000/stores/storelist/3/32.637817/51.658522/10
 // http://localhost:5000/stores/storelist/all/32.637817/51.658522/10
