@@ -47,6 +47,36 @@ router.get('/storelist/city/:areacode/:id', function(req, res) {
 });
 
 
+router.get('/storelist/discounts/city/:areacode', function(req, res) {
+    var db = req.db;
+    console.log(req.params.areacode);
+    console.log(req.params.id);
+    db.collection('stores').find({sAreaCode:req.params.areacode, sDiscount:{ $gt: 0 }}).toArray(function (err, items) {
+        res.json(items);
+    });
+});
+
+
+router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
+    var db = req.db;
+    var items = [];
+    db.collection('stores').find({sDiscount:{ $gt: 0 }}).toArray(function (err, stores) {
+			stores.forEach(function(store) {
+    			console.log("lat"+req.params.lat);
+    			console.log("lon"+req.params.lon);
+    			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    			console.log(dist);
+    			if (dist < req.params.km){
+    			    var distNum = dist.toFixed(2);
+    			    store.distance=distNum.toString();
+      			  	items.push(store);
+    			}
+    		});
+    		res.json(items);
+    	});
+});
+
+
 
 
 // http://localhost:5000/stores/storelist/3/32.637817/51.658522/10
@@ -89,6 +119,9 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     	});
     }
 });
+
+
+
 
 
 
