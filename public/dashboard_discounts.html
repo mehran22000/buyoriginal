@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+	<div id="header">
+	<h1> Buy Original </h1>
+	<a href="/dashboard_brands.html">Brands</a>
+	<a href="/dashboard_stores.html">Stores</a>
+	<a href="/dashboard_categories.html">Categories</a>
+	<a href="/dashboard_categories.html">Discounts</a>		
+	</div>
+	
+	<div id="blankSection" >
+	<p></p>
+	<p></p>
+	<p></p>
+	</div>
+	
+	<div id="blackSection" >
+	<p>
+	Brand Id: <input type="text" name="bId" value="" id="bId" placeholder="(Unique Namber)">
+	Store Id: <input type="text" name="sId" value="" id="sId">
+	Discount Number: <input type="text" name="sDiscount" value="" id="sDiscount" placeholder="5,10,...,100">
+	</p>
+    <a href="#" class="myButton" onclick="addDiscount()">Submit</a>	
+    <p></p>
+	</div>
+	
+	<div id="boList">
+	<table id="myTable"></table>
+	</div>
+		
+
+<script>
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+        
+        
+function populateTable() {
+
+    // Empty content string
+    var tableContent = '<tr><td>BRAND ID</td><td>BRAND NAME</td><td>STORE ID</td><td>DISCOUNT</td><td></td></tr>';
+    // jQuery AJAX call for JSON
+    $.getJSON( '/stores/storelist/discounts/all', function( data ) {
+	
+        // For each item in our JSON, add a table row and cells to the content string
+        $.each(data, function(){
+            tableContent += '<tr>';
+            tableContent += '<td>' + this.bId + '</td>';
+            tableContent += '<td>' + this.bName + '</td>';
+            tableContent += '<td>' + this.sId + '</td>';
+            tableContent += '<td>' + this.sDiscount + '%' + '</td>';
+            tableContent += '<td> <a href="#" onclick=deleteDiscount("'+this.bId+'","'+this.sId+'");>delete</a></td>';
+            tableContent += '</tr>';         
+        });
+        document.getElementById("myTable").innerHTML= tableContent;
+
+        // Inject the whole content string into our existing HTML table;
+    });
+};
+  
+function addDiscount() {
+    event.preventDefault();
+
+    // Super basic validation - increase errorCount variable if any fields are blank
+    var errorCount = 0;
+  
+
+    // If it is, compile all user info into one object
+    var bId = document.getElementById("bId").value;
+    var sId = document.getElementById("sId").value;
+    var sDiscount = document.getElementById("sDiscount").value;
+    
+    if (!isNumeric(bId))
+   		alert ("Brand Id must be numeric");
+   	else if (!isNumeric(sId))
+   		alert ("Category Id must be numeric");
+   	else if (!isNumeric(sDiscount))
+   		alert ("Discount must be numeric");
+	else {
+    	var newDiscount = {
+        	'bId': bId,
+        	'sId': sId,
+        	'sDiscount':sDiscount
+    	}
+		// Use AJAX to post the object to our addstore service
+    	$.ajax({
+        	    type: 'POST',
+           	    data: newDiscount,
+                url: '/stores/adddiscount',
+                dataType: 'JSON'
+    	}).done(function( response ) {
+
+    	// Check for successful (blank) response
+    	if (response.msg === '') {
+    		document.getElementById("bId").value = "";
+    		document.getElementById("sId").value="";
+    		document.getElementById("sDiscount").value="";
+         	// Update the table
+        	populateTable();
+		}
+    	else {
+			// If something goes wrong, alert the error message that our service returned
+        	alert('Error: ' + response.msg);
+    		}
+    	});
+    }
+};
+
+function deleteDiscount(bId,sId) {
+
+    event.preventDefault();
+
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to delete this discount?');
+
+    // Check and make sure the user confirmed
+    if (confirmation === true) {
+
+        var newDiscount = {
+        	'bId': bId,
+        	'sId': sId,
+        	'sDiscount':0
+    	}
+		// Use AJAX to post the object to our addstore service
+    	$.ajax({
+        	    type: 'POST',
+           	    data: newDiscount,
+                url: '/stores/deletediscount',
+                dataType: 'JSON'
+    	}).done(function( response ) {
+
+    	// Check for successful (blank) response
+    	if (response.msg === '') {
+    		populateTable();
+		}
+    	else {
+			// If something goes wrong, alert the error message that our service returned
+        	alert('Error: ' + response.msg);
+    		}
+    	});
+    }
+    else {
+
+        // If they said no to the confirm, do nothing
+        return false;
+
+    }
+
+};
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+        
+                
+</script>
+</body>
+</html>

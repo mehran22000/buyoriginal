@@ -46,6 +46,13 @@ router.get('/storelist/city/:areacode/:id', function(req, res) {
     });
 });
 
+router.get('/storelist/discounts/all', function(req, res) {
+    console.log("/storelist/discounts");
+    var db = req.db;
+    db.collection('stores').find({sDiscount:{ $gt: 0 }}).toArray(function (err, items) {
+        res.json(items);
+    });
+});
 
 router.get('/storelist/discounts/city/:areacode', function(req, res) {
     var db = req.db;
@@ -201,6 +208,112 @@ router.post('/addstore', function(req, res) {
     	}
 	});
 });
+
+
+router.post('/adddiscount', function(req, res) {
+    console.log('/adddiscount');
+    var db = req.db;
+    
+    // Find CategoryId
+    var _bId = req.body.bId;
+    var _sId = req.body.sId;
+    var _sDiscount = req.body.sDiscount;
+    
+    console.log('_bId:'+_bId);
+    console.log('_sId:'+_sId);
+  	console.log('_sDiscount:'+_sDiscount);
+  	
+  	
+	db.collection('stores').findOne({bId:_bId.toString(),sId:_sId.toString()},function (err,doc) {
+    if (doc){
+    	var newStore = {
+        		'bId': doc.bId,
+        		'sId':doc.sId,
+        		'sName':doc.sName,
+        		'bName':doc.bName,
+        		'bCategory':doc.cName,
+        		'bDistributor':doc.bDistributor,
+        		'sCity':doc.sCity,
+        		'sAddress':doc.sAddress,
+        		'sHours':doc.sHours,
+        		'sAreaCode':doc.sAreaCode,
+        		'sTel1':doc.sTel1,
+        		'sTel2':doc.sTel2,
+        		'sLat':doc.sLat,
+        		'sLong':doc.sLong,
+        		'sDiscount':Number(_sDiscount),
+        		'sVerified':doc.sVerified
+    	}
+    	db.collection('stores').remove({bId:_bId,sId:_sId}, function(err, result) {
+        	if (err == null) {
+        		db.collection('stores').insert(newStore, function(err, result){
+        			if (err === null) {
+        				console.log('new store discount doc added');
+        		}
+        		res.send(
+            		(err === null) ? { msg: '' } : { msg: err }
+        			);
+    			});
+        	}
+    	});
+    	}
+    });
+});
+
+router.post('/deletediscount', function(req, res) {
+    console.log('/deletediscount');
+    var db = req.db;
+    
+    // Find CategoryId
+    var _bId = req.body.bId;
+    var _sId = req.body.sId;
+    var _sDiscount = 0;
+    
+    console.log('_bId:'+_bId);
+    console.log('_sId:'+_sId);
+  	console.log('_sDiscount:'+_sDiscount);
+  	
+  	
+	db.collection('stores').findOne({bId:_bId.toString(),sId:_sId.toString()},function (err,doc) {
+    if (doc){
+    	var newStore = {
+        		'bId': doc.bId,
+        		'sId':doc.sId,
+        		'sName':doc.sName,
+        		'bName':doc.bName,
+        		'bCategory':doc.cName,
+        		'bDistributor':doc.bDistributor,
+        		'sCity':doc.sCity,
+        		'sAddress':doc.sAddress,
+        		'sHours':doc.sHours,
+        		'sAreaCode':doc.sAreaCode,
+        		'sTel1':doc.sTel1,
+        		'sTel2':doc.sTel2,
+        		'sLat':doc.sLat,
+        		'sLong':doc.sLong,
+        		'sDiscount':Number(_sDiscount),
+        		'sVerified':doc.sVerified
+    	}
+    	db.collection('stores').remove({bId:_bId,sId:_sId}, function(err, result) {
+        	if (err == null) {
+        		db.collection('stores').insert(newStore, function(err, result){
+        			if (err === null) {
+        				console.log('new store discount doc added');
+        		}
+        		res.send(
+            		(err === null) ? { msg: '' } : { msg: err }
+        			);
+    			});
+        	}
+    	});
+    	}
+    });
+});
+
+
+
+
+    
 
 /*
  * DELETE to deleteuser.
