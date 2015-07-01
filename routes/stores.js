@@ -76,9 +76,6 @@ router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
     	});
 });
 
-
-
-
 // http://localhost:5000/stores/storelist/3/32.637817/51.658522/10
 // http://localhost:5000/stores/storelist/all/32.637817/51.658522/10
 
