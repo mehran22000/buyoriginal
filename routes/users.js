@@ -2,6 +2,22 @@ var express = require('express');
 var router = express.Router();
 
 /*
+ * Business Users
+ */
+ router.get('/business/userlist', function(req, res) {
+    var db = req.db;
+    db.collection('business_users').find().toArray(function (err, items) {
+        res.json(items);
+    });
+});
+
+ 
+
+
+
+
+
+/*
  * GET userlist.
  */
 router.get('/userlist', function(req, res) {
