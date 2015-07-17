@@ -1,0 +1,241 @@
+/*
+layout.css
+==========
+
+<!--
+ Copyright (c) 2013 Antenna Software
+
+ You may study, copy and/or modify this file and use it or any modified version within any
+ instance of an Antenna Software product which you have been granted a license to use.
+
+ You may not redistribute copies or modified versions of this file to third parties or make it
+ accessible via any public medium without the written permission of Antenna Software.
+
+ This copyright notice must be retained in all copies or modified versions of this file.
+-->
+
+`layout.css` is used to provide dimensions and layout-specific styles. It specifies:
+<ul>
+<li>still header-footer layout (abstract)</li>
+<li>default layout styling for Screens in Stack Container</li>
+<li>layout for CoreApp module</li>
+<li>useful utility classes</li>
+</ul>
+
+*/
+/*
+Header-footer layout
+====================
+
+We use CSS3 box-flex to achieve still header-footer effect.
+
+You can use `#bodywrapper` as an 100% width and height container for box-flex childs (with vertical orientation as the
+default). `#content` has some additional padding and y scroll set to auto. Buttons - header childs are smaller than
+normal buttons.
+
+*/
+body {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+    background: white important;
+}
+
+#bodywrapper {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    height: 100%;
+    width: 100%;
+    max-height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+header {
+    display: block;
+    height: 5rem;
+    line-height: 5rem;
+    background-size: 97px 32px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0px;
+    margin-top: 0px;
+}
+
+header a.form-button {
+    margin-top: 1rem;
+}
+
+#content {
+    -webkit-box-flex: 1.0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+footer {
+    display: block;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    padding: 0.5rem;
+}
+
+/*
+Screens
+=======
+
+Styling for screens container and screens. By default we use 3D-accelerated transition on -webkit-transform
+property to achieve slide transition. See `HC$UI.StackContainer` and `HC$UI.Screen` classes for more information
+about controlling screens.
+
+*/
+div.stack-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+div.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+div.screen.transition {
+    -webkit-transition: all linear 0.2s;
+}
+
+div.screen.pos-right {
+    -webkit-transform: translate3d(100%,0,0);
+}
+
+div.screen.pos-left {
+    -webkit-transform: translate3d(-100%,0,0);
+}
+
+div.screen.pos-center {
+    -webkit-transform: translate3d(0,0,0);
+}
+
+/*
+CoreApp screens layout
+======================
+
+Those screens have big logo on the top (instead of default white header bar). We specify percent values of its height,
+and device-specific CSS should additionally maintain proper minimal size of the logo. We also set here some adjustments
+for default form controls (like sizing).
+
+*/
+#mainlogo {
+    width: 100%;
+    max-width: 100%;
+    height: 40%;
+    background: no-repeat center center;
+    background-size: 252px 82px;
+    background-color: #525559;
+}
+
+#loginScreen, #startingScreen, #loadingScreen, #oldPasswordScreen {
+    background: #525559;
+    padding-top: 0px;
+    margin-top: 0px;
+}
+
+#switcher-home {
+    width: 3.5rem;
+    height: 3.5rem;
+    float: right;
+    background: no-repeat center center;
+    background-size: 32px 32px;
+    margin-top: -1rem;
+}
+
+#settings-icon {
+    background: no-repeat center center;
+    background-size: 16px 16px;
+}
+
+.coreapp {
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+}
+
+.screen input {
+    width: 100%;
+    -webkit-user-modify: read-write-plaintext-only;
+}
+
+table.settings-list td.icon .user-avatar {
+    background: no-repeat center center;
+    background-size: 32px 32px;
+}
+
+table.settings-list td.icon .user-avatar-disabled {
+    background: no-repeat center center;
+    background-size: 32px 32px;
+}
+
+table.settings-list td.icon .container-icon {
+    background: no-repeat center center;
+    background-size: 32px 32px;
+}
+
+table.settings-list .cross {
+    background: no-repeat center center;
+    background-size: 16px 16px;
+}
+
+table.settings-list .cross-disabled {
+    background: no-repeat center center;
+    background-size: 16px 16px;
+}
+.separator-line {
+    height: 1px;
+    border-bottom: 1px solid #888888;
+    padding-top: 6px;
+}
+/*
+Utilities
+=========
+
+We also provide some utility classes for alignment, visibility etc.
+
+    <div class="left">Left-aligned</div>
+    <div class="right">Right-aligned</div>
+    <div class="center">Centered</div>
+
+    <div class="float-left">Float-left</div>
+    <div class="float-right">Float-right</div>
+*/
+.left {
+    text-align: left;
+}
+.right {
+    text-align: right;
+}
+.center {
+    text-align: center;
+}
+
+.float-left {
+    float: left;
+}
+.float-right {
+    float: right;
+}
+
+.hidden {
+    display: none !important;
+}

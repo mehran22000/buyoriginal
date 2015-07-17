@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--
+ Copyright (c) 2013 Antenna Software
+
+ You may study, copy and/or modify this file and use it or any modified version within any
+ instance of an Antenna Software product which you have been granted a license to use.
+
+ You may not redistribute copies or modified versions of this file to third parties or make it
+ accessible via any public medium without the written permission of Antenna Software.
+
+ This copyright notice must be retained in all copies or modified versions of this file.
+-->
+<html manifest="cache.manifest">
+<head>
+    <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>AMP Hybrid Client CoreApp</title>
+    <link rel="stylesheet" type="text/css" href="./assets/styles/layout.css" />
+    <link rel="stylesheet" type="text/css" href="./assets/styles/theme.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 0.75)" href="./assets/styles/device-specific/device-1.0.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 1.0)" href="./assets/styles/device-specific/device-1.0.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 1.3)" href="./assets/styles/device-specific/device-1.3.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 1.5)" href="./assets/styles/device-specific/device-1.5.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 2.0)" href="./assets/styles/device-specific/device-2.0.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 3.0)" href="./assets/styles/device-specific/device-3.0.css" />
+
+    <script type="text/javascript" src="./assets/scripts/controls.js"></script>
+    <script type="text/javascript" src="./assets/scripts/i18n.js"></script>
+    <script type="text/javascript" src="./assets/scripts/config.js"></script>
+    <script type="text/javascript" src="./assets/scripts/coreapp.js"></script>
+</head>
+<body onload="HC$CoreApp.onload();">
+
+<div id="bodywrapper">
+
+    <header id="singleappHeader" class="hidden">
+
+        <a id="buttonGoBackSettings" href="javascript:void(0);"
+           onclick="javascript:HC$CoreApp.controller._switchScreen('settingsScreen', 'loginScreen')"
+           class="form-button gray float-right hidden">
+            Go Back
+        </a>
+
+    </header>
+
+    <div id="mainlogo" class="retina"></div>
+
+    <div id="content" class="stack-container">
+
+        <div id="startingScreen" class="screen coreapp">
+
+            <div id="_starting" class="message center">Starting...</div>
+
+        </div>
+
+        <div id="loginScreen" class="screen coreapp pos-right">
+            <div id="combobox">
+                <label id="_username" for="comboboxUsername" class="form-label">Username</label><br />
+
+                <div class="combobox">
+                    <input id="comboboxUsername" type="text" class="combobox-input" value="" />
+
+                    <div id="comboboxArrow" class="combobox arrow"></div>
+                    <div id="comboboxCross" class="combobox cross">
+                        <div class="combobox cross-inner"></div>
+                    </div>
+
+                    <select id="comboboxUserslist" class="combobox select"></select>
+                </div><br /><br />
+
+                <label id="_password" for="comboboxPassword" class="form-label">Password</label><br />
+                <input id="comboboxPassword" type="password" class="form-input" value="" /><br /><br />
+
+                <div class="right">
+                    <a id="_login" href="javascript:HC$CoreApp.controller.doSignIn();" class="form-button">Sign in</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingScreen" class="screen coreapp pos-right">
+
+            <div id="loadingProgressBar" class="progress-bar">
+                <div class="inner-holder">
+                    <div class="inner"></div>
+                </div>
+            </div>
+
+            <div class="message center">
+                <span id="loadingMessage"></span>
+            </div>
+
+        </div>
+
+        <div id="oldPasswordScreen" class="screen coreapp pos-right">
+
+            <div id="_passwordChanged" class="message blue left">
+                Your password has changed recently. To access local data, please enter your previous password.
+            </div>
+
+            <label id="_oldPassword" for="oldPassword" class="form-label">Password</label><br />
+            <input id="oldPassword" type="password" class="form-input" value="" /><br /><br />
+
+            <div class="right">
+                <a id="_continue" href="javascript:HC$CoreApp.controller.doReencryptStorage();" class="form-button orange">Continue</a>
+            </div>
+
+        </div>
+
+        <div id="settingsScreen" class="multiapp screen pos-right">
+
+            <div class="h1 left">
+                <span id="_containerSettings">Settings</span>
+                <div class="separator-line"></div>
+            </div>
+            <div class="h4 left">
+                CLIENT INFORMATION
+            </div>
+            <table id="settingsList" class="settings-list">
+                <tbody>
+                <tr>
+                    <td class="icon">
+                        <div class="container-icon"/>
+                    </td>
+                    <td colspan="2" class="app">
+                        <div class="name"></div>
+                        <div class="version"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="description-info">
+                            <div class="title">device id</div>
+                            <div class="content content-break"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">profile service</div>
+                            <div class="content content-break"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">details</div>
+                            <div class="content"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">phone number</div>
+                            <div class="content"></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <span id="_copyright">&copy; 2014 Pegasystems</span>
+        <div id="settings-button" class="settings-button hidden" onclick="javascript:HC$CoreApp.controller._switchScreen('homeScreen', 'settingsScreen')">
+            <span>Settings</span>
+            <div id="settings-icon"></div>
+        </div>
+    </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+/*
+device.css
+==========
+
+<!--
+ Copyright (c) 2013 Antenna Software
+
+ You may study, copy and/or modify this file and use it or any modified version within any
+ instance of an Antenna Software product which you have been granted a license to use.
+
+ You may not redistribute copies or modified versions of this file to third parties or make it
+ accessible via any public medium without the written permission of Antenna Software.
+
+ This copyright notice must be retained in all copies or modified versions of this file.
+-->
+
+`device.css` is a mock stylesheet that specifies how styles should be provided for the specific
+screen resolutions. There are following resolution-specific stylesheets:
+<ul>
+    <li>device-1.0.css - for Android mdpi displays (~160dpi, -webkit-min-device-pixel-ratio: 1.0)</li>
+    <li>device-1.3.css - for Android tvdpi displays (~213dpi, -webkit-min-device-pixel-ratio: 1.3)</li>
+    <li>device-1.5.css - for Android hdpi displays (~240dpi, -webkit-min-device-pixel-ratio: 1.5)</li>
+    <li>device-2.0.css - for Android xhdpi displays (~320dpi, -webkit-min-device-pixel-ratio: 2.0)</li>
+    <li>device-3.0.css - for Android xxhdpi displays (~480dpi, -webkit-min-device-pixel-ratio: 3.0)</li>
+</ul>
+
+To use the appropriate stylesheet, you can specify `media` query in the stylesheet link or in the stylesheet itself.
+For example, to support all devices, you should include links for all stylesheets (with appropriate `media` attribute
+value) in the `<head>` sections of your HTML document, e.g.:
+
+`<link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 1.0)" href="./assets/styles/device-specific/device-1.0.css" />`
+
+All examples provided here refer to mdpi displays.
+
+*Tip:* to target device density in JavaScript, use `window.devicePixelRatio`.
+
+*/
+/*
+Rem units
+=========
+
+You should user either percent or `rem` units used across the documents to make sure that we have the desired size on
+all screen densities. We define base font size as 10px on mdpi screens so it can be easily scaled: 13px on the tvdpi
+devices, 15px on hdpi devices etc. In a result, you can use 1.0rem as 10dp.
+
+*/
+html {
+    font-size: 10px;
+}
+
+/*
+Main logo
+=========
+
+The main logo is used on Login and Loading screens. Image is provided via centered not-repeated background.
+`min-height` property is the lowest bound of height - in case of landscape screen orientation, we shouldn't cut the
+logo but make page content scrollable.
+
+*/
+.logo {
+    background-image: url("../../images/device-1.0/logo_mdpi.png");
+}
+
+/*
+Header logo
+===========
+
+The header logo is used on header element in MultiApp module.
+
+*/
+header {
+    background-image: url("../../images/device-1.0/logo_small_mdpi.png");
+}

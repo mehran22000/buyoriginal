@@ -1,0 +1,666 @@
+/*
+theme.css
+=========
+
+<!--
+ Copyright (c) 2013 Antenna Software
+
+ You may study, copy and/or modify this file and use it or any modified version within any
+ instance of an Antenna Software product which you have been granted a license to use.
+
+ You may not redistribute copies or modified versions of this file to third parties or make it
+ accessible via any public medium without the written permission of Antenna Software.
+
+ This copyright notice must be retained in all copies or modified versions of this file.
+-->
+
+`theme.css` provides settings for fonts, colors, backgrounds used among all bootstrap pages. Themes for layout and
+following UI controls are set here:
+<ul>
+<li>buttons</li>
+<li>inputs</li>
+<li>progress bars</li>
+<li>messages</li>
+</ul>
+
+*/
+/*
+Common settings
+===============
+
+Fonts
+-----
+By default, we use Open Sans font, obtained locally or from Google's CDN.
+
+Body, header, footer
+--------------------
+Default body, header and footer styling - sets background color and default font. Sizes are provided in layout.css.
+
+Headers
+-------
+You can use `hx` classes to set appropriate text headers.
+
+    <body>
+        Welcome to the AMP Hybrid Client!
+        <div class="h1">Header lvl 1</div>
+        <div class="h2">Header lvl 2</div>
+        <div class="h3">Header lvl 3</div>
+        <div class="h4">Header lvl 4</div>
+    </body>
+*/
+html {
+    font-size: 10px;
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Open Sans Light'), local('OpenSans-Light'), url('../fonts/opensans-light.woff') format('woff'), url('../fonts/opensans-light.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url('../fonts/opensans-regular.woff') format('woff'), url('../fonts/opensans-regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 600;
+    src: local('Open Sans Semibold'), local('OpenSans-Semibold'), url('../fonts/opensans-semibold.woff') format('woff'), url('../fonts/opensans-semibold.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Open Sans Bold'), local('OpenSans-Bold'), url('../fonts/opensans-bold.woff') format('woff'), url('../fonts/opensans-bold.ttf') format('truetype');
+}
+
+body {
+    background: white;
+    font-family: 'Open Sans', sans-serif;
+}
+
+header {
+    background-color: black;
+    border-bottom: solid 1px black;
+    border-top: solid 1px black;
+    background-position: 1.5rem center;
+    background-repeat: no-repeat;
+}
+
+footer {
+    font-size: 1.4rem;
+    font-weight: 400;
+    background: black;
+    color: white;
+    border-top: solid 1px black;
+}
+
+footer .settings-button {
+    float: right;
+}
+
+footer .settings-button.hidden{
+    display: none;
+}
+
+footer .settings-button span{
+    float: left;
+    margin-right: 0.4rem;
+}
+
+footer .settings-button #settings-icon{
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-top: 0.3rem;
+    float: right;
+}
+
+.h1 {
+    font-size: 1.8rem;
+    font-weight: 200;
+    color: #5f6062;
+    margin-bottom: 1rem;
+}
+
+.h2 {
+    font-size: 2.2rem;
+    font-weight: 200;
+    color: #5f6062;
+    margin-bottom: 0.5rem;
+}
+
+.h3 {
+    font-size: 1.8rem;
+    font-weight: 200;
+    color: #5f6062;
+    margin-bottom: 0.5rem;
+}
+
+.h4 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: black;
+    margin-bottom: 1rem;
+}
+
+/*
+Buttons
+=======
+
+Many buttons are used among the bootstrap application. There are a few variants of them:
+
+<ul>
+<li>default - 'Action' button</li>
+<li>gray - 'Cancel' button</li>
+</ul>
+
+All buttons share the same `disabled` class. Additionally, we remove tap-highlight and user-select settings to make
+them behave more like 'native'.
+
+    <a class="form-button">Login</a>
+    <a class="form-button gray">Go back</a>
+    <a class="form-button disabled">Disabled</a>
+*/
+a.form-button {
+    display: inline-block;
+    height: 3.0rem;
+    line-height: 2.2rem;
+    border-radius: 0.2rem;
+    font-size: 1.4rem;
+    padding: 0.4rem 1.2rem;
+    color: white;
+    text-decoration: none;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background: #30A4D1;
+    border: solid 1px #30A4D1;
+    box-shadow: none;
+    min-width: 8rem;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-user-select: none;
+}
+
+/*
+Buttons hover and active
+========================
+P7 doesn't have hover and active styles, so we changed their colors to the same as main form-button.
+We left hover and active in case of changing designer's mind.
+*/
+a.form-button:hover {
+    background: #30A4D1;
+    border: solid 1px #30A4D1;
+    box-shadow: 0px 2px #30A4D1 inset;
+}
+a.form-button:active {
+    background: #30A4D1;
+    border: solid 1px #30A4D1;
+    box-shadow: 0px 2px #30A4D1 inset;
+}
+
+a.form-button.gray {
+    background: #969696;
+    border: solid 1px #969696;
+}
+a.form-button.gray:hover {
+    background: #969696;
+    border: solid 1px #969696;
+    box-shadow: 0px 2px #969696 inset;
+}
+a.form-button.gray:active {
+    background: #969696;
+    border: solid 1px #969696;
+    box-shadow: 0px 2px #969696 inset;
+}
+
+a.form-button.orange {
+    background: #FF7F00;
+    border: solid 1px #FF7F00;
+}
+a.form-button.orange:hover {
+    background: #FF7F00;
+    border: solid 1px #FF7F00;
+    box-shadow: 0px 2px #FF7F00 inset;
+}
+a.form-button.orange:active {
+    background: #FF7F00;
+    border: solid 1px #FF7F00;
+    box-shadow: 0px 2px #FF7F00 inset;
+}
+
+a.form-button.disabled,
+a.form-button.gray.disabled {
+    background: #a8a9aa;
+    border: solid 1px #a8a9aa;
+    box-shadow: none;
+}
+
+/*
+Inputs
+======
+
+Text and password inputs are used on the Login screen. You can also attach a label
+to the input.
+
+    <label for="login" class="form-label">Username</label><br />
+    <input id="login" type="text" class="form-input" value="jsmith@antenna.com" /><br /><br />
+
+    <label for="password" class="form-label">Password</label><br />
+    <input id="password" type="password" class="form-input" value="password" /><br /><br />
+*/
+input[type="text"].form-input,
+input[type="password"].form-input {
+    border: none;
+    background: white;
+    outline: none;
+    font-size: 1.3rem;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    color: black;
+    padding: 0.5rem;
+    margin: 0px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+input[type="text"].form-input:focus,
+input[type="password"].form-input:focus {
+    background: white;
+}
+
+label.form-label {
+    display: inline-block;
+    text-transform: capitalize;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/*
+Progress bar
+============
+
+Loading screens utilize progress bar to present the progress of the current job. We use `width` property of the inner
+element to set current progress. You can use `HC$UI.ProgressBar` class as the controller for this DOM.
+
+    <div id="loadingProgressBar" class="progress-bar" style="width: 300px;">
+        <div class="inner" style="width: 33%;"></div>
+    </div>
+*/
+div.progress-bar {
+    width: 100%;
+    height: 1.4rem;
+    border: solid 0.1rem #e1e1e1;
+    padding: 0.1rem;
+    background: white;
+}
+
+div.progress-bar div.inner-holder {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+div.progress-bar div.inner {
+    height: 100%;
+    width: 0%;
+    background: #30A4D1;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+div.progress-bar.hidden {
+    display: none;
+}
+
+/*
+Messages
+========
+
+You can use `message` class to create text block with information message.
+
+    <div class="message blue">
+        Your password has changed recently. To access local data, please enter your previous password.
+    </div>
+
+*/
+div.message {
+    font-size: 1.4rem;
+    font-weight: 200;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    color: white;
+    padding: 2rem;
+}
+
+div.message.blue {
+    color: black;
+    background-color: #ADC8DC;
+}
+
+/*
+Combobox
+========
+
+Combobox can be used for combining input and select control. This control `should be used with proper JS code` responsible
+for maintaining its behavior
+
+    <div class="combobox">
+        <input id="username" type="text" class="combobox-input" value="" />
+
+        <div id="combobox-arrow" class="combobox arrow"></div>
+        <div id="combobox-cross" class="combobox cross">
+            <div class="combobox cross-inner"></div>
+        </div>
+
+        <select id="userslist" class="combobox select">
+            <option value="option1">Option1</option>
+            <option value="option2">Option2</option>
+            <option value="option3">Option3</option>
+        </select>
+    </div>
+
+*/
+
+div.combobox {
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    position: relative;
+}
+
+div.combobox input[type="text"].combobox-input {
+    border: none;
+    background: white;
+    outline: none;
+    font-size: 1.3rem;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    color: black;
+    padding: 0.5rem;
+    margin: 0px;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+}
+
+div.combobox input[type="text"].combobox-input:focus {
+    background: white;
+}
+
+div.combobox.arrow {
+    position: absolute;
+    right: 0.8rem;
+    top: 0.8rem;
+    width: 0px;
+    height: 100%;
+    border-style: solid;
+    border-width: 1.0rem 0.7rem 0 0.7rem;
+    border-color: #6b6c6e transparent transparent transparent;
+}
+
+div.combobox select {
+    font-size: 1.4rem;
+    position: absolute;
+    right: 0rem;
+    top: 0rem;
+    background: transparent;
+    width: 2.5rem;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    text-indent: -9999px;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+div.combobox.cross {
+    position: absolute;
+    right: 0.50rem;
+    top: 0.4rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding-left: 1.0rem;
+    padding-top: 0.1rem;
+    background: #6b6c6e;
+    -webkit-border-radius: 0.2rem;
+    display: block;
+}
+
+div.combobox.cross-inner{
+    background: #fff;
+    width: 0.5rem;
+    height: 2.1rem;
+    position: relative;
+    -webkit-transform: rotate(45deg);
+    -webkit-border-radius: 0.1rem;
+}
+
+div.combobox.cross-inner:before{
+    background: #fff;
+    content: "";
+    width: 2.1rem;
+    height: 0.5rem;
+    position: absolute;
+    top: 0.8rem;
+    left: -0.8rem;
+    -webkit-border-radius: 0.1rem;
+}
+
+/*
+Settings list
+================
+
+To present information on settings screen, we use simple table. Each row represents one application.
+You can use `HC$UI.SettingsInfo` class as the controller for this DOM.
+
+    <table id="settingsList" class="settings-list">
+                <tbody>
+                <tr>
+                    <td colspan="3" class="bold-cell">
+                        Remove Users
+                    </td>
+                </tr>
+
+                <tr class="spacer"><td></td></tr>
+
+                <tr>
+                    <td class="icon">
+                        <div class="container-icon"/>
+                    </td>
+                    <td colspan="2" class="app">
+                        <div class="name">AMP Client</div>
+                        <div class="version">1.0</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="icon">
+                        <div class="description-info">
+                            <div class="title">device id</div>
+                            <div class="content"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">profile service</div>
+                            <div class="content"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">details</div>
+                            <div class="content"></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+*/
+
+table.settings-list {
+    color: black;
+    width: 100%;
+    border-spacing: 0rem 0.4rem;
+    border-collapse: collapse;
+    margin-top: -1rem;
+}
+
+table.settings-list tr {
+    height: 5rem;
+    background: white;
+}
+
+table.settings-list td.bold-cell {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    font-size: 1.6rem;
+    padding-left: 0.4rem;
+}
+
+table.settings-list td.icon {
+    margin:0;
+    padding:0;
+    width: 5rem;
+    height: 5rem;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    padding: 0.4rem;
+    border-top: 1px solid #cccccc;
+    border-left: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+
+table.settings-list td.icon .user-avatar,
+table.settings-list td.icon .user-avatar-disabled,
+table.settings-list td.icon .container-icon {
+    width: 4.2rem;
+    height: 4.2rem;
+    margin: 0px;
+    padding: 0px;
+    display: block;
+}
+
+table.settings-list td.app {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border-top: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+
+table.settings-list td.app div.name {
+    font-size: 1.4rem;
+    color: black;
+    font-weight: 600;
+}
+
+table.settings-list td.app div.version {
+    font-size: 1.2rem;
+    color: #888888;
+    font-weight: 200;
+    display: none;
+}
+
+table.settings-list tr td.info {
+    width: 3rem;
+    display: none;
+}
+
+table.settings-list td.name-container {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    padding: 0.5rem;
+    border-top: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+
+table.settings-list td.name-container div.name {
+    font-size: 1.4rem;
+}
+
+table.settings-list tr td.delete-button {
+    width: 3rem;
+    position: relative;
+    border-top: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+}
+
+table.settings-list .cross,
+table.settings-list .cross-disabled{
+    width: 1.5rem;
+    height: 2.4rem;
+    padding-left: 1.0rem;
+}
+
+table.settings-list tr.spacer {
+    background: transparent;
+    height: 2rem;
+}
+
+table.settings-list td.app div.version {
+    display: table-cell !important;
+    font-weight: 400 !important;
+    font-size: 1.3rem !important;
+}
+
+table.settings-list td.app div.name {
+    font-weight: 600 !important;
+    font-size: 1.4rem !important;
+    margin-bottom: -0.5rem;
+}
+
+table.settings-list .description-info {
+    /*padding: 0.4rem;*/
+    padding: 0;
+    font-size: 1.4rem;
+}
+
+table.settings-list .description-info .title {
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+}
+
+table.settings-list .description-info .content {
+    position: relative;
+    margin-bottom: 1rem;
+    text-align: justify;
+}
+
+table.settings-list .description-info .content-break {
+    word-break:break-all;
+}
+
+/*
+table.settings-list tr td:nth-child(1) {
+  border-right: 0;
+}
+
+table.settings-list tr td:nth-child(2) {
+  border-left: 0;
+}
+
+table.settings-list td {
+    border: 1px solid #cccccc;
+    padding: 6px;
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!--
+ Copyright (c) 2013 Antenna Software
+
+ You may study, copy and/or modify this file and use it or any modified version within any
+ instance of an Antenna Software product which you have been granted a license to use.
+
+ You may not redistribute copies or modified versions of this file to third parties or make it
+ accessible via any public medium without the written permission of Antenna Software.
+
+ This copyright notice must be retained in all copies or modified versions of this file.
+-->
+<html manifest="cache.manifest">
+<head>
+    <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>AMP Hybrid Client MultiApp</title>
+    <link rel="stylesheet" type="text/css" href="./assets/styles/layout.css" />
+    <link rel="stylesheet" type="text/css" href="./assets/styles/theme.css" />
+    <link rel="stylesheet" type="text/css" href="./assets/styles/multiapp.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 1.0)" href="./assets/styles/device-specific/device-1.0.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 1.3)" href="./assets/styles/device-specific/device-1.3.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 1.5)" href="./assets/styles/device-specific/device-1.5.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 2.0)" href="./assets/styles/device-specific/device-2.0.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 3.0)" href="./assets/styles/device-specific/device-3.0.css" />
+    <link rel="stylesheet" media="screen and (-webkit-min-device-pixel-ratio: 3.0)" href="./assets/styles/device-specific/device-3.0.css" />
+
+    <script type="text/javascript" src="./assets/scripts/controls.js"></script>
+    <script type="text/javascript" src="./assets/scripts/i18n.js"></script>
+    <script type="text/javascript" src="./assets/scripts/config.js"></script>
+    <script type="text/javascript" src="./assets/scripts/multiapp.js"></script>
+</head>
+<body onload="HC$MultiApp.onload();">
+
+<div id="bodywrapper">
+
+    <header>
+
+        <a id="buttonGoBackHome" href="javascript:void(0);"
+           onclick="javascript:HC$MultiApp.controller._switchScreen('appVersionsScreen', 'homeScreen')"
+           class="form-button gray float-right hidden">
+            Go Back
+        </a>
+
+        <a id="buttonGoBackAppVersion" href="javascript:void(0);"
+           onclick="javascript:HC$MultiApp.controller._switchScreen('appDetailsScreen', 'homeScreen')"
+           class="form-button gray float-right hidden">
+            Go Back
+        </a>
+
+        <a id="buttonGoBackSettings" href="javascript:void(0);"
+           onclick="javascript:HC$MultiApp.controller._switchScreen('settingsScreen', 'homeScreen')"
+           class="form-button gray float-right hidden">
+            Go Back
+        </a>
+
+        <a id="buttonGoBackSwitcher" href="javascript:void(0);"
+           onclick="javascript:HC$MultiApp.controller.starPreviousApp()"
+           class="form-button gray float-right hidden">
+            Go Back
+        </a>
+
+        <a id="buttonSignOut" href="javascript:void(0);"
+           onclick="javascript:HC$MultiApp.controller.doSignOut()"
+           class="form-button orange float-right hidden">
+            Sign Out
+        </a>
+
+    </header>
+
+    <div id="content" class="stack-container">
+
+        <div id="loadingScreen" class="multiapp screen">
+            <div id="mainlogo"></div>
+
+            <div id="loadingProgressBar" class="progress-bar">
+                <div class="inner-holder">
+                    <div class="inner"></div>
+                </div>
+            </div>
+
+            <div class="message center">
+                <span id="loadingMessage"></span>
+            </div>
+
+        </div>
+
+        <div id="homeScreen" class="multiapp screen pos-right">
+
+            <div id="appListHeader" class="h1 left">
+                <span id="_installingApplications">Installing Apps</span>
+                <div class="separator-line"></div>
+            </div>
+            <div class=""></div>
+            <table id="appList" class="app-list">
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div id="switcherScreen" class="multiapp screen pos-right">
+
+            <div id="appSwitcherHeader" class="h1 left">
+                <span id="_switchApplications">Switch Apps</span>
+                <div id="switcher-home" onclick="javascript:HC$MultiApp.controller._switchScreen('switcherScreen', 'homeScreen')"></div>
+                <div class="separator-line"></div>
+            </div>
+
+            <table id="appListSwitcher" class="app-list">
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div id="appDetailsScreen" class="multiapp screen pos-right">
+
+            <div id="appVersionHeader" class="h1 app-header">
+                <div id="app-icon" class="app-header icon">
+                    <img src=""/>
+                </div>
+                <div id="app-info" class="app-header info">
+                    <div class="name">Talk client (1.0)</div>
+                    <div class="author">Antenna Software</div>
+                    <div class="actions">
+                        <a class="form-button orange">Uninstall</a>
+                    </div>
+                </div>
+                <div id="app-description" class="app-header description-info">
+                    <div class="title">description</div>
+                    <div class="content">Group chat client for enterprise users.</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="settingsScreen" class="multiapp screen pos-right">
+
+            <div class="h1 left">
+                <span id="_containerSettings">Settings</span>
+                <div class="separator-line"></div>
+            </div>
+
+            <table id="settingsList" class="settings-list">
+                <tbody>
+                <tr>
+                    <td colspan="3" class="bold-cell">
+                        Remove Users
+                    </td>
+                </tr>
+
+                <tr class="spacer"><td></td></tr>
+
+                <tr>
+                    <td class="icon">
+                        <div class="container-icon"/>
+                    </td>
+                    <td colspan="2" class="app">
+                        <div class="name"></div>
+                        <div class="version"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <div class="description-info">
+                            <div class="title">device id</div>
+                            <div class="content content-break"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">profile service</div>
+                            <div class="content content-break"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">details</div>
+                            <div class="content"></div>
+                        </div>
+                        <div class="description-info">
+                            <div class="title">phone number</div>
+                            <div class="content"></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <footer>
+        <span id="_copyright">&copy; 2014 Pegasystems</span>
+        <div id="settings-button" class="settings-button hidden" onclick="javascript:HC$MultiApp.controller._switchScreen('homeScreen', 'settingsScreen')">
+            <span>Settings</span>
+            <div id="settings-icon"></div>
+        </div>
+    </footer>
+</div>
+
+</body>
+</html>

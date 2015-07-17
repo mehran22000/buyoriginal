@@ -1,0 +1,53 @@
+/*
+ Copyright (c) 2013 Antenna Software
+
+ You may study, copy and/or modify this file and use it or any modified version within any
+ instance of an Antenna Software product which you have been granted a license to use.
+
+ You may not redistribute copies or modified versions of this file to third parties or make it
+ accessible via any public medium without the written permission of Antenna Software.
+
+ This copyright notice must be retained in all copies or modified versions of this file.
+*/
+
+/*
+ device-1.0.css - for Android mdpi displays (~160dpi, -webkit-device-pixel-ratio: 1.0)
+ See device.css for documentation.
+*/
+#mainlogo {
+    background-image: url("../../images/device-1.0/logo_mdpi.png");
+}
+
+header {
+    background-image: url("../../images/device-1.0/logo_small_mdpi.png");
+}
+
+#switcher-home {
+    background-image: url("../../images/device-1.0/button_home_mdpi.png");
+}
+
+#settings-icon {
+    background-image: url("../../images/device-1.0/icon_settings_mdpi.png");
+}
+
+/* Some UI elements on settings screen differ depending on screen size */
+
+table.settings-list td.icon .user-avatar {
+    background-image: url("../../images/device-1.0/icon_user_mdpi.png");
+}
+
+table.settings-list td.icon .user-avatar-disabled {
+    background-image: url("../../images/device-1.0/icon_user_disabled_mdpi.png");
+}
+
+table.settings-list td.icon .container-icon {
+    background-image: url("../../images/device-1.0/icon_container_mdpi.png");
+}
+
+table.settings-list .cross {
+    background-image: url("../../images/device-1.0/icon_remove_mdpi.png");
+}
+
+table.settings-list .cross-disabled {
+    background-image: url("../../images/device-1.0/icon_remove_disabled_mdpi.png");
+}
