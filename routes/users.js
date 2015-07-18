@@ -24,8 +24,60 @@ router.get('/business/validateemail/:email', function(req, res) {
     });
 });
 
- 
 
+router.get('/business/login', function(req, res) {
+    var db = req.db;
+    var email = req.body.email;
+    var password = req.body.password;
+    
+    db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
+        if (doc.length==0){
+        	res.send(JSON.stringify({ "result": "err_invalid_email"}));
+        }
+        else {
+        	if (doc.buPassword==password){
+        	   res.send(JSON.stringify({ "result": "successful"}));
+        	}
+        	else {
+        		res.send(JSON.stringify({ "result": "err_incorrect_password"}));
+        	}
+        }
+    });     
+});
+
+
+
+ 
+router.post('/business/adduser', function(req, res) {
+    console.log('/business/adduser');
+    var db = req.db;
+    
+    var newUser = {
+        		'buId': req.body.buId,
+        		'buEmail':req.body.buEmail,
+        		'buPassword':req.body.buPassword,
+        		'buCity':req.body.buCity,
+        		'buBrandId':req.body.buBrandId,
+        		'buBrandName':req.body.buBrandName,
+        		'buStoreName':req.body.buStoreName,
+        		'buStoreAddress':req.body.buStoreAddress,
+        		'buStoreHours':req.body.buStoreHours,
+        		'buDistributor':req.body.buDistributor,
+        		'buStoreLat':req.body.buStoreLat,
+        		'buStoreLon':req.body.buStoreLon,
+        		'buAreaCode':req.body.buAreaCode,
+        		'buTel':req.body.buTel
+    }
+    
+    db.collection('business_users').insert(newUser, function(err, result){
+        	if (err === null) {
+        		console.log('new user doc added');
+        	}
+        	res.send(
+            	(err === null) ? { msg: '' } : { msg: err }
+        		);
+    		});	
+	});
 
 
 
