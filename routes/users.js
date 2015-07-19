@@ -30,25 +30,24 @@ router.post('/business/login', function(req, res) {
     var email = req.body.email;
     var password = req.body.password;
     
-    var array = [{ "result": "successful"}];
-    res.json(array);
     //res.send('succesful');
     
-    /*
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
         if (doc.length==0){
-        	res.send(JSON.stringify({ "result": "err_invalid_email"}));
+        	var array = [{ "result": "err_invalid_email"}];
+            res.json(array);       
         }
         else {
         	if (doc.buPassword==password){
-        	   res.send(JSON.stringify({ "result": "successful"}));
+        		var array = [{ "result": "successful"}];
+            	res.json(array);       
         	}
         	else {
-        		res.send(JSON.stringify({ "result": "err_incorrect_password"}));
+        		var array = [{ "result": "err_invalid_password"}];
+    			res.json(array);       
         	}
         }
     });
-    */     
 });
 
 
