@@ -25,14 +25,14 @@ router.get('/business/validateemail/:email', function(req, res) {
 });
 
 
-router.get('/business/login', function(req, res) {
+router.post('/business/login', function(req, res) {
     var db = req.db;
     var email = req.body.email;
     var password = req.body.password;
     
     var array = [{ "result": "successful"}];
-    //res.json(array);
-     res.send('succesful');
+    res.json(array);
+    // res.send('succesful');
     
     /*
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
