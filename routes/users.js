@@ -31,8 +31,8 @@ router.get('/business/login', function(req, res) {
     var password = req.body.password;
     
     var array = [{ "result": "successful"}];
-    res.json(array);
-    // res.send(JSON.stringify({ "result": "successful"}));
+    //res.json(array);
+     res.send('succesful');
     
     /*
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
