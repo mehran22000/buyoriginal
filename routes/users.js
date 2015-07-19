@@ -38,7 +38,8 @@ router.post('/business/login', function(req, res) {
             res.json(array);       
         }
         else {
-        	if (doc.buPassword==password){
+            console.log('doc.buPassword='+doc[0].buPassword+' password='+password);
+        	if (doc[0].buPassword==password){	   
         		var array = [{ "result": "successful"}];
             	res.json(array);       
         	}
