@@ -30,6 +30,10 @@ router.get('/business/login', function(req, res) {
     var email = req.body.email;
     var password = req.body.password;
     
+    
+    res.send(JSON.stringify({ "result": "successful"}));
+    
+    /*
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
         if (doc.length==0){
         	res.send(JSON.stringify({ "result": "err_invalid_email"}));
@@ -42,7 +46,8 @@ router.get('/business/login', function(req, res) {
         		res.send(JSON.stringify({ "result": "err_incorrect_password"}));
         	}
         }
-    });     
+    });
+    */     
 });
 
 
