@@ -57,9 +57,25 @@ router.post('/business/login', function(req, res) {
 router.post('/business/adduser', function(req, res) {
     console.log('/business/adduser');
     var db = req.db;
+    var buId = 0;
+    var sId = 0;
+    var error=null;
     
-    var newUser = {
-        		'buId': req.body.buId,
+    // 1) Find Stats
+    db.collection('stats').findOne({},function (err,doc) {
+        
+        if (err!=null)
+        	error = err;
+        	 
+        if (doc){
+            sId=(parseInt(doc.numStores)+1).toString();
+            buId=(parseInt(doc.numBusinessUsers)+1).toString();
+            
+        	console.log('add user: sId'+sId + ' business user id'+buId);
+        	
+        	// 2) Add new user	
+        	var newUser = {
+        		'buId': buId,
         		'buEmail':req.body.buEmail,
         		'buPassword':req.body.buPassword,
         		'buCity':req.body.buCity,
@@ -73,17 +89,69 @@ router.post('/business/adduser', function(req, res) {
         		'buStoreLon':req.body.buStoreLon,
         		'buAreaCode':req.body.buAreaCode,
         		'buTel':req.body.buTel
-    }
+    		}
     
-    db.collection('business_users').insert(newUser, function(err, result){
-        	if (err === null) {
-        		console.log('new user doc added');
+    		db.collection('business_users').insert(newUser, function(err, result){
+        		if (err === null) {
+        			console.log('new user doc added');
+        		   
+        		    // 3) Add store
+        			var newStore = {
+        				'bId': req.body.buBrandId,
+        				'sId':sId,
+        				'sName':req.body.buStoreName,
+        				'bName':req.body.buBrandName,
+        			    'bCategory':req.body.buBrandCategory,
+        			    'bDistributor':req.body.buDistributor,
+        			    'sCity':req.body.buCity,
+        			    'sAddress':req.body.buStoreAddress,
+        			    'sHours':req.body.buStoreHours,
+        			    'sAreaCode':req.body.buAreaCode,
+        			    'sTel1':req.body.buTel,
+        			    'sTel2':'',
+        			    'sLat':req.body.buStoreLat,
+        			    'sLong':req.body.buStoreLon,
+        			    'sVerified':'No'
+    				}
+        	
+        			db.collection('stores').insert(newStore, function(err, result){
+        			if (err === null) {
+        				console.log('new store doc added');
+        				
+        				// 4) Update Stats
+        				doc.numBusinessUsers=buId;
+        				doc.numStores=sId;
+        				db.collection('stats').update({},doc, function (err,result){
+        					if (err === null) {
+        						console.log('stats updated');
+        					}
+        					else {
+        						error = err;
+        					}
+        				});
+        			}
+        			else {
+        				error=err;
+        			}
+        		
+    			});	
         	}
-        	res.send(
-            	(err === null) ? { msg: '' } : { msg: err }
-        		);
-    		});	
-	});
+        	else {
+        		error = err;
+        	}
+        });
+      }
+    });	
+    
+    if (error != null){
+    	var array = [{ "result": "failed"}];
+    	res.json(array);
+    }
+    else {
+    	var array = [{ "result": "success"}];
+        res.json(array); 
+    }
+});
 
 
 
