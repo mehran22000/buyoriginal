@@ -34,7 +34,7 @@ router.post('/business/login', function(req, res) {
     
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
         if (doc.length==0){
-        	var array = [{ "result": "err_invalid_email"}];
+        	var array = [{ "err": "err_invalid_email"}];
             res.json(array);       
         }
         else {
@@ -44,7 +44,7 @@ router.post('/business/login', function(req, res) {
             	res.json(doc);       
         	}
         	else {
-        		var array = [{ "result": "err_invalid_password"}];
+        		var array = [{ "err": "err_invalid_password"}];
     			res.json(array);       
         	}
         }
