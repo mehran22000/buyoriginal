@@ -82,6 +82,7 @@ router.post('/business/adduser', function(req, res) {
         		'buCityNameFa':req.body.buCityNameFa,
         		'buBrandId':req.body.buBrandId,
         		'buBrandName':req.body.buBrandName,
+        		'buBrandCategory':req.body.buBrandCategory,
         		'buStoreName':req.body.buStoreName,
         		'buStoreAddress':req.body.buStoreAddress,
         		'buStoreHours':req.body.buStoreHours,
