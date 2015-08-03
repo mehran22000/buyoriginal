@@ -78,7 +78,8 @@ router.post('/business/adduser', function(req, res) {
         		'buId': buId,
         		'buEmail':req.body.buEmail,
         		'buPassword':req.body.buPassword,
-        		'buCity':req.body.buCity,
+        		'buCityName':req.body.buCityName,
+        		'buCityNameFa':req.body.buCityNameFa,
         		'buBrandId':req.body.buBrandId,
         		'buBrandName':req.body.buBrandName,
         		'buStoreName':req.body.buStoreName,
@@ -89,7 +90,8 @@ router.post('/business/adduser', function(req, res) {
         		'buStoreLon':req.body.buStoreLon,
         		'buAreaCode':req.body.buAreaCode,
         		'buTel':req.body.buTel,
-        		'buStoreId':sId
+        		'buStoreId':sId,
+        		'buBrandLogoName':req.body.buBrandLogoName
     		}
     
     		db.collection('business_users').insert(newUser, function(err, result){
@@ -112,7 +114,8 @@ router.post('/business/adduser', function(req, res) {
         			    'sTel2':'',
         			    'sLat':req.body.buStoreLat,
         			    'sLong':req.body.buStoreLon,
-        			    'sVerified':'No'
+        			    'sVerified':'No',
+        			    'bLogo':req.body.buBrandLogoName
     				}
         	
         			db.collection('stores').insert(newStore, function(err, result){
