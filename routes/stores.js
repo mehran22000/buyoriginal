@@ -269,7 +269,7 @@ router.post('/adddiscount', function(req, res) {
         				console.log('new store discount doc added');
         		}
         		res.send(
-            		(err === null) ? { msg: '' } : { msg: err }
+            		(err === null) ? [{ "result": "success"}] : [{ "err": err}]
         			);
     			});
         	}
