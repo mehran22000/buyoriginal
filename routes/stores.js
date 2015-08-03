@@ -217,11 +217,23 @@ router.post('/adddiscount', function(req, res) {
     // Find CategoryId
     var _bId = req.body.bId;
     var _sId = req.body.sId;
-    var _sDiscount = req.body.sDiscount;
+    var _startDate = req.body.startDate;
+    var _endDate = req.body.endDate;
+    var _startDateFa = req.body.startDateFa;
+    var _endDateFa = req.body.endDateFa;
+    var _precentage = req.body.precentage;
+    var _note = req.body.note;
+    
     
     console.log('_bId:'+_bId);
     console.log('_sId:'+_sId);
-  	console.log('_sDiscount:'+_sDiscount);
+  	console.log('_startDate:'+_startDate);
+  	console.log('_endDate:'+_endDate);
+  	console.log('_startDateFa:'+_startDateFa);
+  	console.log('_endDate:'+_endDateFa);
+  	console.log('_precentage:'+_precentage);
+  	console.log('_note:'+_note);
+  	
   	
   	
 	db.collection('stores').findOne({bId:_bId.toString(),sId:_sId.toString()},function (err,doc) {
@@ -241,9 +253,15 @@ router.post('/adddiscount', function(req, res) {
         		'sTel2':doc.sTel2,
         		'sLat':doc.sLat,
         		'sLong':doc.sLong,
-        		'sDiscount':Number(_sDiscount),
-        		'sVerified':doc.sVerified
+        		'sVerified':doc.sVerified,
+        		'dStartDate': _startDate,
+        		'dEndDate': _endDate,
+        		'dStartDateFa': _startDateFa,
+        		'dEndDateFa': _endDateFa,
+        		'dPrecentage': _precentage,
+        		'dNote': _note
     	}
+    	
     	db.collection('stores').remove({bId:_bId,sId:_sId}, function(err, result) {
         	if (err == null) {
         		db.collection('stores').insert(newStore, function(err, result){

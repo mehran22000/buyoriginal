@@ -88,7 +88,8 @@ router.post('/business/adduser', function(req, res) {
         		'buStoreLat':req.body.buStoreLat,
         		'buStoreLon':req.body.buStoreLon,
         		'buAreaCode':req.body.buAreaCode,
-        		'buTel':req.body.buTel
+        		'buTel':req.body.buTel,
+        		'buStoreId':sId
     		}
     
     		db.collection('business_users').insert(newUser, function(err, result){
