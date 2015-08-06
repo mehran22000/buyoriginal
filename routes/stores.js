@@ -49,7 +49,7 @@ router.get('/storelist/city/:areacode/:id', function(req, res) {
 router.get('/storelist/discounts/all', function(req, res) {
     console.log("/storelist/discounts");
     var db = req.db;
-    db.collection('stores').find({sDiscount:{ $gt: 0 }}).toArray(function (err, items) {
+    db.collection('stores').find({dPrecentage:{ $gt: 0 }}).toArray(function (err, items) {
         res.json(items);
     });
 });
