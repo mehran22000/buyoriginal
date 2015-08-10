@@ -67,7 +67,7 @@ router.get('/storelist/discounts/city/:areacode', function(req, res) {
 router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
     var db = req.db;
     var items = [];
-    db.collection('stores').find({dPrecentage:{ $ne: "" }}).toArray(function (err, stores) {
+    db.collection('stores').find({dPrecentage:{$gte:0}}).toArray(function (err, stores) {
 			stores.forEach(function(store) {
     			console.log("lat"+req.params.lat);
     			console.log("lon"+req.params.lon);
