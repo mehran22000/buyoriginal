@@ -40,8 +40,44 @@ router.post('/business/login', function(req, res) {
         else {
             console.log('doc.buPassword='+doc[0].buPassword+' password='+password);
         	if (doc[0].buPassword==password){	   
-        		// var array = [{ "result": "successful"}];
-            	res.json(doc);       
+        		
+            	db.collection('stores').findOne({sId:doc.sId.toString()}, function (sErr, sDoc) {
+            		if (sErr!=null){
+            			var array = [{ "err": "err_store_unavailable"}];
+    					res.json(array);
+            		}
+            		else {
+            		    var profile = {
+        							  'buId': doc.buId,
+        							  'buEmail':doc.buEmail,
+        							  'buPassword':doc.buPassword,
+        							  'buCityName':doc.buCityName,
+        							  'buCityNameFa':doc.buCityNameFa,
+        						      'buBrandId':doc.buBrandId,
+        							  'buBrandName':doc.buBrandName,
+        							  'buBrandCategory':doc.buBrandCategory,
+        							  'buStoreName':doc.buStoreName,
+        							  'buStoreAddress':doc.buStoreAddress,
+        							  'buStoreHours':doc.buStoreHours,
+        							  'buDistributor':doc.buDistributor,
+        							  'buStoreLat':doc.buStoreLat,
+        							  'buStoreLon':doc.buStoreLon,
+        							  'buAreaCode':doc.buAreaCode,
+        							  'buTel':doc.buTel,
+        							  'buStoreId':doc.sId,
+        							  'buBrandLogoName':doc.buBrandLogoName,
+        							  'dStartDate': sDoc.dStartDate,
+        							  'dEndDate': sDoc.dEndDate,
+        							  'dStartDateFa': sDoc.dStartDateFa,
+        							  'dEndDateFa': sDoc.dEndDateFa,
+        							  'dPrecentage': sDoc.dPrecentage,
+        							  'dNote': sDoc.dNote
+        							  }
+            		
+            			res.json(profile);	
+            			
+            		}
+            	}       
         	}
         	else {
         		var array = [{ "err": "err_invalid_password"}];

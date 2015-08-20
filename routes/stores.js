@@ -258,7 +258,7 @@ router.post('/adddiscount', function(req, res) {
         		'dEndDate': _endDate,
         		'dStartDateFa': _startDateFa,
         		'dEndDateFa': _endDateFa,
-        		'dPrecentage': _precentage,
+        		'dPrecentage': parseInt(_precentage),
         		'dNote': _note
     	}
     	
