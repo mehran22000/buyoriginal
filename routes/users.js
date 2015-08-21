@@ -11,6 +11,21 @@ var router = express.Router();
     });
 });
 
+router.get('/business/forgetpassword/:email', function(req, res) {
+    var postmark = require("postmark");
+
+	// Example request
+	var client = new postmark.Client("0aba8682-68fb-4720-abbc-ae22d778b02b");
+
+	client.sendEmail({
+    	"From": "sender@example.org",
+    	"To": "mehr.najafi@gmail.com",
+    	"Subject": "Test", 
+    	"TextBody": "Hello from Postmark!"
+	});
+});
+
+
 router.get('/business/validateemail/:email', function(req, res) {
     var db = req.db;
     var email = req.params.email;
@@ -40,39 +55,40 @@ router.post('/business/login', function(req, res) {
         else {
             console.log('doc.buPassword='+doc[0].buPassword+' password='+password);
         	if (doc[0].buPassword==password){	   
-        		
-            	db.collection('stores').findOne({sId:doc.sId.toString()}, function (sErr, sDoc) {
+        		console.log('doc.buStoreId='+doc[0].buStoreId);
+            	db.collection('stores').findOne({sId:doc[0].buStoreId}, function (sErr, sDoc) {
             		if (sErr!=null){
             			var array = [{ "err": "err_store_unavailable"}];
     					res.json(array);
             		}
             		else {
-            		    var profile = {
-        							  'buId': doc.buId,
-        							  'buEmail':doc.buEmail,
-        							  'buPassword':doc.buPassword,
-        							  'buCityName':doc.buCityName,
-        							  'buCityNameFa':doc.buCityNameFa,
-        						      'buBrandId':doc.buBrandId,
-        							  'buBrandName':doc.buBrandName,
-        							  'buBrandCategory':doc.buBrandCategory,
-        							  'buStoreName':doc.buStoreName,
-        							  'buStoreAddress':doc.buStoreAddress,
-        							  'buStoreHours':doc.buStoreHours,
-        							  'buDistributor':doc.buDistributor,
-        							  'buStoreLat':doc.buStoreLat,
-        							  'buStoreLon':doc.buStoreLon,
-        							  'buAreaCode':doc.buAreaCode,
-        							  'buTel':doc.buTel,
-        							  'buStoreId':doc.sId,
-        							  'buBrandLogoName':doc.buBrandLogoName,
+            		    console.log('dNote='+sDoc.dNote);
+            		    var profile = [{
+        							  'buId': doc[0].buId,
+        							  'buEmail':doc[0].buEmail,
+        							  'buPassword':doc[0].buPassword,
+        							  'buCityName':doc[0].buCityName,
+        							  'buCityNameFa':doc[0].buCityNameFa,
+        						      'buBrandId':doc[0].buBrandId,
+        							  'buBrandName':doc[0].buBrandName,
+        							  'buBrandCategory':doc[0].buBrandCategory,
+        							  'buStoreName':doc[0].buStoreName,
+        							  'buStoreAddress':doc[0].buStoreAddress,
+        							  'buStoreHours':doc[0].buStoreHours,
+        							  'buDistributor':doc[0].buDistributor,
+        							  'buStoreLat':doc[0].buStoreLat,
+        							  'buStoreLon':doc[0].buStoreLon,
+        							  'buAreaCode':doc[0].buAreaCode,
+        							  'buTel':doc[0].buTel,
+        							  'buStoreId':doc[0].sId,
+        							  'buBrandLogoName':doc[0].buBrandLogoName,
         							  'dStartDate': sDoc.dStartDate,
         							  'dEndDate': sDoc.dEndDate,
         							  'dStartDateFa': sDoc.dStartDateFa,
         							  'dEndDateFa': sDoc.dEndDateFa,
         							  'dPrecentage': sDoc.dPrecentage,
         							  'dNote': sDoc.dNote
-        							  }
+        							  }];
             		
             			res.json(profile);	
             		}
