@@ -75,17 +75,17 @@ router.post('/business/login', function(req, res) {
         							  }
             		
             			res.json(profile);	
-            			
             		}
-            	}       
-        	}
+            	});
+            }       
         	else {
         		var array = [{ "err": "err_invalid_password"}];
     			res.json(array);       
         	}
-        }
+    	}
     });
 });
+
 
 
 
