@@ -1,23 +1,23 @@
-
 {
-    "name": "application-name",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "start": "node ./bin/www"
-    },
-    "dependencies": {
-        "express": "~4.0.0",
-        "serve-favicon": "*",
-        "morgan": "~1.0.0",
-        "cookie-parser": "~1.0.1",
-        "body-parser": "~1.0.0",
-        "debug": "~0.7.4",
-        "jade": "*",
-        "mongodb": "~1.4",
-        "mongoskin": "*"
-    },
-    "engines": {
-         "node": "0.12.2"
+  "name": "application-name",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.0.0",
+    "cookie-parser": "~1.0.1",
+    "debug": "~0.7.4",
+    "express": "~4.0.0",
+    "jade": "*",
+    "mongodb": "~1.4",
+    "mongoskin": "*",
+    "morgan": "~1.0.0",
+    "postmark": "^1.2.1",
+    "serve-favicon": “*”,
+  },
+  "engines": {
+    "node": "0.12.2"
   }
 }
