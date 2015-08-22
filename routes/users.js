@@ -20,7 +20,7 @@ router.get('/business/forgetpassword', function(req, res) {
 	var client = new postmark.Client("0aba8682-68fb-4720-abbc-ae22d778b02b");
 
 	client.sendEmail({
-    	"From": "mehranna@ca.ibm.com",
+    	"From": "mehran@aslbekhar.com",
     	"To": "mehr.najafi@gmail.com",
     	"Subject": "Test", 
     	"TextBody": "Hello from Postmark!"
