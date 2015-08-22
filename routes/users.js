@@ -11,7 +11,9 @@ var router = express.Router();
     });
 });
 
-router.get('/business/forgetpassword/:email', function(req, res) {
+router.get('/business/forgetpassword', function(req, res) {
+    
+    console.log('forgetPassword');
     var postmark = require("postmark");
 
 	// Example request
@@ -103,7 +105,56 @@ router.post('/business/login', function(req, res) {
 });
 
 
-
+router.post('/business/updateuser', function(req, res) {
+    console.log('/business/updateuser');
+	var error=null;
+    
+	db.collection('business_users').remove({buId:req.body.buId}, function(err, result) {
+        	if (err == null) {
+        		console.log('old user info deleted');
+        		var newUser = {
+        			'buId': req.body.buId,
+        			'buEmail':req.body.buEmail,
+        			'buPassword':req.body.buPassword,
+        			'buCityName':req.body.buCityName,
+        			'buCityNameFa':req.body.buCityNameFa,
+        			'buBrandId':req.body.buBrandId,
+        			'buBrandName':req.body.buBrandName,
+        			'buBrandCategory':req.body.buBrandCategory,
+        			'buStoreName':req.body.buStoreName,
+        			'buStoreAddress':req.body.buStoreAddress,
+        			'buStoreHours':req.body.buStoreHours,
+        			'buDistributor':req.body.buDistributor,
+        			'buStoreLat':req.body.buStoreLat,
+        			'buStoreLon':req.body.buStoreLon,
+        			'buAreaCode':req.body.buAreaCode,
+        			'buTel':req.body.buTel,
+        			'buStoreId':req.body.buStoreId,
+        			'buBrandLogoName':req.body.buBrandLogoName
+    			}
+    			
+    			db.collection('business_users').insert(newUser, function(err, result){
+        		if (err === null) {
+        			console.log('updated user info added');
+        		}
+        		else {
+        			error = err;
+        		}	
+        	});
+    	}
+    	else {
+    		error = err;
+    	}});
+    	
+    	if (error != null){
+    		var array = [{ "result": "failed"}];
+    		res.json(array);
+    	}
+    	else {
+    		var array = [{ "result": "success"}];
+        	res.json(array); 
+        }
+    });
 
  
 router.post('/business/adduser', function(req, res) {
