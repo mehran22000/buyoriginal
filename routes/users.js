@@ -20,11 +20,19 @@ router.get('/business/forgetpassword', function(req, res) {
 	var client = new postmark.Client("0aba8682-68fb-4720-abbc-ae22d778b02b");
 
 	client.sendEmail({
-    	"From": "sender@example.org",
+    	"From": "mehranna@ca.ibm.com",
     	"To": "mehr.najafi@gmail.com",
     	"Subject": "Test", 
     	"TextBody": "Hello from Postmark!"
-	});
+	} , function(error, success) {
+    if(error) {
+        console.error("Unable to send via postmark: " + error.message);
+        res.send(JSON.stringify({ "result": error.message}));
+        return;
+    }
+    res.send(JSON.stringify({ "result": "success"}));
+});
+	
 });
 
 
