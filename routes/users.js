@@ -35,19 +35,19 @@ router.get('/business/forgetpassword/:email', function(req, res) {
 			} , function(error, success) {
     			if(error) {
         			console.error("Unable to send via postmark: " + error.message);
-        			res.send(JSON.stringify({ "err": error.message}));
+        			res.send(JSON.stringify([{ "err": error.message}]));
         		return;
     			}
-    			res.send(JSON.stringify({ "result": "success"})); 
+    			res.send(JSON.stringify([{ "result": "success"}])); 
     			return; 
     		});  
         }        	
         else {
-        	res.send(JSON.stringify({ "err": "password not found"}));
+        	res.send(JSON.stringify([{ "err": "password not found"}]));
         	return;
         }
     });
-	res.send(JSON.stringify({ "err": "user not found"}));
+	res.send(JSON.stringify([{ "err": "user not found"}]));
     return;
 });
 
