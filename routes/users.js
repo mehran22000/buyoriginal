@@ -11,28 +11,44 @@ var router = express.Router();
     });
 });
 
-router.get('/business/forgetpassword', function(req, res) {
+router.get('/business/forgetpassword/:email', function(req, res) {
     
     console.log('forgetPassword');
     var postmark = require("postmark");
-
-	// Example request
-	var client = new postmark.Client("0aba8682-68fb-4720-abbc-ae22d778b02b");
-
-	client.sendEmail({
-    	"From": "mehran@aslbekhar.com",
-    	"To": "mehr.najafi@gmail.com",
-    	"Subject": "Test", 
-    	"TextBody": "Hello from Postmark!"
-	} , function(error, success) {
-    if(error) {
-        console.error("Unable to send via postmark: " + error.message);
-        res.send(JSON.stringify({ "result": error.message}));
-        return;
-    }
-    res.send(JSON.stringify({ "result": "success"}));
-});
 	
+	// Retrieve Password
+	var email = req.params.email;
+	var password = "";
+	
+	db.collection('business_users').findOne({buEmail:email.toString()},function (err,doc) {
+        if (doc){
+        	password = doc.buPassword.toString();
+        }
+        if (password.length() > 0) {
+    	
+    		var client = new postmark.Client("0aba8682-68fb-4720-abbc-ae22d778b02b");
+    		client.sendEmail({
+    			"From": "passwordrecovery@aslbekhar.com",
+    			"To": email.toString(),
+    			"Subject": "Aslbekhar.com Password Recovery", 
+    			"TextBody": "Hello from Postmark!"
+			} , function(error, success) {
+    			if(error) {
+        			console.error("Unable to send via postmark: " + error.message);
+        			res.send(JSON.stringify({ "err": error.message}));
+        		return;
+    			}
+    			res.send(JSON.stringify({ "result": "success"})); 
+    			return; 
+    		});  
+        }        	
+        else {
+        	res.send(JSON.stringify({ "err": "password not found"}));
+        	return;
+        }
+    });
+	res.send(JSON.stringify({ "err": "user not found"}));
+    return;
 });
 
 
@@ -113,6 +129,24 @@ router.post('/business/login', function(req, res) {
 });
 
 
+router.post('/business/deleteuser/:email', function(req, res) {
+    console.log('/business/deleteuser');
+	var error=null;
+    var email = req.params.email;
+   
+	db.collection('business_users').remove({buEmail:email.toString()}, function(err, result) {
+    	if (err == null) {
+    		console.log('User account deleted');
+    		var array = [{ "result": "success"}];
+        	res.json(array);
+        }
+        else {
+        	var array = [{ "err": "failed"}];
+    		res.json(array);
+        }
+    });
+});
+    		
 router.post('/business/updateuser', function(req, res) {
     console.log('/business/updateuser');
 	var error=null;
