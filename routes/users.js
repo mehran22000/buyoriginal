@@ -13,42 +13,60 @@ var router = express.Router();
 
 router.get('/business/forgetpassword/:email', function(req, res) {
     
-    console.log('forgetPassword');
+    console.log('/business/forgetPassword');
     var postmark = require("postmark");
+	var db = req.db;
+	var email = req.params.email;
+	console.log('email:'+email.toString());
 	
 	// Retrieve Password
-	var email = req.params.email;
-	var password = "";
-	
-	db.collection('business_users').findOne({buEmail:email.toString()},function (err,doc) {
-        if (doc){
-        	password = doc.buPassword.toString();
+	var password = null;
+    	
+    db.collection('business_users').findOne({buEmail:email.toString()},function (err,doc) {
+
+	    if (err != null) {
+    		console.log('Error: user not found');
+    		res.send(JSON.stringify([{ "err": "invalid_email"}]));
+        	return;
         }
-        if (password.length() > 0) {
+        
+        password = doc.buPassword;
+        console.log('Password='+password);
+        
+        if (password != null) {
     	
     		var client = new postmark.Client("0aba8682-68fb-4720-abbc-ae22d778b02b");
+    		var eHeader = " سلام " + doc.buStoreName.toString() +"\n";
+			var eBody1="رمز عبور شما برای مدیریت فروشگاه شما در موبایل اپلیکیشن و وبسایت اصل بخر مطابق زیر است:"+"\n";
+			var eBody2="شناسه:"+ doc.buEmail.toString()+"\n";
+			var eBody3="رمز عبور:"+ doc.buPassword.toString()+"\n";
+			var eFooter = "برای اطلاعات بیشتر یا هرگونه سوال و پیشنهاد لطفا با پست الکترونیکی  support@aslbekhar.com تماس بگیرید."+"\n"+"با تشکر"+"\n"+"مدیریت اصل بخر ";
+    		
     		client.sendEmail({
     			"From": "passwordrecovery@aslbekhar.com",
     			"To": email.toString(),
     			"Subject": "Aslbekhar.com Password Recovery", 
-    			"TextBody": "Hello from Postmark!"
+    			"TextBody": eHeader+"\n"+eBody1+"\n"+eBody2+"\n"+eBody3+"\n"+eFooter,
 			} , function(error, success) {
     			if(error) {
         			console.error("Unable to send via postmark: " + error.message);
-        			res.send(JSON.stringify([{ "err": error.message}]));
-        		return;
+        			console.log("Unable to send via postmark: " + error.message);
+        			var array = [{ "err": error.message}];
+            		res.json(array);
     			}
-    			res.send(JSON.stringify([{ "result": "success"}])); 
-    			return; 
+    			else {
+    				console.log("Password was sent!");
+    				var array = [{ "result": "success"}];
+            		res.json(array); 
+            	}
     		});  
         }        	
         else {
-        	res.send(JSON.stringify([{ "err": "password not found"}]));
-        	return;
+        	console.log("Password not found!");
+        	var array = [{ "err": "err_password_notfound"}];
+            res.json(array);
         }
     });
-	res.send(JSON.stringify([{ "err": "user not found"}]));
-    return;
 });
 
 
