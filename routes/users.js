@@ -97,7 +97,7 @@ router.post('/business/login', function(req, res) {
     var password = req.body.password;
     
     //res.send('succesful');
-    
+    console.log('/business/login');
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
         if (doc.length==0){
         	var array = [{ "err": "err_invalid_email"}];
@@ -131,7 +131,6 @@ router.post('/business/login', function(req, res) {
         							  'buStoreLon':doc[0].buStoreLon,
         							  'buAreaCode':doc[0].buAreaCode,
         							  'buTel':doc[0].buTel,
-        							  'buStoreId':doc[0].sId,
         							  'buBrandLogoName':doc[0].buBrandLogoName,
         							  'dStartDate': sDoc.dStartDate,
         							  'dEndDate': sDoc.dEndDate,
@@ -140,6 +139,8 @@ router.post('/business/login', function(req, res) {
         							  'dPrecentage': sDoc.dPrecentage,
         							  'dNote': sDoc.dNote
         							  }];
+        							  
+        							  console.log(profile);
             		
             			res.json(profile);	
             		}
@@ -154,23 +155,31 @@ router.post('/business/login', function(req, res) {
 });
 
 
-router.post('/business/deleteuser/:email', function(req, res) {
+router.get('/business/deleteuser/:email/:sid', function(req, res) {
     console.log('/business/deleteuser');
 	var db = req.db;
 	var error=null;
     var email = req.params.email;
-   
-	db.collection('business_users').remove({buEmail:email.toString()}, function(err, result) {
+    var sId = req.params.sid;
+    console.log(email);
+    console.log(sId);
+	db.collection('business_users').remove({buEmail:email}, function(err, result) {
     	if (err == null) {
     		console.log('User account deleted');
-    		var array = [{ "result": "success"}];
-        	res.json(array);
+    		db.collection('stores').remove({sId:sId}, function(err, result) {
+    			console.log('Store account deleted');
+    			if (err == null) {
+  					res.send(JSON.stringify({ "result": "success"}));      		
+  				}
+        		else {
+ 					res.send(JSON.stringify({ "err": "invalid_store"}));       		
+ 				}
+        	});
         }
         else {
-        	var array = [{ "err": "failed"}];
-    		res.json(array);
-        }
-    });
+			res.send(JSON.stringify({ "err": "invalid_user"}));    	
+		}
+    });       
 });
     		
 router.post('/business/updateuser', function(req, res) {
