@@ -113,7 +113,6 @@ router.post('/business/login', function(req, res) {
     					res.json(array);
             		}
             		else {
-            		    console.log('dNote='+sDoc.dNote);
             		    var profile = [{
         							  'buId': doc[0].buId,
         							  'buEmail':doc[0].buEmail,
@@ -123,6 +122,7 @@ router.post('/business/login', function(req, res) {
         						      'buBrandId':doc[0].buBrandId,
         							  'buBrandName':doc[0].buBrandName,
         							  'buBrandCategory':doc[0].buBrandCategory,
+        							  'buStoreId':doc[0].buStoreId,
         							  'buStoreName':doc[0].buStoreName,
         							  'buStoreAddress':doc[0].buStoreAddress,
         							  'buStoreHours':doc[0].buStoreHours,
@@ -156,6 +156,7 @@ router.post('/business/login', function(req, res) {
 
 router.post('/business/deleteuser/:email', function(req, res) {
     console.log('/business/deleteuser');
+	var db = req.db;
 	var error=null;
     var email = req.params.email;
    
@@ -175,6 +176,7 @@ router.post('/business/deleteuser/:email', function(req, res) {
 router.post('/business/updateuser', function(req, res) {
     console.log('/business/updateuser');
 	var error=null;
+    var db = req.db;
     
 	db.collection('business_users').remove({buId:req.body.buId}, function(err, result) {
         	if (err == null) {
