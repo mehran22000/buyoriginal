@@ -316,10 +316,10 @@ router.post('/deletediscount', function(req, res) {
         	if (err == null) {
         		db.collection('stores').insert(newStore, function(err, result){
         			if (err === null) {
-        				console.log('new store discount doc added');
+        				console.log('new store record with no discount added');
         		}
         		res.send(
-            		(err === null) ? { msg: '' } : { msg: err }
+            		(err === null) ? { "result": "success"} : { "err": err}
         			);
     			});
         	}
