@@ -80,12 +80,20 @@ router.get('/business/forgetpassword/:email', function(req, res) {
 router.get('/business/validateemail/:email', function(req, res) {
     var db = req.db;
     var email = req.params.email;
+    console.log('/business/validateemail/:email');
+    console.log('email:'+email.toString());
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, items) {
-        if (items.length==0){
-        	res.send(JSON.stringify({ "duplicate": "false"}));
+        
+        if (err == null) {
+        	if (items.length==0){
+        		res.send(JSON.stringify({ "duplicate": "false"}));
+        	}
+        	else {
+        		res.send(JSON.stringify({ "duplicate": "true"}));
+        	}
         }
         else {
-        	res.send(JSON.stringify({ "duplicate": "true"}));
+        		res.send(JSON.stringify({ "err": err}));
         }
     });
 });
