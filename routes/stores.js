@@ -243,7 +243,7 @@ router.post('/adddiscount', function(req, res) {
         		'sId':doc.sId,
         		'sName':doc.sName,
         		'bName':doc.bName,
-        		'bCategory':doc.cName,
+        		'bCategory':doc.bCategory,
         		'bDistributor':doc.bDistributor,
         		'sCity':doc.sCity,
         		'sAddress':doc.sAddress,
