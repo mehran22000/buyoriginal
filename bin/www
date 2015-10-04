@@ -3,10 +3,10 @@
 /**
  * Module dependencies.
  */
-var app1 = express();
+var appp = express();
 
 // Authenticator
-app1.use(express.basicAuth(‘testUser’, 'testPass'));
+appp.use(express.basicAuth(‘testUser’, 'testPass'));
  
 
 var app = require('../app');
