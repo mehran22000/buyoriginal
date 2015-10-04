@@ -16,7 +16,7 @@
     "morgan": "~1.0.0",
     "postmark": "^1.2.1",
     "serve-favicon": "*"
-	"express" : "3.x"
+	"express": "3.x"
   },
   "engines": {
     "node": "0.12.2"
