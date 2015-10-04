@@ -6,7 +6,7 @@
 var appp = express();
 
 // Authenticator
-appp.use(express.basicAuth(‘testUser’, 'testPass'));
+appp.use(express.basicAuth('testUser', 'testPass'));
  
 
 var app = require('../app');
