@@ -15,7 +15,7 @@
     "mongoskin": "*",
     "morgan": "~1.0.0",
     "postmark": "^1.2.1",
-    "serve-favicon": "*"
+    "serve-favicon": "*",
 	"express": "3.x"
   },
   "engines": {
