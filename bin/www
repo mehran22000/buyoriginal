@@ -3,20 +3,12 @@
 /**
  * Module dependencies.
  */
-var basicAuth = require('basic-auth-connect');
-app.use(basicAuth('username', 'password'));
- 
- app.use(function(req, res, next) {
-    var user = auth(req);
+var app1 = express();
 
-    if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
-        res.writeHead(401, 'Access invalid for user', {'Content-Type' : 'text/plain'});
-        res.end('Invalid credentials');
-    } else {
-        next();
-    }
-});
+// Authenticator
+app1.use(express.basicAuth(‘testUser’, 'testPass'));
  
+
 var app = require('../app');
 var debug = require('debug')('nodetest5:server');
 var http = require('http');
