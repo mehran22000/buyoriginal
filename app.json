@@ -4,4 +4,13 @@
   "repository": "https://github.com/heroku/node-js-getting-started",
   "logo": "http://node-js-sample.herokuapp.com/node.svg",
   "keywords": ["node", "express", "static"]
+  
+  var express = require('express');
+	var app = express();
+
+	app.get('/home', function(req, res) {
+	 res.send('Hello World');
+	});
+
+	app.listen(process.env.PORT || 8080);
 }
