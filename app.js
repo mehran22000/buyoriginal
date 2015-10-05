@@ -1,3 +1,6 @@
+
+
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -71,5 +74,57 @@ app.use(function(err, req, res, next) {
     });
 });
 
+
+
+var passport = require('passport')    
+var BasicStrategy = require('passport-http').BasicStrategy
+
+passport.use(new BasicStrategy(
+  function(username, password, done) {
+    if (username.valueOf() === 'yourusername' &&
+      password.valueOf() === 'yourpassword')
+      return done(null, true);
+    else
+      return done(null, false);
+  }
+));
+
+// Express-specific configuration section
+// *IMPORTANT*
+//   Note the order of WHERE passport is initialized
+//   in the configure section--it will throw an error
+//   if app.use(passport.initialize()) is called after
+//   app.use(app.router) 
+app.configure(function(){
+  app.use(express.cookieParser());
+  app.use(express.session({secret:'123abc',key:'express.sid'}));
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.set('view options', {
+    layout: false
+  });
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.static(__dirname + '/public'));
+  app.use(passport.initialize());
+  app.use(app.router);
+  app.use(logger);
+});
+
+// Routes
+
+app.get('/', passport.authenticate('basic', { session: false }), routes.index);
+app.get('/partials/:name', routes.partials);
+
+// JSON API
+
+app.get('/api/posts', passport.authenticate('basic', { session: false }), api.posts);
+app.get('/api/post/:id', passport.authenticate('basic', { session: false }), api.post)
+// --Repeat for every API call you want to protect with basic auth--
+
+app.get('*', passport.authenticate('basic', { session: false }), routes.index);
+
+
+//-----------------------------------------------------------------------------------------------------------
 
 module.exports = app;
