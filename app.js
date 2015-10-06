@@ -18,6 +18,7 @@ var app = express();
 
 
 app.use(function(req, res, next) {
+	var auth = require('basic-auth'); 
     var user = auth(req);
 
     if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
