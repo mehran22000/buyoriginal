@@ -15,7 +15,22 @@ var stores = require('./routes/stores');
 var categories = require('./routes/categories');
 
 var app = express();
-app.use(express.basicAuth('testUser', 'testPass'));
+
+
+app.use(function(req, res, next) {
+    var user = auth(req);
+
+    if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
+        res.statusCode = 401;
+        res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+        res.end('Unauthorized');
+    } else {
+        next();
+    }
+});
+
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
