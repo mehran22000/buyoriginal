@@ -16,6 +16,22 @@ var categories = require('./routes/categories');
 
 var app = express();
 
+
+app.use(function(req, res, next) {
+	var auth = require('basic-auth'); 
+    var user = auth(req);
+
+    if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
+        res.statusCode = 401;
+        res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+        res.end('Unauthorized');
+    } else {
+        next();
+    }
+});
+
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
