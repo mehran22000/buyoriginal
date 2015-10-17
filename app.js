@@ -16,7 +16,7 @@ var categories = require('./routes/categories');
 
 var app = express();
 
-
+/*
 app.use(function(req, res, next) {
 	var auth = require('basic-auth'); 
     var user = auth(req);
@@ -29,7 +29,7 @@ app.use(function(req, res, next) {
         next();
     }
 });
-
+*/
 
 
 // view engine setup
