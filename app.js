@@ -17,7 +17,7 @@ var categories = require('./routes/categories');
 var app = express();
 
 
-app.use(function(req, res, next) {
+app.use('/dashboard_brands.html',function(req, res, next) {
 	var auth = require('basic-auth'); 
     var user = auth(req);
 
