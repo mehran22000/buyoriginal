@@ -24,7 +24,8 @@ app.use('./public/',function(req, res, next) {
     if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
         res.statusCode = 401;
         res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
-        res.end('Unauthorized');
+		res.end(req.originalUrl);
+        //res.end('Unauthorized');
     } else {
         next();
     }
