@@ -20,12 +20,18 @@ var app = express();
 app.use(function(req, res, next) {
 	var auth = require('basic-auth'); 
     var user = auth(req);
-
+    if(req.originalUrl === '/dashboard_brands.html' || req.originalUrl === '/dashboard_categories.html' || req.originalUrl === '/dashboard_discounts.html' || req.originalUrl === '/dashboard_stores.html')
+	{
     if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
         res.statusCode = 401;
         res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+		//res.end(req.originalUrl);
         res.end('Unauthorized');
     } else {
+        next();
+    }
+	}else 
+	{
         next();
     }
 });
