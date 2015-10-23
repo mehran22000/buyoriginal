@@ -35,6 +35,7 @@ body{
 	padding:0 0;
 	margin:0 0; 
 	font-family: 'Open Sans', sans-serif;
+	direction: rtl;
 }
 .header {
   background: url("../images/banner.jpg") no-repeat 0px 0px;
