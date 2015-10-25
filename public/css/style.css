@@ -216,6 +216,7 @@ a.button1 {
 .team-section{
 padding:4em 0;
 background:#eee;
+direction:ltr;
 }
 .team-section h3 {
   font-size: 2.5em;
