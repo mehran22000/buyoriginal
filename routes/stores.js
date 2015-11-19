@@ -235,7 +235,7 @@ router.post('/adddiscount', function(req, res) {
   	console.log('_note:'+_note);
   	
   	if (!_note) {
-  		_note='ندارد';
+  		_note=' ';
   	}
   	
 	db.collection('stores').findOne({bId:_bId.toString(),sId:_sId.toString()},function (err,doc) {
