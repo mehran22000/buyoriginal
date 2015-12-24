@@ -122,7 +122,7 @@ router.post('/business/login', function(req, res) {
     					res.json(array);
             		}
             		else {
-            		    var profile = [{
+            		    var profile = {
         							  'buId': doc[0].buId,
         							  'buEmail':doc[0].buEmail,
         							  'buPassword':doc[0].buPassword,
@@ -140,21 +140,27 @@ router.post('/business/login', function(req, res) {
         							  'buStoreLon':doc[0].buStoreLon,
         							  'buAreaCode':doc[0].buAreaCode,
         							  'buTel':doc[0].buTel,
-        							  'buBrandLogoName':doc[0].buBrandLogoName}];
+        							  'buBrandLogoName':doc[0].buBrandLogoName};
         					
-        					if (sDoc) {
-            		    	    profile = profile + [{	 
-            		    			  'dStartDate': sDoc.dStartDate,
-        							  'dEndDate': sDoc.dEndDate,
-        							  'dStartDateFa': sDoc.dStartDateFa,
-        							  'dEndDateFa': sDoc.dEndDateFa,
-        							  'dPrecentage': sDoc.dPrecentage,
-        							  'dNote': sDoc.dNote
-        							  }];
+        					if (sDoc.dPrecentage > 0) {
+        					    profile ['dStartDate']= sDoc.dStartDate;
+        						profile ['dEndDate']= sDoc.dEndDate;
+        						profile ['dStartDateFa']= sDoc.dStartDateFa;
+        						profile ['dEndDateFa']= sDoc.dEndDateFa;
+        						profile ['dPrecentage']= sDoc.dPrecentage;
+        						profile ['dNote']= sDoc.dNote;
         					}
-        							  
+        					else {
+								profile ['dStartDate']= null;
+        						profile ['dEndDate']= null;
+        						profile ['dStartDateFa']= null;
+        						profile ['dEndDateFa']= null;
+        						profile ['dPrecentage']= 0;
+        						profile ['dNote']= null;
+        					}
+        					console.log('profile');		  
         					console.log(profile);
-            				res.json(profile);	
+            				res.json([profile]);	
             		}
             	});
             }       
