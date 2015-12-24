@@ -107,6 +107,7 @@ router.post('/business/login', function(req, res) {
     //res.send('succesful');
     console.log('/business/login');
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, doc) {
+        console.log(doc);
         if (doc.length==0){
         	var array = [{ "err": "err_invalid_email"}];
             res.json(array);       
@@ -139,18 +140,21 @@ router.post('/business/login', function(req, res) {
         							  'buStoreLon':doc[0].buStoreLon,
         							  'buAreaCode':doc[0].buAreaCode,
         							  'buTel':doc[0].buTel,
-        							  'buBrandLogoName':doc[0].buBrandLogoName,
-        							  'dStartDate': sDoc.dStartDate,
+        							  'buBrandLogoName':doc[0].buBrandLogoName}];
+        					
+        					if (sDoc) {
+            		    	    profile = profile + [{	 
+            		    			  'dStartDate': sDoc.dStartDate,
         							  'dEndDate': sDoc.dEndDate,
         							  'dStartDateFa': sDoc.dStartDateFa,
         							  'dEndDateFa': sDoc.dEndDateFa,
         							  'dPrecentage': sDoc.dPrecentage,
         							  'dNote': sDoc.dNote
         							  }];
+        					}
         							  
-        							  console.log(profile);
-            		
-            			res.json(profile);	
+        					console.log(profile);
+            				res.json(profile);	
             		}
             	});
             }       
