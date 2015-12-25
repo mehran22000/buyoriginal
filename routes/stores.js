@@ -7,6 +7,7 @@ var router = express.Router();
 router.get('/storelist', function(req, res) {
     var db = req.db;
     db.collection('stores').find().toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -19,6 +20,7 @@ router.get('/storelist/:id', function(req, res) {
     var db = req.db;
     console.log(req.params.id);
     db.collection('stores').find({bId:req.params.id}).toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -32,6 +34,7 @@ router.get('/storelist/city/:areacode', function(req, res) {
     var db = req.db;
     console.log(req.params.areacode);
     db.collection('stores').find({sAreaCode:req.params.areacode}).toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -42,6 +45,7 @@ router.get('/storelist/city/:areacode/:id', function(req, res) {
     console.log(req.params.areacode);
     console.log(req.params.id);
     db.collection('stores').find({sAreaCode:req.params.areacode, bId:req.params.id}).toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -50,6 +54,7 @@ router.get('/storelist/discounts/all', function(req, res) {
     console.log("/storelist/discounts");
     var db = req.db;
     db.collection('stores').find({dPrecentage:{ $ne: "" }}).toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -59,6 +64,7 @@ router.get('/storelist/discounts/city/:areacode', function(req, res) {
     console.log(req.params.areacode);
     console.log(req.params.id);
     db.collection('stores').find({sAreaCode:req.params.areacode, dPrecentage:{ $ne:"" }}).toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -79,6 +85,7 @@ router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
       			  	items.push(store);
     			}
     		});
+    		res.set({'Access-Control-Allow-Origin': '*'});
     		res.json(items);
     	});
 });
@@ -103,6 +110,7 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     				items.push(store);
     			}
     		});
+    		res.set({'Access-Control-Allow-Origin': '*'});
     		res.json(items);
     	});
     }
@@ -119,6 +127,7 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
       			  	items.push(store);
     			}
     		});
+    		res.set({'Access-Control-Allow-Origin': '*'});
     		res.json(items);
     	});
     }
@@ -193,6 +202,7 @@ router.post('/addstore', function(req, res) {
         	if (err === null) {
         		console.log('new store doc added');
         	}
+        	res.set({'Access-Control-Allow-Origin': '*'});
         	res.send(
             	(err === null) ? { msg: '' } : { msg: err }
         		);
@@ -270,6 +280,7 @@ router.post('/adddiscount', function(req, res) {
         			if (err === null) {
         				console.log('new store discount doc added');
         		}
+        		res.set({'Access-Control-Allow-Origin': '*'});
         		res.send(
             		(err === null) ? [{ "result": "success"}] : [{ "err": err}]
         			);
@@ -320,6 +331,7 @@ router.post('/deletediscount', function(req, res) {
         			if (err === null) {
         				console.log('new store record with no discount added');
         		}
+        		res.set({'Access-Control-Allow-Origin': '*'});
         		res.send(
             		(err === null) ? { "result": "success"} : { "err": err}
         			);
@@ -342,6 +354,7 @@ router.delete('/deletestore/:id', function(req, res) {
     var db = req.db;
     var storeToDelete = req.params.id;
     db.collection('stores').removeById(storeToDelete, function(err, result) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
 });

@@ -6,8 +6,10 @@ var router = express.Router();
  */
 router.get('/brandlist', function(req, res) {
     res.setHeader('Content-Type', 'text/json; charset=utf-8')
+    res.set({'Access-Control-Allow-Origin': '*'});
     var db = req.db;
     var items = [];
+    
     db.collection('brands').find().toArray(function (err, brands) {   
         brands.forEach(function(brand) {
     		db.collection('categories').find({cId:brand.bCategoryId}).toArray(function (e,categories) {
@@ -38,6 +40,8 @@ router.get('/brandlist', function(req, res) {
  */
 router.post('/addbrand', function(req, res) {
     var db = req.db;
+    res.set({'Access-Control-Allow-Origin': '*'});
+	
     db.collection('brands').insert(req.body, function(err, result){
         res.send(
             (err === null) ? { msg: '' } : { msg: err }
@@ -50,6 +54,8 @@ router.post('/addbrand', function(req, res) {
  */
 router.delete('/deletebrand/:id', function(req, res) {
     var db = req.db;
+    res.set({'Access-Control-Allow-Origin': '*'});
+
     var userToDelete = req.params.id;
     db.collection('brands').removeById(userToDelete, function(err, result) {
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });

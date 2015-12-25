@@ -7,6 +7,7 @@ var router = express.Router();
 router.get('/categorylist', function(req, res) {
     var db = req.db;
     db.collection('categories').find().toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -17,6 +18,7 @@ router.get('/categorylist', function(req, res) {
 router.post('/addcategory', function(req, res) {
     var db = req.db;
     db.collection('categories').insert(req.body, function(err, result){
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.send(
             (err === null) ? { msg: '' } : { msg: err }
         );
@@ -30,6 +32,7 @@ router.delete('/deletecategory/:id', function(req, res) {
     var db = req.db;
     var userToDelete = req.params.id;
     db.collection('categories').removeById(userToDelete, function(err, result) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
 });

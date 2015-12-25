@@ -7,6 +7,7 @@ var router = express.Router();
  router.get('/business/userlist', function(req, res) {
     var db = req.db;
     db.collection('business_users').find().toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
@@ -21,9 +22,8 @@ router.get('/business/forgetpassword/:email', function(req, res) {
 	
 	// Retrieve Password
 	var password = null;
-    	
+    res.set({'Access-Control-Allow-Origin': '*'});	
     db.collection('business_users').findOne({buEmail:email.toString()},function (err,doc) {
-
 	    if (err != null) {
     		console.log('Error: user not found');
     		res.send(JSON.stringify({ "err": "invalid_email"}));
@@ -68,6 +68,7 @@ router.get('/business/forgetpassword/:email', function(req, res) {
         	}
         }
     else {
+    	
     	console.log("User not found!");
     	res.send(JSON.stringify({ "err": "invalid_email"}));
    		return;
@@ -80,6 +81,8 @@ router.get('/business/forgetpassword/:email', function(req, res) {
 router.get('/business/validateemail/:email', function(req, res) {
     var db = req.db;
     var email = req.params.email;
+    res.set({'Access-Control-Allow-Origin': '*'});
+	
     console.log('/business/validateemail/:email');
     console.log('email:'+email.toString());
     db.collection('business_users').find({buEmail:email.toString()}).toArray(function (err, items) {
@@ -103,6 +106,8 @@ router.post('/business/login', function(req, res) {
     var db = req.db;
     var email = req.body.email;
     var password = req.body.password;
+	res.set({'Access-Control-Allow-Origin': '*'});
+	
     
     //res.send('succesful');
     console.log('/business/login');
@@ -175,6 +180,7 @@ router.post('/business/login', function(req, res) {
 
 router.get('/business/deleteuser/:email/:sid', function(req, res) {
     console.log('/business/deleteuser');
+	res.set({'Access-Control-Allow-Origin': '*'});
 	var db = req.db;
 	var error=null;
     var email = req.params.email;
@@ -204,7 +210,8 @@ router.post('/business/updateuser', function(req, res) {
     console.log('/business/updateuser');
 	var error=null;
     var db = req.db;
-    
+	res.set({'Access-Control-Allow-Origin': '*'});
+	    
 	db.collection('business_users').remove({buId:req.body.buId}, function(err, result) {
         	if (err == null) {
         		console.log('old user info deleted');
@@ -259,6 +266,8 @@ router.post('/business/adduser', function(req, res) {
     var buId = 0;
     var sId = 0;
     var error=null;
+	res.set({'Access-Control-Allow-Origin': '*'});
+	
     
     // 1) Find Stats
     db.collection('stats').findOne({},function (err,doc) {
@@ -365,6 +374,7 @@ router.post('/business/adduser', function(req, res) {
  */
 router.get('/userlist', function(req, res) {
     var db = req.db;
+    res.set({'Access-Control-Allow-Origin': '*'});
     db.collection('userlist').find().toArray(function (err, items) {
         res.json(items);
     });
@@ -375,6 +385,7 @@ router.get('/userlist', function(req, res) {
  */
 router.post('/adduser', function(req, res) {
     var db = req.db;
+	res.set({'Access-Control-Allow-Origin': '*'});
     db.collection('userlist').insert(req.body, function(err, result){
         res.send(
             (err === null) ? { msg: '' } : { msg: err }
@@ -388,6 +399,8 @@ router.post('/adduser', function(req, res) {
 router.delete('/deleteuser/:id', function(req, res) {
     var db = req.db;
     var userToDelete = req.params.id;
+    res.set({'Access-Control-Allow-Origin': '*'});
+	
     db.collection('userlist').removeById(userToDelete, function(err, result) {
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
