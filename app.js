@@ -13,8 +13,41 @@ var users = require('./routes/users');
 var brands = require('./routes/brands');
 var stores = require('./routes/stores');
 var categories = require('./routes/categories');
+var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
 
 var app = express();
+
+app.all('/*', function(req, res, next) {
+  console.log("CORS");
+  
+  res.set({'Access-Control-Allow-Origin': '*'});  
+  res.set({'Access-Control-Allow-Methods': 'POST, GET, PUT'});
+  res.set({'Access-Control-Max-Age': '3600'});
+  res.set({'Access-Control-Allow-Headers':'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, token'});
+  res.set({'Access-Control-Expose-Headers':'Request-Header'});  
+  
+  if (req.method !== 'OPTIONS') {
+   		var token = req.headers['token'];
+   		console.log(req.headers);
+   		var url = req.originalUrl;
+   		console.log(url); 
+   		
+   		if (token !== serverToken) {
+    		console.log('Unauthorized after header token validation');
+    		console.log(headers(req.headers));
+    		res.statusCode = 401;
+        	res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+        	res.end('Unauthorized');
+    	}
+    	else {
+    		console.log('authorized');
+    		next();
+    	}
+    }
+    else {
+    	next();
+    }
+});
 
 
 app.use(function(req, res, next) {
