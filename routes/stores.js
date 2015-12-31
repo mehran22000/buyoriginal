@@ -40,7 +40,7 @@ router.get('/storelist/city/:areacode', function(req, res) {
 });
 
 
-router.get('/storelist/city/:areacode/:id', function(req, res) {
+router.get('(/services)/storelist/city/:areacode/:id', function(req, res) {
     var db = req.db;
     console.log(req.params.areacode);
     console.log(req.params.id);

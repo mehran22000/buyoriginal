@@ -26,7 +26,11 @@ app.all('/*', function(req, res, next) {
   res.set({'Access-Control-Allow-Headers':'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, token'});
   res.set({'Access-Control-Expose-Headers':'Request-Header'});  
   
-  if (req.method !== 'OPTIONS') {
+  if (req.method === 'OPTIONS'){
+  	next();
+  } 
+  else if (req.originalUrl.indexOf('/services/') > -1) {
+   		
    		var token = req.headers['token'];
    		console.log(req.headers);
    		var url = req.originalUrl;
@@ -43,8 +47,8 @@ app.all('/*', function(req, res, next) {
     		console.log('authorized');
     		next();
     	}
-    }
-    else {
+  }
+  else {
     	next();
     }
 });
@@ -89,11 +93,20 @@ app.use(function(req,res,next){
     next();
 });
 
+// ToDo: Kept for backward compatibility for iOS. Remove it Later 
 app.use('/', routes);
 app.use('/users', users);
 app.use('/brands',brands);
 app.use('/stores',stores);
 app.use('/categories',categories);
+
+
+app.use('/services/users', users);
+app.use('/services/brands',brands);
+app.use('/services/stores',stores);
+app.use('/services/categories',categories);
+
+
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
