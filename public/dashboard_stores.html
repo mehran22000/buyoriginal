@@ -11,9 +11,10 @@
 	<a href="/dashboard_brands.html">Brands</a>
 	<a href="/dashboard_stores.html">Stores</a>
 	<a href="/dashboard_categories.html">Categories</a>
-	<a href="/dashboard_categories.html">Discounts</a>		
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>		
 	</div>
-	
+		
 	<div id="blankSection" >
 	<p></p>
 	<p></p>
@@ -59,6 +60,7 @@
     </p>
 	</div>
 	
+	<div id="divSpinner"><img src="images/spinner.gif"/></div>
 	
 	<div id="boList">
 	<table id="myTable"></table>
@@ -66,7 +68,7 @@
 	
 
 <script>
-$( document ).ready(function() {
+$(document).ready(function() {
     console.log( "ready!" );
     populateTable();
 });
@@ -77,41 +79,52 @@ function populateTable() {
     // Empty content string
     var tableContent = '<tr><td>BRAND ID</td><td>STORE ID</td><td>STORE NAME</td><td>BRAND NAME</td><td>BRAND CATEGORY</td><td>CITY</td><td>ADDRESS</td><td>HOURS</td><td>AREA CODE</td><td>TEL 1</td><td>TEL 2</td><td>DISTRIBUTOR</td><td>LAT</td><td>LONG</td><td>VARIFIED?</td><td></td></tr>';
     // jQuery AJAX call for JSON
-    $.getJSON( '/stores/storelist', function( data ) {
-	
-        // For each item in our JSON, add a table row and cells to the content string
-        $.each(data, function(){
-            tableContent += '<tr>';
-            tableContent += '<td>' + this.bId + '</td>';
-            tableContent += '<td>' + this.sId + '</td>';
-            tableContent += '<td>' + this.sName + '</td>';
-            tableContent += '<td>' + this.bName + '</td>';
-            tableContent += '<td>' + this.bCategory + '</td>';
-            tableContent += '<td>' + this.sCity + '</td>';
-            tableContent += '<td>' + this.sAddress + '</td>';
-            tableContent += '<td>' + this.sHours + '</td>';
-            tableContent += '<td>' + this.sAreaCode + '</td>';
-            tableContent += '<td>' + this.sTel1 + '</td>';
-            tableContent += '<td>' + this.sTel2 + '</td>';
-            tableContent += '<td>' + this.bDistributor + '</td>';
-            tableContent += '<td>' + this.sLat + '</td>';
-            tableContent += '<td>' + this.sLong + '</td>';
-            tableContent += '<td>' + this.sVerified + '</td>';
-            tableContent += '<td> <a href="#" onclick=deleteStore("'+this._id+'");>delete</a></td>';
-            tableContent += '</tr>';         
-        });
-        document.getElementById("myTable").innerHTML= tableContent;
-
+    
+    
+    $.ajax({
+    	    type: 'GET',
+        	url: '/services/stores/storelist',
+        	dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            },
+            success: function(data) {
+				document.getElementById("divSpinner").style.display = 'none';
+        		            
+        		// For each item in our JSON, add a table row and cells to the content string
+        		$.each(data, function(){
+            		tableContent += '<tr>';
+            		tableContent += '<td>' + this.bId + '</td>';
+            		tableContent += '<td>' + this.sId + '</td>';
+            		tableContent += '<td>' + this.sName + '</td>';
+            		tableContent += '<td>' + this.bName + '</td>';
+            		tableContent += '<td>' + this.bCategory + '</td>';
+            		tableContent += '<td>' + this.sCity + '</td>';
+            		tableContent += '<td>' + this.sAddress + '</td>';
+            		tableContent += '<td>' + this.sHours + '</td>';
+            		tableContent += '<td>' + this.sAreaCode + '</td>';
+            		tableContent += '<td>' + this.sTel1 + '</td>';
+            		tableContent += '<td>' + this.sTel2 + '</td>';
+            		tableContent += '<td>' + this.bDistributor + '</td>';
+            		tableContent += '<td>' + this.sLat + '</td>';
+            		tableContent += '<td>' + this.sLong + '</td>';
+            		tableContent += '<td>' + this.sVerified + '</td>';
+            		tableContent += '<td> <a href="#" onclick=deleteStore("'+this._id+'");>delete</a></td>';
+            		tableContent += '</tr>';
+            })         
+          document.getElementById("myTable").innerHTML= tableContent;
+        }
+        
         // Inject the whole content string into our existing HTML table;
     });
 };
         
 function addStore() {
     event.preventDefault();
-
     // Super basic validation - increase errorCount variable if any fields are blank
     var errorCount = 0;
-  
 
     // If it is, compile all user info into one object
     var bId = document.getElementById("bId").value;
@@ -129,7 +142,6 @@ function addStore() {
     var sVerified = "NO";
     if (document.getElementById('sVerified').checked)
     	sVerified = "YES";
-    
     
     if (!isNumeric(bId))
    		alert ("Brand Id must be numeric");
@@ -168,36 +180,43 @@ function addStore() {
 		// Use AJAX to post the object to our addstore service
     	$.ajax({
         	    type: 'POST',
-           	 data: newStore,
-           	 url: '/stores/addstore',
-           	 dataType: 'JSON'
-    	}).done(function( response ) {
+           	 	data: newStore,
+           	 	url: 'services/stores/addstore',
+           	 	dataType: 'JSON',
+        	 	beforeSend: function (request)
+             	{
+                    document.getElementById("divSpinner").style.display = 'inline';
+                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+             	}
+    			}).done(function(response) {
 
-    	// Check for successful (blank) response
-    	if (response.msg === '') {
-    		document.getElementById("bId").value = "";
-    		document.getElementById("sId").value="";
-        	document.getElementById("sName").value = "";
-    		document.getElementById("bDistributor").value="";
-    		document.getElementById("sCity").value="";
-    		document.getElementById("sAddress").value="";
-    		document.getElementById("sHours").value="";
-    		document.getElementById("sAreaCode").value="";
-    		document.getElementById("sTel1").value="";
-    		document.getElementById("sTel2").value="";
-    		document.getElementById("sLat").value="";
-    		document.getElementById("sLong").value="";
-    		document.getElementById("sVerified").checked=false;
-    		// Update the table
-        	populateTable();
-		}
-    	else {
-			// If something goes wrong, alert the error message that our service returned
-        	alert('Error: ' + response.msg);
-    		}
-    	});
+				document.getElementById("divSpinner").style.display = 'none';
+    		    // Check for successful (blank) response
+    			if (response.msg === '') {
+    				document.getElementById("bId").value = "";
+    				document.getElementById("sId").value="";
+        			document.getElementById("sName").value = "";
+    				document.getElementById("bDistributor").value="";
+    				document.getElementById("sCity").value="";
+    				document.getElementById("sAddress").value="";
+    				document.getElementById("sHours").value="";
+    				document.getElementById("sAreaCode").value="";
+    				document.getElementById("sTel1").value="";
+    				document.getElementById("sTel2").value="";
+    				document.getElementById("sLat").value="";
+    				document.getElementById("sLong").value="";
+    				document.getElementById("sVerified").checked=false;
+    				// Update the table
+        			populateTable();
+        			}
+				else {
+					// If something goes wrong, alert the error message that our service returned
+        			alert('Error: ' + response.msg);
+        		}
+    		})
+    	}
     }
-};
+
 
 function deleteStore(rowId) {
 
@@ -212,9 +231,14 @@ function deleteStore(rowId) {
         // If they did, do our delete
         $.ajax({
             type: 'DELETE',
-            url: '/stores/deletestore/' + rowId
+            url: '/services/stores/deletestore/' + rowId,
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            },
         }).done(function( response ) {
-
+			document.getElementById("divSpinner").style.display = 'none';
             // Check for a successful (blank) response
             if (response.msg === '') {
             }

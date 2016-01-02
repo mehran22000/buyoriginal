@@ -95,11 +95,11 @@ app.use(function(req,res,next){
 
 // ToDo: Kept for backward compatibility for iOS. Remove it Later 
 app.use('/', routes);
+
 app.use('/users', users);
 app.use('/brands',brands);
 app.use('/stores',stores);
 app.use('/categories',categories);
-
 
 app.use('/services/users', users);
 app.use('/services/brands',brands);

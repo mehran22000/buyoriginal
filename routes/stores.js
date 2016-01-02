@@ -53,7 +53,7 @@ router.get('/storelist/city/:areacode/:id', function(req, res) {
 router.get('/storelist/discounts/all', function(req, res) {
     console.log("/storelist/discounts");
     var db = req.db;
-    db.collection('stores').find({dPrecentage:{ $ne: "" }}).toArray(function (err, items) {
+    db.collection('stores').find({dPrecentage:{ $gte: 0 }}).toArray(function (err, items) {
         res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
@@ -63,7 +63,7 @@ router.get('/storelist/discounts/city/:areacode', function(req, res) {
     var db = req.db;
     console.log(req.params.areacode);
     console.log(req.params.id);
-    db.collection('stores').find({sAreaCode:req.params.areacode, dPrecentage:{ $ne:"" }}).toArray(function (err, items) {
+    db.collection('stores').find({sAreaCode:req.params.areacode, dPrecentage:{ $gte:0 }}).toArray(function (err, items) {
         res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });

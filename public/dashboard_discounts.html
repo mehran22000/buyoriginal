@@ -11,7 +11,8 @@
 	<a href="/dashboard_brands.html">Brands</a>
 	<a href="/dashboard_stores.html">Stores</a>
 	<a href="/dashboard_categories.html">Categories</a>
-	<a href="/dashboard_categories.html">Discounts</a>		
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>		
 	</div>
 	
 	<div id="blankSection" >
@@ -22,13 +23,26 @@
 	
 	<div id="blackSection" >
 	<p>
-	Brand Id: <input type="text" name="bId" value="" id="bId" placeholder="(Unique Namber)">
-	Store Id: <input type="text" name="sId" value="" id="sId">
-	Discount Number: <input type="text" name="sDiscount" value="" id="sDiscount" placeholder="5,10,...,100">
+	Brand Id:    <input type="text" name="bId" value="" id="bId" placeholder="" size="4"> &nbsp;&nbsp;&nbsp;
+	Store Id:    <input type="text" name="sId" value="" id="sId" size="4"> &nbsp;&nbsp;&nbsp;
+	Percentage:     <input type="text" name="sDiscount" value="" id="sDiscount" placeholder="5,10,...,100" size="10">
+	</p>
+	<p>
+	Start Date (English): 20 <input type="text" name="sDateEn.year" value="" id="sDateEn.year" size="2">/<input type="text" name="sDateEn.month" value="" id="sDateEn.month" size="2">/<input type="text" name="sDateEn.day" value="" id="sDateEn.day" size="2"> &nbsp;&nbsp;&nbsp;  
+	End Date (English):  20 <input type="text" name="eDateEn.year" value="" id="eDateEn.year" size="2">/<input type="text" name="eDateEn.month" value="" id="eDateEn.month" size="2">/<input type="text" name="eDateEn.day" value="" id="eDateEn.day" size="2">
+	</P>
+	<p>
+	Start Date (Persian): 13 <input type="text" name="sDateFa.year" value="" id="sDateFa.year" size="2">/<input type="text" name="sDateFa.month" value="" id="sDateFa.month" size="2">/<input type="text" name="sDateFa.day" value="" id="sDateFa.day" size="2"> &nbsp;&nbsp;&nbsp;  
+	End Date (Persian):  13 <input type="text" name="eDateFa.year" value="" id="eDateFa.year" size="2">/<input type="text" name="eDateFa.month" value="" id="eDateFa.month" size="2">/<input type="text" name="eDateFa.day" value="" id="eDateFa.day" size="2">
+	</p>
+	<p>
+	Note: <input type="text" name="note" value="" id="note" size="93"> 
 	</p>
     <a href="#" class="myButton" onclick="addDiscount()">Submit</a>	
     <p></p>
 	</div>
+	
+	<div id="divSpinner"><img src="images/spinner.gif"/></div>
 	
 	<div id="boList">
 	<table id="myTable"></table>
@@ -45,22 +59,39 @@ $( document ).ready(function() {
 function populateTable() {
 
     // Empty content string
-    var tableContent = '<tr><td>BRAND ID</td><td>BRAND NAME</td><td>STORE ID</td><td>DISCOUNT</td><td></td></tr>';
+    var tableContent = '<tr><td>BRAND ID</td><td>BRAND NAME</td><td>STORE ID</td><td>STORE NAME</td><td>DISCOUNT</td> <td>START DATE(En)</td> <td>END DATE(En)</td> <td>START DATE(Fa)</td> <td>END DATE(Fa)</td> <td>NOTE</td><td></td></tr>';
     // jQuery AJAX call for JSON
-    $.getJSON( '/stores/storelist/discounts/all', function( data ) {
-	
-        // For each item in our JSON, add a table row and cells to the content string
-        $.each(data, function(){
-            tableContent += '<tr>';
-            tableContent += '<td>' + this.bId + '</td>';
-            tableContent += '<td>' + this.bName + '</td>';
-            tableContent += '<td>' + this.sId + '</td>';
-            tableContent += '<td>' + this.sDiscount + '%' + '</td>';
-            tableContent += '<td> <a href="#" onclick=deleteDiscount("'+this.bId+'","'+this.sId+'");>delete</a></td>';
-            tableContent += '</tr>';         
-        });
-        document.getElementById("myTable").innerHTML= tableContent;
-
+    
+    $.ajax({
+    	    type: 'GET',
+        	url: '/services/stores/storelist/discounts/all',
+        	dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            },
+            success: function(data) {
+    		    // For each item in our JSON, add a table row and cells to the content string
+	    		document.getElementById("divSpinner").style.display = 'none';
+        		$.each(data, function(){
+            		tableContent += '<tr>';
+            		tableContent += '<td>' + this.bId + '</td>';
+            		tableContent += '<td>' + this.bName + '</td>';
+            		tableContent += '<td>' + this.sId + '</td>';
+            		tableContent += '<td>' + this.sName + '</td>';
+            		tableContent += '<td>' + this.dPrecentage + '%' + '</td>';
+            		tableContent += '<td>' + this.dStartDate + '</td>';
+            		tableContent += '<td>' + this.dEndDate + '</td>';
+            		tableContent += '<td>' + this.dStartDateFa + '</td>';
+            		tableContent += '<td>' + this.dEndDateFa + '</td>';
+            		tableContent += '<td>' + this.dNote + '</td>';
+            		tableContent += '<td> <a href="#" onclick=deleteDiscount("'+this.bId+'","'+this.sId+'");>delete</a></td>';
+            		tableContent += '</tr>';
+            	})         
+        	  document.getElementById("myTable").innerHTML= tableContent;
+        	}
+        	
         // Inject the whole content string into our existing HTML table;
     });
 };
@@ -70,39 +101,112 @@ function addDiscount() {
 
     // Super basic validation - increase errorCount variable if any fields are blank
     var errorCount = 0;
-  
 
     // If it is, compile all user info into one object
     var bId = document.getElementById("bId").value;
     var sId = document.getElementById("sId").value;
-    var sDiscount = document.getElementById("sDiscount").value;
     
+    var sDateEnYear = document.getElementById("sDateEn.year").value;
+    var sDateEnMonth = document.getElementById("sDateEn.month").value;
+    var sDateEnDay = document.getElementById("sDateEn.day").value;
+    var eDateEnYear = document.getElementById("eDateEn.year").value;
+    var eDateEnMonth = document.getElementById("eDateEn.month").value;
+    var eDateEnDay = document.getElementById("eDateEn.day").value;
+    
+    var sDateFaYear = document.getElementById("sDateFa.year").value;
+    var sDateFaMonth = document.getElementById("sDateFa.month").value;
+    var sDateFaDay = document.getElementById("sDateFa.day").value;
+    var eDateFaYear = document.getElementById("eDateFa.year").value;
+    var eDateFaMonth = document.getElementById("eDateFa.month").value;
+    var eDateFaDay = document.getElementById("eDateFa.day").value;
+    
+    
+    var startDate = '20' + sDateEnYear + '/' + sDateEnMonth + '/' + sDateEnDay;
+    var endDate = '20' + eDateEnYear + '/' + eDateEnMonth + '/' + eDateEnDay;;    
+    var startDateFa = '13' + sDateFaYear + '/' + sDateFaMonth + '/' + sDateFaDay;
+    var endDateFa = '13' + eDateFaYear + '/' + eDateFaMonth + '/' + eDateFaDay;
+    var percentage = document.getElementById("sDiscount").value;
+    var note = document.getElementById("note").value;
+
+
     if (!isNumeric(bId))
    		alert ("Brand Id must be numeric");
    	else if (!isNumeric(sId))
    		alert ("Category Id must be numeric");
-   	else if (!isNumeric(sDiscount))
-   		alert ("Discount must be numeric");
+   	else if (!isNumeric(sDateEnYear) || sDateEnYear > 99 || sDateEnYear < 16)
+   		alert ("Start Date - Year (English) is incorrect");
+	else if (!isNumeric(sDateEnMonth) || sDateEnMonth > 12 || sDateEnMonth < 0)
+   		alert ("Start Date - Month (English) is incorrect");
+   	else if (!isNumeric(sDateEnDay) || sDateEnDay > 31 || sDateEnDay < 0)
+   		alert ("Start Date - Day (English) is incorrect");
+   	else if (!isNumeric(eDateEnYear) || eDateEnYear > 99 || eDateEnYear < 16)
+   		alert ("End Date - Year (English) is incorrect");
+	else if (!isNumeric(eDateEnMonth) || eDateEnMonth > 12 || eDateEnMonth < 0)
+   		alert ("Etart Date - Month (English) is incorrect");
+   	else if (!isNumeric(eDateEnDay) || eDateEnDay > 31 || eDateEnDay < 0)
+   		alert ("Etart Date - Day (English) is incorrect");
+   		
+   	else if (!isNumeric(sDateFaYear) || sDateFaYear > 99 || sDateFaYear < 94)
+   		alert ("Start Date - Year (Farsi) is incorrect");
+	else if (!isNumeric(sDateFaMonth) || sDateFaMonth > 12 || sDateFaMonth < 0)
+   		alert ("Start Date - Month (Farsi) is incorrect");
+   	else if (!isNumeric(sDateFaDay) || sDateFaDay > 31 || sDateFaDay < 0)
+   		alert ("Start Date - Day (Farsi) is incorrect");
+   	else if (!isNumeric(eDateFaYear) || eDateFaYear > 99 || eDateFaYear < 94)
+   		alert ("End Date - Year (Farsi) is incorrect");
+	else if (!isNumeric(eDateFaMonth) || eDateFaMonth > 12 || eDateFaMonth < 0)
+   		alert ("End Date - Month (Farsi) is incorrect");
+   	else if (!isNumeric(eDateFaDay) || eDateFaDay > 31 || eDateFaDay < 0)
+   		alert ("End Date - Day (Farsi) is incorrect");
+	else if (!isNumeric(percentage) || percentage < 0 || percentage > 100 || percentage % 5 !== 0) 
+   		alert ("Percentage is incorrect - Divisible by 5");
+   	else if ((percentage === 0) && note.length <= 0)
+   		alert ("Both percentage and note can not be empty");
+	
 	else {
     	var newDiscount = {
         	'bId': bId,
         	'sId': sId,
-        	'sDiscount':sDiscount
-    	}
+        	'startDate': startDate,
+        	'endDate' : endDate,
+        	'startDateFa': startDateFa,
+        	'endDateFa' : endDateFa,
+        	'precentage':percentage,
+        	'note' : note
+ 		}
 		// Use AJAX to post the object to our addstore service
     	$.ajax({
         	    type: 'POST',
            	    data: newDiscount,
-                url: '/stores/adddiscount',
-                dataType: 'JSON'
+                url: '/services/stores/adddiscount',
+                dataType: 'JSON',
+        		beforeSend: function (request)
+            	{
+                    document.getElementById("divSpinner").style.display = 'inline';
+                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            	},
     	}).done(function( response ) {
 
     	// Check for successful (blank) response
-    	if (response.msg === '') {
-    		document.getElementById("bId").value = "";
-    		document.getElementById("sId").value="";
-    		document.getElementById("sDiscount").value="";
-         	// Update the table
+    		document.getElementById("divSpinner").style.display = 'none';
+    		if (response.result !== "success") {
+    			document.getElementById("bId").value = "";
+    			document.getElementById("sId").value="";
+    			document.getElementById("sDiscount").value="";
+    			document.getElementById("sDateEn.year").value = "";
+    			document.getElementById("sDateEn.month").value = "";
+    			document.getElementById("sDateEn.day").value = "";
+    			document.getElementById("eDateEn.year").value = "";
+    			document.getElementById("eDateEn.month").value = "";
+    			document.getElementById("eDateEn.day").value = "";
+    			document.getElementById("sDateFa.year").value = "";
+    			document.getElementById("sDateFa.month").value = "";
+    			document.getElementById("sDateFa.day").value = "";
+    			document.getElementById("eDateFa.year").value = "";
+    			document.getElementById("eDateFa.month").value = "";
+    			document.getElementById("eDateFa.day").value = "";
+    			document.getElementById("note").value = "";
+         		// Update the table
         	populateTable();
 		}
     	else {
@@ -132,12 +236,18 @@ function deleteDiscount(bId,sId) {
     	$.ajax({
         	    type: 'POST',
            	    data: newDiscount,
-                url: '/stores/deletediscount',
-                dataType: 'JSON'
+                url: '/services/stores/deletediscount',
+                dataType: 'JSON',
+        		beforeSend: function (request)
+            	{
+                    document.getElementById("divSpinner").style.display = 'inline';
+                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            	},
     	}).done(function( response ) {
-
+		
+    		document.getElementById("divSpinner").style.display = 'none';
     	// Check for successful (blank) response
-    	if (response.msg === '') {
+    	if (response.result === "success") {
     		populateTable();
 		}
     	else {

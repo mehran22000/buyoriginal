@@ -11,7 +11,8 @@
 	<a href="/dashboard_brands.html">Brands</a>
 	<a href="/dashboard_stores.html">Stores</a>
 	<a href="/dashboard_categories.html">Categories</a>	
-	<a href="/dashboard_categories.html">Discounts</a>	
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>	
 	</div>
 	
 	<div id="blankSection" >
@@ -31,6 +32,8 @@
     <p></p>
 	</div>
 	
+	<div id="divSpinner"><img src="images/spinner.gif"/></div>
+	
 	<div id="boList">
 	<table id="myTable"></table>
 	</div>
@@ -48,19 +51,32 @@ function populateTable() {
     // Empty content string
     var tableContent = '<tr><td>BRAND ID</td><td>BRAND NAME</td><td>BRAND CATEGORY</td><td>LOGO NAME</td><td></td></tr>';
     // jQuery AJAX call for JSON
-    $.getJSON( '/brands/brandlist', function( data ) {
-	
-        // For each item in our JSON, add a table row and cells to the content string
-        $.each(data, function(){
-            tableContent += '<tr>';
-            tableContent += '<td>' + this.bId + '</td>';
-            tableContent += '<td>' + this.bName + '</td>';
-            tableContent += '<td>' + this.cName + '</td>';
-            tableContent += '<td>' + this.bLogo + '</td>';
-            tableContent += '<td> <a href="#" onclick=deleteBrand("'+this._id+'");>delete</a></td>';
-            tableContent += '</tr>';         
-        });
-        document.getElementById("myTable").innerHTML= tableContent;
+    
+    $.ajax({
+    	    type: 'GET',
+        	url: '/services/brands/brandlist',
+        	dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            },
+            success: function(data) {
+            
+    			document.getElementById("divSpinner").style.display = 'none';
+    		//	$('loader').hide();
+        	// For each item in our JSON, add a table row and cells to the content string
+    	    $.each(data, function(){
+        	    tableContent += '<tr>';
+            	tableContent += '<td>' + this.bId + '</td>';
+            	tableContent += '<td>' + this.bName + '</td>';
+            	tableContent += '<td>' + this.cName + '</td>';
+            	tableContent += '<td>' + this.bLogo + '</td>';
+            	tableContent += '<td> <a href="#" onclick=deleteBrand("'+this._id+'");>delete</a></td>';
+            	tableContent += '</tr>';         
+        	});
+        	document.getElementById("myTable").innerHTML= tableContent;
+        	}
 
         // Inject the whole content string into our existing HTML table;
     });
@@ -98,24 +114,30 @@ function addBrand() {
     	$.ajax({
         	    type: 'POST',
            	    data: newBrand,
-                url: '/brands/addbrand',
-                dataType: 'JSON'
+                url: '/services/brands/addbrand',
+                dataType: 'JSON',
+            	beforeSend: function (request)
+            	{
+                	document.getElementById("divSpinner").style.display = 'inline';
+                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            	},
     	}).done(function( response ) {
-
-    	// Check for successful (blank) response
-    	if (response.msg === '') {
-    		document.getElementById("bId").value = "";
-    		document.getElementById("bName").value="";
-    		document.getElementById("cId").value="";
-    		document.getElementById("bLogo").value="";
-         	// Update the table
-        	populateTable();
-		}
-    	else {
-			// If something goes wrong, alert the error message that our service returned
-        	alert('Error: ' + response.msg);
+		
+			document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.msg === '') {
+    			document.getElementById("bId").value = "";
+    			document.getElementById("bName").value="";
+    			document.getElementById("cId").value="";
+    			document.getElementById("bLogo").value="";
+         		// Update the table
+        		populateTable();
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
     		}
-    	});
+    	})
     }
 };
 
@@ -132,9 +154,15 @@ function deleteBrand(rowId) {
         // If they did, do our delete
         $.ajax({
             type: 'DELETE',
-            url: '/brands/deletebrand/' + rowId
+            url: '/services/brands/deletebrand/' + rowId,
+            beforeSend: function (request)
+        	{
+            	document.getElementById("divSpinner").style.display = 'inline';
+            	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+        	},
         }).done(function( response ) {
-
+			
+			document.getElementById("divSpinner").style.display = 'none';
             // Check for a successful (blank) response
             if (response.msg === '') {
             }
@@ -145,7 +173,7 @@ function deleteBrand(rowId) {
             // Update the table
             populateTable();
 
-        });
+        })
 
     }
     else {

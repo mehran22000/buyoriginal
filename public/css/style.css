@@ -879,3 +879,5 @@ span.menu {
 .contact-header h3 {
   font-size: 1.3em;
 }
+
+#loading { background: url(/image/loading.gif) no-repeat center; }
