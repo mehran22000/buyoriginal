@@ -18,7 +18,11 @@ var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
 var app = express();
 
 app.all('/*', function(req, res, next) {
-  console.log("CORS");
+  console.log("Authentication Check");
+  
+  var auth = require('basic-auth'); 
+  var user = auth(req);
+  
   
   res.set({'Access-Control-Allow-Origin': '*'});  
   res.set({'Access-Control-Allow-Methods': 'POST, GET, PUT'});
@@ -48,12 +52,25 @@ app.all('/*', function(req, res, next) {
     		next();
     	}
   }
-  else {
+  else if(req.originalUrl === '/dashboard_brands.html' || req.originalUrl === '/dashboard_categories.html' || req.originalUrl === '/dashboard_discounts.html' || req.originalUrl === '/dashboard_stores.html')
+	{
+    	if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
+        	res.statusCode = 401;
+        	res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+			//res.end(req.originalUrl);
+			console.log('unauthorized');
+        	res.end('Unauthorized');
+    	}
+    	else {
+    		next();
+    	}
+  	}
+  	else {
     	next();
     }
 });
 
-
+/*
 app.use(function(req, res, next) {
 	var auth = require('basic-auth'); 
     var user = auth(req);
@@ -72,7 +89,7 @@ app.use(function(req, res, next) {
         next();
     }
 });
-
+*/
 
 
 // view engine setup
