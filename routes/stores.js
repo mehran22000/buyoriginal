@@ -306,13 +306,15 @@ router.post('/deletediscount', function(req, res) {
   	
   	
 	db.collection('stores').findOne({bId:_bId.toString(),sId:_sId.toString()},function (err,doc) {
+    console.log('_bCategory'+doc.bCategory);
+    
     if (doc){
     	var newStore = {
         		'bId': doc.bId,
         		'sId':doc.sId,
         		'sName':doc.sName,
         		'bName':doc.bName,
-        		'bCategory':doc.cName,
+        		'bCategory':doc.bCategory,
         		'bDistributor':doc.bDistributor,
         		'sCity':doc.sCity,
         		'sAddress':doc.sAddress,
