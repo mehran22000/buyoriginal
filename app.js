@@ -54,7 +54,7 @@ app.all('/*', function(req, res, next) {
   }
   else if(req.originalUrl === '/dashboard_brands.html' || req.originalUrl === '/dashboard_categories.html' || req.originalUrl === '/dashboard_discounts.html' || req.originalUrl === '/dashboard_stores.html')
 	{
-    	if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
+    	if (user === undefined || user['name'] !== 'admin' || user['pass'] !== 'YXNsYmVraGFyLmNvbQ==') {
         	res.statusCode = 401;
         	res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
 			//res.end(req.originalUrl);
@@ -76,7 +76,7 @@ app.use(function(req, res, next) {
     var user = auth(req);
     if(req.originalUrl === '/dashboard_brands.html' || req.originalUrl === '/dashboard_categories.html' || req.originalUrl === '/dashboard_discounts.html' || req.originalUrl === '/dashboard_stores.html')
 	{
-    if (user === undefined || user['name'] !== 'username' || user['pass'] !== 'password') {
+    if (user === undefined || user['name'] !== 'admin' || user['pass'] !== 'YXNsYmVraGFyLmNvbQ==') {
         res.statusCode = 401;
         res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
 		//res.end(req.originalUrl);
