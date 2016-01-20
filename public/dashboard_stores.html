@@ -56,11 +56,19 @@
 	Verified: <input type="checkbox" name="sVerified" value="YES" id="sVerified">
 	</p>
 	<p>
-    <a href="#" class="myButton" onclick="addStore()">Add</a>
+    <a href="#" class="myButton" onclick="addStoreBtnClicked()">Add</a>
     </p>
 	</div>
+	<hr>
+	<p></p><p></p><p></p><p></p><p></p><p></p>
+	<div>
+	<p> Brand Id:<input type="text" name="search.bId" value="" id="search.bId" size="4"> 
+	 <a href="#" class="myButton" onclick="searchBtnClicked()">Search</a> </p>
+	</div>
+	<hr>
 	
 	<div id="divSpinner"><img src="images/spinner.gif"/></div>
+
 	
 	<div id="boList">
 	<table id="myTable"></table>
@@ -70,11 +78,22 @@
 <script>
 $(document).ready(function() {
     console.log( "ready!" );
-    populateTable();
+    document.getElementById("divSpinner").style.display = 'none';
+    
 });
 
+function searchBtnClicked() {
+	var bId = document.getElementById("search.bId").value;
+	if (!isNumeric(bId)) {
+   		alert ("Brand Id must be numeric");
+   	}
+   	else {	
+		document.getElementById("divSpinner").style.display = 'none';
+		populateTable(bId);
+	}
+}
 
-function populateTable() {
+function populateTable(bId) {
 
     // Empty content string
     var tableContent = '<tr><td>BRAND ID</td><td>STORE ID</td><td>STORE NAME</td><td>BRAND NAME</td><td>BRAND CATEGORY</td><td>CITY</td><td>ADDRESS</td><td>HOURS</td><td>AREA CODE</td><td>TEL 1</td><td>TEL 2</td><td>DISTRIBUTOR</td><td>LAT</td><td>LONG</td><td>VARIFIED?</td><td></td></tr>';
@@ -83,7 +102,7 @@ function populateTable() {
     
     $.ajax({
     	    type: 'GET',
-        	url: '/services/stores/storelist',
+        	url: '/services/stores/storelist/'+bId,
         	dataType: 'JSON',
         	beforeSend: function (request)
             {
@@ -96,22 +115,23 @@ function populateTable() {
         		// For each item in our JSON, add a table row and cells to the content string
         		$.each(data, function(){
             		tableContent += '<tr>';
-            		tableContent += '<td>' + this.bId + '</td>';
-            		tableContent += '<td>' + this.sId + '</td>';
-            		tableContent += '<td>' + this.sName + '</td>';
-            		tableContent += '<td>' + this.bName + '</td>';
-            		tableContent += '<td>' + this.bCategory + '</td>';
-            		tableContent += '<td>' + this.sCity + '</td>';
-            		tableContent += '<td>' + this.sAddress + '</td>';
-            		tableContent += '<td>' + this.sHours + '</td>';
-            		tableContent += '<td>' + this.sAreaCode + '</td>';
-            		tableContent += '<td>' + this.sTel1 + '</td>';
-            		tableContent += '<td>' + this.sTel2 + '</td>';
-            		tableContent += '<td>' + this.bDistributor + '</td>';
-            		tableContent += '<td>' + this.sLat + '</td>';
-            		tableContent += '<td>' + this.sLong + '</td>';
-            		tableContent += '<td>' + this.sVerified + '</td>';
+            	 	tableContent += '<td> <input type="input" id="'+ this._id +'.bId" value="'+ this.bId + '" size="4"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sId" value="'+ this.sId + '" size="4"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sName" value="' + this.sName + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.bName" value="' + this.bName + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.bCategory" value="' + this.bCategory + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sCity" value="' + this.sCity + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sAddress" value="' + this.sAddress + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sHours" value="' + this.sHours + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sAreaCode" value="' + this.sAreaCode + '" size="4"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sTel1" value="' + this.sTel1 + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sTel2" value="' + this.sTel2 + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.bDistributor" value="' + this.bDistributor + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sLat" value="' + this.sLat + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sLong" value="' + this.sLong + '" size="10"></input></td>';
+            		tableContent += '<td> <input type="input" id="'+ this._id +'.sVerified" value="' + this.sVerified + '" size="4"></input></td>';
             		tableContent += '<td> <a href="#" onclick=deleteStore("'+this._id+'");>delete</a></td>';
+            		tableContent += '<td> <a href="#" onclick=saveStoreBtnClicked("'+this._id+'");>save</a></td>';
             		tableContent += '</tr>';
             })         
           document.getElementById("myTable").innerHTML= tableContent;
@@ -120,49 +140,11 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table;
     });
 };
-        
-function addStore() {
-    event.preventDefault();
-    // Super basic validation - increase errorCount variable if any fields are blank
-    var errorCount = 0;
 
-    // If it is, compile all user info into one object
-    var bId = document.getElementById("bId").value;
-    var sId = document.getElementById("sId").value;
-    var sName = document.getElementById("sName").value;
-    var bDistributor = document.getElementById("bDistributor").value;
-    var sCity = document.getElementById("sCity").value;
-    var sAddress = document.getElementById("sAddress").value;
-    var sHours = document.getElementById("sHours").value;
-    var sAreaCode = document.getElementById("sAreaCode").value;
-    var sTel1 = document.getElementById("sTel1").value;
-    var sTel2 = document.getElementById("sTel2").value;
-    var sLat = document.getElementById("sLat").value;
-    var sLong = document.getElementById("sLong").value;
-    var sVerified = "NO";
-    if (document.getElementById('sVerified').checked)
-    	sVerified = "YES";
-    
-    if (!isNumeric(bId))
-   		alert ("Brand Id must be numeric");
-   	else if (!isNumeric(sId))
-   		alert ("Store Id must be numeric");
-   	else if (sName=='')
-   		alert ("Store name can not be empty");
-   	else if (sCity=='')
-   		alert ("City can not be empty");
-   	else if (sAddress=='')
-   		alert ("Address can not be empty");
-    else if (!isNumeric(sAreaCode))
-   		alert ("Area Code must be numeric");
-    else if (!isNumeric(sTel1))
-   		alert ("Tel 1 must be numeric");
-   	else if (!isNumeric(sLat))
-   		alert ("Latitude must be numeric");
-   	else if (!isNumeric(sLong))
-   		alert ("Longitude must be numeric");
-   	else {
-    	var newStore = {
+
+function addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified){
+	
+	var newStore = {
         	'bId': bId,
         	'sId':sId,
         	'sName':sName,
@@ -207,16 +189,134 @@ function addStore() {
     				document.getElementById("sLong").value="";
     				document.getElementById("sVerified").checked=false;
     				// Update the table
-        			populateTable();
+        			document.getElementById("search.bId").value=bId;
+        			populateTable(bId);
         			}
 				else {
 					// If something goes wrong, alert the error message that our service returned
         			alert('Error: ' + response.msg);
         		}
-    		})
-    	}
-    }
+    	})
+};
 
+
+
+        
+function addStoreBtnClicked() {
+    event.preventDefault();
+    // Super basic validation - increase errorCount variable if any fields are blank
+    var errorCount = 0;
+
+    // If it is, compile all user info into one object
+    var bId = document.getElementById("bId").value;
+    var sId = document.getElementById("sId").value;
+    var sName = document.getElementById("sName").value;
+    var bDistributor = document.getElementById("bDistributor").value;
+    var sCity = document.getElementById("sCity").value;
+    var sAddress = document.getElementById("sAddress").value;
+    var sHours = document.getElementById("sHours").value;
+    var sAreaCode = document.getElementById("sAreaCode").value;
+    var sTel1 = document.getElementById("sTel1").value;
+    var sTel2 = document.getElementById("sTel2").value;
+    var sLat = document.getElementById("sLat").value;
+    var sLong = document.getElementById("sLong").value;
+    var sVerified = "NO";
+    if (document.getElementById('sVerified').checked)
+    	sVerified = "YES";
+    
+    if (!isNumeric(bId))
+   		alert ("Brand Id must be numeric");
+   	else if (!isNumeric(sId))
+   		alert ("Store Id must be numeric");
+   	else if (sName=='')
+   		alert ("Store name can not be empty");
+   	else if (sCity=='')
+   		alert ("City can not be empty");
+   	else if (sAddress=='')
+   		alert ("Address can not be empty");
+    else if (!isNumeric(sAreaCode))
+   		alert ("Area Code must be numeric");
+    else if (!isNumeric(sTel1))
+   		alert ("Tel 1 must be numeric");
+   	else if (!isNumeric(sLat))
+   		alert ("Latitude must be numeric");
+   	else if (!isNumeric(sLong))
+   		alert ("Longitude must be numeric");
+   	else {
+    	addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified);
+    }
+}
+
+
+function saveStoreBtnClicked(rowId) {
+
+	var bIdElem=rowId+".bId";
+	
+	var sIdElem = rowId+".sId";
+    var sNameElem = rowId+".sName";
+    var bDistributorElem = rowId+".bDistributor";
+    var sCityElem = rowId+".sCity";
+    var sAddressElem = rowId+".sAddress";
+    var sHoursElem = rowId+".sHours";
+    var sAreaCodeElem = rowId+".sAreaCode";
+    var sTel1Elem = rowId+".sTel1";
+    var sTel2Elem = rowId+".sTel2";
+    var sLatElem = rowId+".sLat";
+    var sLongElem = rowId+".sLong";
+    var sVerifiedElem = rowId+".sVerified";
+
+	
+	
+	var bId = document.getElementById(bIdElem).value;
+    var sId = document.getElementById(sIdElem).value;
+    var sName = document.getElementById(sNameElem).value;
+    var bDistributor = document.getElementById(bDistributorElem).value;
+    var sCity = document.getElementById(sCityElem).value;
+    var sAddress = document.getElementById(sAddressElem).value;
+    var sHours = document.getElementById(sHoursElem).value;
+    var sAreaCode = document.getElementById(sAreaCodeElem).value;
+    var sTel1 = document.getElementById(sTel1Elem).value;
+    var sTel2 = document.getElementById(sTel2Elem).value;
+    var sLat = document.getElementById(sLatElem).value;
+    var sLong = document.getElementById(sLongElem).value;
+    var sVerified = document.getElementById(sVerifiedElem).value;
+
+	
+	event.preventDefault();
+
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to update this store?');
+    // Check and make sure the user confirmed
+    if (confirmation === true) {
+
+        // If they did, do our delete
+        $.ajax({
+            type: 'DELETE',
+            url: '/services/stores/deletestore/' + rowId,
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            },
+        }).done(function( response ) {
+			document.getElementById("divSpinner").style.display = 'none';
+            // Check for a successful (blank) response
+            if (response.msg === '') {
+            	addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified);
+            }
+            else {
+                alert('Error: ' + response.msg);
+            }
+        });
+
+    }
+    else {
+
+        // If they said no to the confirm, do nothing
+        return false;
+
+    }   
+}
 
 function deleteStore(rowId) {
 
@@ -247,7 +347,8 @@ function deleteStore(rowId) {
             }
 
             // Update the table
-            populateTable();
+            var bId = document.getElementById("search.bId").value;
+            populateTable(bId);
 
         });
 
