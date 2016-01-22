@@ -90,6 +90,64 @@ router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
     	});
 });
 
+
+router.get('/backup', function(req, res) {
+    console.log('/backup');
+    var db = req.db;
+    db.collection('stores').find().toArray(function (err, items) {
+    	db.collection('stores_backup_2').remove({}, function(err, result) {
+        	if (err == null) {
+        		db.collection('stores_backup_2').insert(items, function(err, result){
+        			if (err === null) {
+        				console.log('backup is completed');
+        		}
+        		res.set({'Access-Control-Allow-Origin': '*'});
+        		res.send((err === null) ? { msg: '' } : { msg: err });
+    			})
+        	}
+    	});  
+    });		
+});
+    
+
+router.post('/replace', function(req, res) {
+    console.log('/replace');
+    var db = req.db;
+    
+    // Find CategoryId
+    var field = req.body.field;
+    var oldValue = req.body.oldValue;
+    var newValue = req.body.newValue;
+    
+    console.log('field:'+field);
+    console.log('oldValue:'+oldValue);
+    console.log('newValue:'+newValue);
+  	
+	db.collection('stores').find().toArray(function (err, stores) {
+		stores.forEach(function(store) {
+			if (store[field.toString()] === oldValue.toString()) {
+				console.log('original');
+				console.log(store);
+    			store[field.toString()] = newValue.toString();
+    			console.log('after');
+				console.log(store);
+    		}   	
+    	});
+		db.collection('stores').remove({}, function(err, result) {
+        	if (err == null) {
+        		db.collection('stores').insert(stores, function(err, result){
+        			if (err === null) {
+        				console.log('replace is completed');
+        		}
+        		res.set({'Access-Control-Allow-Origin': '*'});
+        		res.send((err === null) ? { msg: '' } : { msg: err });
+    			})
+        	}
+    	});
+	});
+});    
+       
+
 // http://localhost:5000/stores/storelist/3/32.637817/51.658522/10
 // http://localhost:5000/stores/storelist/all/32.637817/51.658522/10
 
