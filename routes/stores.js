@@ -33,6 +33,9 @@ router.get('/storelist/:id', function(req, res) {
 router.get('/storelist/city/:areacode', function(req, res) {
     var db = req.db;
     console.log(req.params.areacode);
+    
+    reportSession(db,req.params.areacode);	
+     	
     db.collection('stores').find({sAreaCode:req.params.areacode}).toArray(function (err, items) {
         res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
@@ -193,7 +196,47 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
 
 
 
+function reportSession(db,areacode) {
 
+    var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+	var yyyy = today.getFullYear();
+
+	if(dd<10) {dd='0'+dd} 
+	if(mm<10) {mm='0'+mm} 
+	today = mm+'/'+dd+'/'+yyyy;
+    
+    console.log(today);
+    console.log(db);
+    console.log(areacode);
+    db.collection('analytics_city_sessions').findOne({city:areacode,date:today},function (err,doc) {
+    
+    	console.log('doc'+doc);
+    	if (doc == null) {
+    		var record = {'date': today,'city': areacode,'sessions':1 }	
+        	console.log('record'+record);	
+    		db.collection('analytics_city_sessions').insert(record, function(err, result){
+        			if (err === null) {
+        				console.log('analytics updated');
+        			}
+        	});
+        }
+        else {
+        	var record = {'date': today,'city': areacode,'sessions':doc['sessions']+1}
+        	db.collection('analytics_city_sessions').remove({city:areacode,date:today}, function(err, doc) {
+        	if (err == null) {
+        		db.collection('analytics_city_sessions').insert(record, function(err, result){
+        			if (err === null) {
+        				console.log('analytics updated');
+        			}
+        		});
+        	}
+        	
+        });
+       }
+    });  			
+}
 
 
 function distance(lat1, lon1, lat2, lon2, unit) {
