@@ -12,6 +12,41 @@ var router = express.Router();
     });
 });
 
+router.post('/business/sendemail', function(req, res) {
+    console.log('test');
+    console.log('/business/sendemail');
+    var postmark = require("postmark");
+	
+	var to = req.body.to;
+	var email = req.body.email;
+    var subject = req.body.subject;
+    var emailBody = req.body.emailBody;
+	
+	// Retrieve Password
+	res.set({'Access-Control-Allow-Origin': '*'});	
+    
+    var client = new postmark.Client("0aba8682-68fb-4720-abbc-ae22d778b02b");
+    		
+    	client.sendEmail({
+    			"From": "contactus@aslbekhar.com",
+				"To": to,
+				"Subject": subject, 
+    			"TextBody": emailBody,
+		} , function(error, success) {
+    		if(error) {
+        			console.error("Unable to send via postmark: " + error.message);
+        			console.log("Unable to send via postmark: " + error.message);
+        			res.send(JSON.stringify({ "err": error.message}));
+        			return;
+    	}
+    	else {
+    		console.log("Password was sent!");
+			res.send(JSON.stringify({ "result": "success"}));
+            return;
+            }
+    	});  
+    });
+
 router.get('/business/forgetpassword/:email', function(req, res) {
     
     console.log('/business/forgetPassword');

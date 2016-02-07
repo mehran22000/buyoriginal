@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+	<div id="header">
+	<h1> Buy Original </h1>
+	<a href="/dashboard_brands.html">Brands</a>
+	<a href="/dashboard_stores.html">Stores</a>
+	<a href="/dashboard_categories.html">Categories</a>
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>
+	<a href="/dashboard_email.html">Email</a>		
+	</div>
+		
+	<div id="blankSection" >
+	<p></p>
+	<p></p>
+	<p></p>
+	</div>
+	
+	<div id="blackSection" > </div>
+	
+<p> To: &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp     <input type="text" name="to" id="to" size="35"></p>
+<p> Subject: <input type="text" name="subject" id="subject" size="100"></p>
+	
+<textarea name="myTextBox" cols="150" rows="25" id="emailBody">
+Enter your email here
+</textarea> </br>
+<input type="button" value="Send" onClick="sendEmail()" style="height:20px;width:200px;background-color:lightgreen"/>
+
+	
+</body>
+</html>
+
+
+<script>
+
+function sendEmail() {
+    event.preventDefault();
+
+    // Super basic validation - increase errorCount variable if any fields are blank
+    var errorCount = 0;
+  
+    // If it is, compile all user info into one object
+    var to = document.getElementById("to").value;
+    var subject = document.getElementById("subject").value;
+    var emailBody = document.getElementById("emailBody").value;
+    
+    if (to=='')
+   		alert ("To field can not be empty");
+   	else if (subject =='')
+   		alert ("Subject field can not be empty");
+   	else if (emailBody=='')
+   		alert ("Body field can not be empty");
+	else {
+    	var email = {
+        	'to': to,
+        	'subject': subject,
+        	'emailBody':emailBody
+    	}
+		// Use AJAX to post the object to our addstore service
+    	$.ajax({
+        	    type: 'POST',
+           	    data: email,
+                url: '/services/users/business/sendemail',
+                dataType: 'JSON',
+            	beforeSend: function (request)
+            	{
+              //  	document.getElementById("divSpinner").style.display = 'inline';
+                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            	},
+    	}).done(function( response ) {
+		
+			// document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.result === 'success') {
+    			document.getElementById("to").value = "";
+    			document.getElementById("subject").value="";
+    			document.getElementById("emailBody").value="";
+    			alert ("Email was sent successfully");
+  			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
+    		}
+    	})
+    }
+};
+</script>
