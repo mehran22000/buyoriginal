@@ -76,16 +76,21 @@ router.get('/storelist/discounts/city/:areacode', function(req, res) {
 router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
     var db = req.db;
     var items = [];
+    var maxResults = 100;
+    var counter = 0;
     db.collection('stores').find({dPrecentage:{$gte:0}}).toArray(function (err, stores) {
 			stores.forEach(function(store) {
-    			console.log("lat"+req.params.lat);
-    			console.log("lon"+req.params.lon);
-    			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
-    			console.log(dist);
-    			if (dist < req.params.km){
-    			    var distNum = dist.toFixed(2);
-    			    store.distance=distNum.toString();
-      			  	items.push(store);
+    			// console.log("lat"+req.params.lat);
+    			// console.log("lon"+req.params.lon);
+    			if (counter < maxResult) {
+    				var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    				if (dist < req.params.km){
+    			    	var distNum = dist.toFixed(2);
+    			    	store.distance=distNum.toString();
+      			  		items.push(store);
+      			  		counter = counter + 1;
+      			  	//	console.log(dist);
+      			  	}
     			}
     		});
     		res.set({'Access-Control-Allow-Origin': '*'});
@@ -159,16 +164,22 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     var items = [];
     var bId = req.params.bId;
 	console.log(bId);
-	    
+	var maxResults = 15;
+    var counter = 0;
+   
+    
     if (isNumeric(bId)){
         console.log("storeID available");
     	db.collection('stores').find({bId:req.params.bId}).toArray(function (err, stores) {
 			stores.forEach(function(store) {
-    			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
-    			if (dist < req.params.km){
-    			    var distNum = dist.toFixed(2);
-    			     store.distance=distNum.toString();
-    				items.push(store);
+				if (counter < maxResults) {
+    				var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    				if (dist < req.params.km){
+    					counter = counter + 1;
+    			    	var distNum = dist.toFixed(2);
+    			     	store.distance=distNum.toString();
+    					items.push(store);
+    				}
     			}
     		});
     		res.set({'Access-Control-Allow-Origin': '*'});
@@ -178,14 +189,19 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     else {
     	db.collection('stores').find().toArray(function (err, stores) {
 			stores.forEach(function(store) {
-    			console.log("lat"+req.params.lat);
-    			console.log("lon"+req.params.lon);
-    			var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
-    			console.log(dist);
-    			if (dist < req.params.km){
-    			    var distNum = dist.toFixed(2);
-    			    store.distance=distNum.toString();
-      			  	items.push(store);
+    			if (counter < maxResults) {
+    				// console.log("lat"+req.params.lat);
+    				// console.log("lon"+req.params.lon);
+    				// console.log("counter="+String(counter));
+    				var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    				if (dist < req.params.km){
+    					counter = counter + 1;
+    			    	var distNum = dist.toFixed(2);
+    			    	store.distance=distNum.toString();
+      			  		items.push(store);
+      			  	//	console.log(dist);
+    				
+      			  	}
     			}
     		});
     		res.set({'Access-Control-Allow-Origin': '*'});
