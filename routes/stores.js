@@ -164,7 +164,7 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     var items = [];
     var bId = req.params.bId;
 	console.log(bId);
-	var maxResults = 15;
+	var maxResults = 25;
     var counter = 0;
    
     
