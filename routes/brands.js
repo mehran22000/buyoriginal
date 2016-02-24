@@ -49,6 +49,19 @@ router.post('/addbrand', function(req, res) {
     });
 });
 
+
+router.post('/v1/verification', function(req, res) {
+    var db = req.db;
+    console.log(req.params.bId);
+    db.collection('brand_verification').find({bId:req.params.bId}).toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
+        res.json(items);
+    }); 
+});
+
+
+
+
 /*
  * DELETE to deleteuser.
  */
