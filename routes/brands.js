@@ -50,10 +50,12 @@ router.post('/addbrand', function(req, res) {
 });
 
 
-router.post('/v1/verification', function(req, res) {
+router.get('/v1/verification/:bId', function(req, res) {
+    console.log('/v1/verification/ called');
     var db = req.db;
-    console.log(req.params.bId);
-    db.collection('brand_verification').find({bId:req.params.bId}).toArray(function (err, items) {
+    var bId=String(req.params.bId)
+    console.log(bId);
+    db.collection('brand_verification').find({bId:bId}).toArray(function (err, items) {
         res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     }); 
