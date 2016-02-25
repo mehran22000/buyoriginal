@@ -57,6 +57,7 @@ router.get('/v1/verification/:bId', function(req, res) {
     console.log(bId);
     db.collection('brand_verification').find({bId:bId}).toArray(function (err, items) {
         res.set({'Access-Control-Allow-Origin': '*'});
+        console.log(items);
         res.json(items);
     }); 
 });
