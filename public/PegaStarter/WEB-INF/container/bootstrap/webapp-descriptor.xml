@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<webapp-descriptor xmlns="http://www.antennasoftware.com/application-hosting/web-app-descriptor/2.0">
-  <id>com.antennasoftware.hybridclient.bootstrap</id>
-  <version>1.0.0</version>
-  <name>AMP Hybrid Client</name>
-  <description>AMP Hybrid Client enables apps of every type to benefit from enterprise-grade security, high-performance reliable messaging, and enterprise integration features of Pega AMP. Patented technology provides management capabilities critical for the mobile enterprise.</description>
-</webapp-descriptor>

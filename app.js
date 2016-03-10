@@ -4,9 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-// Database
 var mongo = require('mongoskin');
 var db = mongo.db("mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797", {native_parser:true});
+var multer  =   require('multer');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -16,6 +16,19 @@ var categories = require('./routes/categories');
 var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
 
 var app = express();
+
+// File Upload
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './public/images/verifications');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.originalname);
+  }
+});
+var upload = multer({ storage : storage}).single('userPhoto');
+
+
 
 app.all('/*', function(req, res, next) {
   console.log("Authentication Check");
@@ -70,6 +83,22 @@ app.all('/*', function(req, res, next) {
     }
 });
 
+
+app.post('/api/photo',function(req,res){
+	console.log('/api/photo');
+    upload(req,res,function(err) {
+        if(err) {
+        	console.log(err);
+            return res.end("Error uploading file.");
+        }
+        else {
+        	console.log("Download completed");
+        }
+    });
+});
+
+
+
 /*
 app.use(function(req, res, next) {
 	var auth = require('basic-auth'); 
@@ -122,7 +151,6 @@ app.use('/services/users', users);
 app.use('/services/brands',brands);
 app.use('/services/stores',stores);
 app.use('/services/categories',categories);
-
 
 
 /// catch 404 and forwarding to error handler
