@@ -107,7 +107,7 @@ router.post('/v1/addverification', function(req, res) {
       	largeImage = files['largeImage'].name; 
       }
                
-      var record = {bId:fields.bId, shortDesc:fields.shortDesc, longDesc:longDesc, smallImage:smallImage, largeImage:largeImage};
+      var record = {bId:fields.bId, title:fields.title, shortDesc:fields.shortDesc, longDesc:longDesc, smallImage:smallImage, largeImage:largeImage};
       console.log('Verification Record'+record);
       
       db.collection('brand_verification').insert(record, function(err, result){
