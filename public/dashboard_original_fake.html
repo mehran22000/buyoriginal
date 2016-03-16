@@ -112,7 +112,7 @@ $("#uploadForm").bind('ajax:complete', function() {
 function populateTable() {
 
     // Empty content string
-    var tableContent = '<tr><td>BRAND ID</td><td>Short Description</td><td>Small Image</td><td>Long Description</td><td>Large Image</td></tr>';
+    var tableContent = '<tr><td>BRAND ID</td><td>Title</td><td>Short Description</td><td>Small Image</td><td>Long Description</td><td>Large Image</td></tr>';
     // jQuery AJAX call for JSON
     
     $.ajax({
@@ -132,6 +132,7 @@ function populateTable() {
     	    $.each(data, function(){
         	    tableContent += '<tr>';
             	tableContent += '<td>' + this.bId + '</td>';
+            	tableContent += '<td>' + this.title + '</td>';
             	tableContent += '<td>' + this.shortDesc + '</td>';
             	tableContent += '<td>' + '<a href=/images/verifications/'+this.smallImage +'> link </a>' + '</td>';
             	tableContent += '<td>' + this.longDesc + '</td>';
