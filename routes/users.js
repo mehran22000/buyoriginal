@@ -401,4 +401,45 @@ router.post('/business/adduser', function(req, res) {
     }
 });
 
+
+
+router.post('/v1/interests', function(req, res) {
+    console.log('post: /users/interests');
+	var error=null;
+    var db = req.db;
+	res.set({'Access-Control-Allow-Origin': '*'});
+	
+	var recArrayStr = req.body.interests;
+	var recArray = eval('(' + recArrayStr + ')');
+	var counter = 0;
+	var recNo = recArray.length;
+	 
+	recArray.forEach(function(rec) {
+    	db.collection('users_interests').insert(rec, function(err, result) {
+    		if (err === null) {
+        			console.log('Rec '+String(counter) + ' added.' );
+        		}
+        		else {
+        			console.log('Error: rec'+String(counter) + ' ' + err.name + ': ' + err.message);
+        			error = err;
+        		}	
+    		
+    		counter = counter + 1;
+    		if (counter === recNo){
+    			if (error != null){
+    				var array = [{ "result": "failed","err":error.message}];
+    				res.json(array);
+    			}
+    			else {
+    				var array = [{ "result": "success"}];
+        			res.json(array); 
+        		}
+    		}
+    	}
+	  )  
+	});
+});
+
+
+
 module.exports = router;
