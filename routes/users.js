@@ -411,8 +411,8 @@ router.post('/v1/interests', function(req, res) {
 	
 	var recArrayStr = req.body.interests;
 	var recArray = eval('(' + recArrayStr + ')');
-	var counter = 0;
 	var recNo = recArray.length;
+	var counter = 0;
 	 
 	recArray.forEach(function(rec) {
     	db.collection('users_interests').insert(rec, function(err, result) {
