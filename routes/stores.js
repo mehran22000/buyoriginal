@@ -82,7 +82,7 @@ router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
 			stores.forEach(function(store) {
     			// console.log("lat"+req.params.lat);
     			// console.log("lon"+req.params.lon);
-    			if (counter < maxResults) {
+    			// if (counter < maxResults) {
     				var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
     				if (dist < req.params.km){
     			    	var distNum = dist.toFixed(2);
@@ -91,7 +91,7 @@ router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
       			  		counter = counter + 1;
       			  	//	console.log(dist);
       			  	}
-    			}
+    			//}
     		});
     		res.set({'Access-Control-Allow-Origin': '*'});
     		res.json(items);
