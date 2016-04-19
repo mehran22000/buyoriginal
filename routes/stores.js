@@ -91,7 +91,7 @@ router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
       			  		counter = counter + 1;
       			  	//	console.log(dist);
       			  	}
-    			//}
+    			// }
     		});
     		res.set({'Access-Control-Allow-Origin': '*'});
     		res.json(items);
