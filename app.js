@@ -5,7 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongo = require('mongoskin');
-var db = mongo.db("mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797", {native_parser:true});
+// var db = mongo.db("mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797", {native_parser:true});
+var db = mongo.db("mongodb://localhost:27017/local", {native_parser:true});
 var multer  =   require('multer');
 
 var routes = require('./routes/index');
@@ -14,6 +15,8 @@ var brands = require('./routes/brands');
 var stores = require('./routes/stores');
 var categories = require('./routes/categories');
 var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
+var pushComm = require('./routes/apnsComm.js');
+
 
 var app = express();
 

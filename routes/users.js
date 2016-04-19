@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var apnsComm = require('./apnsComm');
 
 /*
  * Business Users
@@ -407,6 +408,7 @@ router.post('/v1/interests', function(req, res) {
     console.log('post: /users/interests');
 	var error=null;
     var db = req.db;
+    console.log(db);
 	res.set({'Access-Control-Allow-Origin': '*'});
 	
 	var recArrayStr = req.body.interests;
@@ -440,6 +442,63 @@ router.post('/v1/interests', function(req, res) {
 	});
 });
 
+
+
+router.get('/testNotification', function(req, res)
+{
+	var pushTokens = ['<9c4adf5d ac790fbb d5929bd6 016b825e 3cc4c3e7 82debdeb 567c640c 360169d2>'];
+	var messageDetails = {
+		alert: {
+			title: 'AslBekhar',
+			body: 'به اصل بخر خوش آمدید'
+		},
+		payload: {'id': '1522'},
+		badge: 0,
+		mode: '',
+		category: ''
+	};
+	var options = {'sound': '', 'content-available' : 0};
+	console.log("Sending alert with messageDetails " + JSON.stringify(messageDetails));
+    apnsComm.pushNotification(pushTokens, messageDetails, options);
+    res.send('Notification sent at ' + new Date() + '!');
+});
+
+/*
+router.get('/business/testPushNotification', function(req, res) {
+    console.log('/business/testPushNotification');
+	res.set({'Access-Control-Allow-Origin': '*'});
+	var db = req.db;
+	var error=null;
+    
+    var pushTokens;
+    var messageDetails = {
+		badge: 0
+	};
+	
+	pushTokens = ['<7cc86555 74e42db0 74fde08f 6820844e 086ca3b7 96ee33cc 33b95156 81ef87cd>'];
+
+	messageDetails.alert = {
+		title: 'AslBekhar',
+		body: 'Hello Push Notification'
+	};
+	
+	messageDetails.payload = 'Test Payload';
+	messageDetails.mode = 'buyer';
+	messageDetails.category = '';
+	console.log('Sending active push notification to phone with messageDetails ' + JSON.stringify(messageDetails));
+	apnsComm.pushNotification(pushTokens, messageDetails, apnsComm.pushOptions.active);
+	
+	if (error != null){
+    	var array = [{ "result": "failed"}];
+    	res.json(array);
+    }
+    else {
+    	var array = [{ "result": "success"}];
+        res.json(array); 
+    }
+    
+});
+*/
 
 
 module.exports = router;
