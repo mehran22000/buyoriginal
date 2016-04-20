@@ -444,6 +444,47 @@ router.post('/v1/interests', function(req, res) {
 
 
 
+router.post('/v1/register', function(req, res) {
+    console.log('post: /users/register');
+	var error=null;
+    var db = req.db;
+    var deviceToken = req.body.device;
+    var city = req.body.city;
+    res.set({'Access-Control-Allow-Origin': '*'});
+	 
+	db.collection('user_device').remove({device:deviceToken}, function(err, result) {
+        	if (err == null) {
+        		console.log('old device info deleted');
+        	
+        		var newUser = {
+        			'device': deviceToken,
+        			'city':city	
+        		}
+    			
+    			db.collection('user_device').insert(newUser, function(err, result){
+        		if (err === null) {
+        			console.log('new device info added');
+        		}
+        		else {
+        			error = err;
+        		}	
+        	});
+    	}
+    	else {
+    		error = err;
+    	}});
+    	
+    	if (error != null){
+    		var array = [{ "result": "failed"}];
+    		res.json(array);
+    	}
+    	else {
+    		var array = [{ "result": "success"}];
+        	res.json(array); 
+        }
+    }); 
+	 
+
 router.get('/testNotification', function(req, res)
 {
 	var pushTokens = ['<9c4adf5d ac790fbb d5929bd6 016b825e 3cc4c3e7 82debdeb 567c640c 360169d2>'];
