@@ -18,10 +18,10 @@ var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
 var pushComm = require('./routes/apnsComm.js');
 
 
-var users_v1 = require('./routes/users');
-var brands_v1 = require('./routes/brands');
-var stores_v1 = require('./routes/stores');
-var categories_v1 = require('./routes/categories');
+var users_v1 = require('./routes/v1/users');
+var brands_v1 = require('./routes/v1/brands');
+var stores_v1 = require('./routes/v1/stores');
+var categories_v1 = require('./routes/v1/categories');
 
 
 var app = express();
