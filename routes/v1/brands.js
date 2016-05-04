@@ -58,7 +58,7 @@ router.post('/addbrand', function(req, res) {
 * Verification
 */
 
-router.get('/v1/verifications', function(req, res) {
+router.get('/verifications', function(req, res) {
     console.log('/v1/verifications called');
     var db = req.db;
     db.collection('brand_verification').find().toArray(function (err, items) {
@@ -70,7 +70,7 @@ router.get('/v1/verifications', function(req, res) {
 
 
 
-router.get('/v1/verification/:bId', function(req, res) {
+router.get('/verification/:bId', function(req, res) {
     console.log('/v1/verification/ called');
     var db = req.db;
     var bId=String(req.params.bId)
@@ -82,7 +82,7 @@ router.get('/v1/verification/:bId', function(req, res) {
     }); 
 });
 
-router.post('/v1/addverification', function(req, res) {
+router.post('/addverification', function(req, res) {
     console.log('/v1/addverification/ called');
     var db = req.db;
     res.set({'Access-Control-Allow-Origin': '*'});
@@ -155,7 +155,7 @@ router.delete('/deletebrand/:id', function(req, res) {
     });
 });
 
-router.delete('/v1/deleteVerification/:id', function(req, res) {
+router.delete('/deleteVerification/:id', function(req, res) {
     console.log('deleteVerification');
     var db = req.db;
     res.set({'Access-Control-Allow-Origin': '*'});
