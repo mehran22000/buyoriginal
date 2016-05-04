@@ -18,6 +18,12 @@ var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
 var pushComm = require('./routes/apnsComm.js');
 
 
+var users_v1 = require('./routes/users');
+var brands_v1 = require('./routes/brands');
+var stores_v1 = require('./routes/stores');
+var categories_v1 = require('./routes/categories');
+
+
 var app = express();
 
 // File Upload
@@ -154,6 +160,14 @@ app.use('/services/users', users);
 app.use('/services/brands',brands);
 app.use('/services/stores',stores);
 app.use('/services/categories',categories);
+
+
+app.use('/services/v1/users', users_v1);
+app.use('/services/v1/brands',brands_v1);
+app.use('/services/v1/stores',stores_v1);
+app.use('/services/v1/categories',categories_v1);
+
+
 
 
 /// catch 404 and forwarding to error handler
