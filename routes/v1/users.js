@@ -404,7 +404,7 @@ router.post('/business/adduser', function(req, res) {
 
 
 
-router.post('/v1/interests', function(req, res) {
+router.post('/interests', function(req, res) {
     console.log('post: /users/interests');
 	var error=null;
     var db = req.db;
@@ -444,7 +444,7 @@ router.post('/v1/interests', function(req, res) {
 
 
 
-router.post('/v1/register', function(req, res) {
+router.post('/register', function(req, res) {
     console.log('post: /users/register');
 	var error=null;
     var db = req.db;
@@ -485,8 +485,8 @@ router.post('/v1/register', function(req, res) {
     }); 
 	 
 	 
-router.post('/v1/register/android', function(req, res) {
-    console.log('post: /users/register');
+router.post('/register/android', function(req, res) {
+    console.log('post: /users/register/android');
 	var error=null;
     var db = req.db;
     var deviceToken = req.body.device;
