@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongo = require('mongoskin');
 var db = mongo.db("mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797", {native_parser:true});
+var db_dev = mongo.db("mongodb://mehran22000:mehrdad781@ds015962.mlab.com:15962/heroku_0v6b8bfg", {native_parser:true});
 // var db = mongo.db("mongodb://localhost:27017/local", {native_parser:true});
 var multer  =   require('multer');
 
@@ -16,12 +17,19 @@ var stores = require('./routes/stores');
 var categories = require('./routes/categories');
 var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
 var pushComm = require('./routes/apnsComm.js');
+var utilities = require('./routes/utilities.js');
 
 
 var users_v1 = require('./routes/v1/users');
 var brands_v1 = require('./routes/v1/brands');
 var stores_v1 = require('./routes/v1/stores');
 var categories_v1 = require('./routes/v1/categories');
+
+var dev_users_v1 = require('./routes/v1/dev/users');
+var dev_brands_v1 = require('./routes/v1/dev/brands');
+var dev_stores_v1 = require('./routes/v1/dev/stores');
+var dev_categories_v1 = require('./routes/v1/dev/categories');
+
 
 
 var app = express();
@@ -145,6 +153,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Make our db accessible to our router
 app.use(function(req,res,next){
     req.db = db;
+    req.db_dev = db_dev;
     next();
 });
 
@@ -160,12 +169,17 @@ app.use('/services/users', users);
 app.use('/services/brands',brands);
 app.use('/services/stores',stores);
 app.use('/services/categories',categories);
-
+app.use('/services/utilities',utilities);
 
 app.use('/services/v1/users', users_v1);
 app.use('/services/v1/brands',brands_v1);
 app.use('/services/v1/stores',stores_v1);
 app.use('/services/v1/categories',categories_v1);
+
+app.use('/services/v1/dev/users', dev_users_v1);
+app.use('/services/v1/dev/brands', dev_brands_v1);
+app.use('/services/v1/dev/stores', dev_stores_v1);
+app.use('/services/v1/dev/categories', dev_categories_v1);
 
 
 
