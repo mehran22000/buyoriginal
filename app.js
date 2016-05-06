@@ -16,6 +16,7 @@ var brands = require('./routes/brands');
 var stores = require('./routes/stores');
 var categories = require('./routes/categories');
 var serverToken = 'YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==';
+var devServerToken = 'emFuYmlsZGFyYW5naGVybWV6DQo=';
 var pushComm = require('./routes/apnsComm.js');
 var utilities = require('./routes/utilities.js');
 
@@ -63,6 +64,7 @@ app.all('/*', function(req, res, next) {
   if (req.method === 'OPTIONS'){
   	next();
   } 
+
   else if (req.originalUrl.indexOf('/services/') > -1) {
    		
    		var token = req.headers['token'];
@@ -70,17 +72,21 @@ app.all('/*', function(req, res, next) {
    		var url = req.originalUrl;
    		console.log(url); 
    		
-   		if (token !== serverToken) {
-    		console.log('Unauthorized after header token validation');
+   		if ((req.originalUrl.indexOf('/dev/') > -1) && (token == devServerToken)){
+   			console.log('dev authorized');
+    		next();
+    	}
+   		else if (token !== serverToken) {
+   			console.log('prod authorized');
+    		next();
+   		}
+   		else {
+   			console.log('Unauthorized after header token validation');
     		console.log(headers(req.headers));
     		res.statusCode = 401;
         	res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
         	res.end('Unauthorized');
-    	}
-    	else {
-    		console.log('authorized');
-    		next();
-    	}
+   		}
   }
   else if(req.originalUrl === '/dashboard_brands.html' || req.originalUrl === '/dashboard_categories.html' || req.originalUrl === '/dashboard_discounts.html' || req.originalUrl === '/dashboard_stores.html')
 	{
