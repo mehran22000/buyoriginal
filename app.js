@@ -72,11 +72,11 @@ app.all('/*', function(req, res, next) {
    		var url = req.originalUrl;
    		console.log(url); 
    		
-   		if ((req.originalUrl.indexOf('/dev/') > -1) && (token == devServerToken)){
+   		if ((req.originalUrl.indexOf('/dev/') > -1) && (token === devServerToken)){
    			console.log('dev authorized');
     		next();
     	}
-   		else if (token !== serverToken) {
+   		else if (token === serverToken) {
    			console.log('prod authorized');
     		next();
    		}
