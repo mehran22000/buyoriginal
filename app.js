@@ -158,7 +158,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Make our db accessible to our router
 app.use(function(req,res,next){
-    req.db = db;
+
+	if (req.originalUrl.indexOf('/dev/')){
+		req.db= db_dev;
+	}
+	else{
+		req.db = db;
+	}
     req.db_dev = db_dev;
     next();
 });
