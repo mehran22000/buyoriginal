@@ -443,6 +443,47 @@ router.post('/interests', function(req, res) {
 });
 
 
+router.post('/analytics', function(req, res) {
+    console.log('post: /users/analytics');
+	var error=null;
+    var db = req.db;
+    console.log(db);
+	res.set({'Access-Control-Allow-Origin': '*'});
+	
+	var recArrayStr = req.body.analytics;
+	var recArray = eval('(' + recArrayStr + ')');
+	var recNo = recArray.length;
+	var counter = 0;
+	 
+	recArray.forEach(function(rec) {
+    	db.collection('users_analytics').insert(rec, function(err, result) {
+    		if (err === null) {
+        			console.log('Rec '+String(counter) + ' added.' );
+        		}
+        		else {
+        			console.log('Error: rec'+String(counter) + ' ' + err.name + ': ' + err.message);
+        			error = err;
+        		}	
+    		
+    		counter = counter + 1;
+    		if (counter === recNo){
+    			if (error != null){
+    				var array = [{ "result": "failed","err":error.message}];
+    				res.json(array);
+    			}
+    			else {
+    				var array = [{ "result": "success"}];
+        			res.json(array); 
+        		}
+    		}
+    	}
+	  )  
+	});
+});
+
+
+
+
 
 router.post('/register', function(req, res) {
     console.log('post: /users/register');
