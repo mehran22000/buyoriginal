@@ -443,6 +443,43 @@ router.post('/interests', function(req, res) {
 });
 
 
+router.post('/business/ad/displays', function(req, res) {
+    console.log('post: /business/ad/displays');
+	var error=null;
+    var db = req.db;
+    console.log(db);
+	res.set({'Access-Control-Allow-Origin': '*'});
+	
+	var date = (new Date()).toISOString()
+	
+	var rec = {
+        'name': req.body.name,
+        'screen':req.body.screen,
+        'type':req.body.type,
+        'device':req.body.device,
+        'lat':req.body.lat,
+        'long':req.body.long,
+        'date':date	
+    }
+	
+	console.log(rec);
+	
+	db.collection('ad_displays').insert(rec, function(err, result) {
+    	if (err === null) {
+    			console.log(req.body + ' added.' );
+    			var array = [{ "result": "success"}];
+        		res.json(array);
+    		}
+       		else {
+        		console.log('Error: '+ err.name + ': ' + err.message);
+    			error = err;
+    			var array = [{ "result": "failed","err":error.message}];
+    			res.json(array);
+        }	  
+	});
+});
+
+
 
 router.post('/register', function(req, res) {
     console.log('post: /users/register');
