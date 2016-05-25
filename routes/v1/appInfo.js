@@ -8,9 +8,9 @@ var apnsComm = require('./apnsComm');
  router.get('/version/:device', function(req, res) {
     var db = req.db;
     var device = req.params.device;
-    db.collection('app_version').find({device:device.toString()}).toArray(function (err, items) {
+    db.collection('app_version').findOne({device:device.toString()},function (err, doc) {
         res.set({'Access-Control-Allow-Origin': '*'});
-        res.json(items);
+        res.json(doc);
     });
 });
 
