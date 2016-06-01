@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var apnsComm = require('./apnsComm');
+var gcm = require('node-gcm');
 
 /*
  * Business Users
