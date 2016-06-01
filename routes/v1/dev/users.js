@@ -565,7 +565,7 @@ router.post('/register/android', function(req, res) {
 	 
 	 
 
-router.get('/testNotification', function(req, res)
+router.get('/testNotification/ios', function(req, res)
 {
 	var pushTokens = ['<9c4adf5d ac790fbb d5929bd6 016b825e 3cc4c3e7 82debdeb 567c640c 360169d2>'];
 	var messageDetails = {
@@ -583,6 +583,24 @@ router.get('/testNotification', function(req, res)
     apnsComm.pushNotification(pushTokens, messageDetails, options);
     res.send('Notification sent at ' + new Date() + '!');
 });
+
+router.get('/testNotification/android/:token', function(req, res)
+{
+	var token = req.params.token;
+	var message = new gcm.Message({
+    	data: { key1: 'Hello asl bekhar' }
+	});
+ 
+	// Set up the sender with you API key, prepare your recipients' registration tokens. 
+	var sender = new gcm.Sender('472796603076');
+	var regTokens = [token];
+ 
+	sender.send(message, { registrationTokens: regTokens }, function (err, response) {
+		if(err) console.error(err);
+		else 	console.log(response);
+	});
+});
+
 
 /*
 router.get('/business/testPushNotification', function(req, res) {
