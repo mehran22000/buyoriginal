@@ -597,8 +597,14 @@ router.get('/testNotification/android/:token', function(req, res)
 	var regTokens = [token];
  
 	sender.send(message, { registrationTokens: regTokens }, function (err, response) {
-		if(err) console.error(err);
-		else 	console.log(response);
+		if (err) {
+			console.error(err);
+			res.send({'err':err});
+		}
+		else {
+		 	console.log(response);
+		 	res.send({'msg':'success'});
+		 }
 	});
 });
 
