@@ -60,9 +60,11 @@ router.post('/add/:env?', function(req, res) {
 	else {
 		if (pwd !== masterPassword) {
 			res.send({ msg: 'Invalid Password' });
+			return;
 		}
 	}
     db.collection(col).insert(req.body, function(err, result){
+        console.log('brand ' + req.body.bName + ' promoted');
         res.send(
             (err === null) ? { msg: '' } : { msg: err }
         );
@@ -174,10 +176,13 @@ router.delete('/deletebrand/:id/:env?/:pwd?', function(req, res) {
 		console.log(pwd);
 		if (pwd !== masterPassword) {
 			res.send({ msg: 'Invalid Password' });
+			return;
 		}
 	}
-    var userToDelete = req.params.id;
-    db.collection(col).removeById(userToDelete, function(err, result) {
+    var brandToDelete = req.params.id;
+    db.collection(col).removeById(brandToDelete, function(err, result) {
+        console.log('brand ' + brandToDelete + ' deleted from ' + env);
+        
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });
 });
