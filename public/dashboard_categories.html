@@ -32,6 +32,18 @@
     <p></p>
 	</div>
 	
+	<hr>	
+	Environment:
+	<select onchange="envChanged(this.value)" id="envSelector">
+  		<option value="sandbox">sandbox</option>
+  		<option value="prod">production</option>
+ 	</select>
+ 	<p></p>
+ 	Master Password: 
+ 	<input type="password" name="masterPassword" id="masterPassword">
+ 	<p></p>
+	
+	
 	<div id="divSpinner"><img src="images/spinner.gif"/></div>
 	
 	<div id="boList">
@@ -40,27 +52,36 @@
 		
 
 <script>
+var baseUrl = '/services/v1/';
+var token = "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==";
+
 $( document ).ready(function() {
     console.log( "ready!" );
     populateTable();
 });
 
+function envChanged(env) {
+	populateTable();
+}
         
 function populateTable() {
 
-    // Empty content string
+    var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl + 'categories/categorylist';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'categories/categorylist/sandbox';
+	}
+	
     var tableContent = '<tr><td>CATEGORY ID</td><td>CATEGORY NAME</td><td></td></tr>';
-    // jQuery AJAX call for JSON
-    
     
     $.ajax({
     	    type: 'GET',
-        	url: '/services/categories/categorylist',
+        	url: routeUrl,
         	dataType: 'JSON',
         	beforeSend: function (request)
             {
                 document.getElementById("divSpinner").style.display = 'inline';
-                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+                request.setRequestHeader("token", token);
             },
             success: function(data) { 
  			
@@ -70,7 +91,12 @@ function populateTable() {
         	    tableContent += '<tr>';
             	tableContent += '<td>' + this.cId + '</td>';
             	tableContent += '<td>' + this.cName + '</td>';
-            	tableContent += '<td> <a href="#" onclick=deleteCategory("'+this._id+'");>delete</a></td>';
+            	tableContent += '<td> <a href="#" onclick=deleteCategory("'+this._id+'",true);>delete</a></td>';
+            	
+            	if (env === "sandbox") {
+					tableContent += '<td> <a href="#" onclick=promoteCat("'+this._id+'","'+this.cId+'","'+this.cName +'");>promote</a></td>';
+				}
+            	
             	tableContent += '</tr>';         
         	});
         	document.getElementById("myTable").innerHTML= tableContent;
@@ -78,6 +104,41 @@ function populateTable() {
         	}
     	});
 };
+
+
+function promoteCat(rowId,cId,cName) {
+    event.preventDefault();
+    var masterPassword = document.getElementById("masterPassword").value;
+    var newCat = {
+        'cId': cId,
+        'cName': cName,
+        'masterPassword':masterPassword
+    }
+  	$.ajax({
+        	type: 'POST',
+           	data: newCat,
+            url: baseUrl + 'categories/add',
+            dataType: 'JSON',
+            beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", token);
+            },
+    	}).done(function( response ) {
+		
+			document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.msg === '') {
+        		deleteCategory(rowId,false);
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
+    		}
+    	})
+	};
+
+
          
 function addCategory() {
     event.preventDefault();
@@ -102,12 +163,12 @@ function addCategory() {
     	$.ajax({
         	    type: 'POST',
             	data: newCategory,
-            	url: '/services/categories/addCategory',
+            	url: baseUrl + 'categories/add/sandbox',
             	dataType: 'JSON',
             	beforeSend: function (request)
             	{
                     document.getElementById("divSpinner").style.display = 'inline';
-                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+                	request.setRequestHeader("token", token);
             	},
     	}).done(function( response ) {
 
@@ -127,25 +188,27 @@ function addCategory() {
     }
 };
 
-function deleteCategory(rowId) {
+function deleteCategory(rowId,prompt) {
 
     event.preventDefault();
-
+    var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
     // Pop up a confirmation dialog
-    var confirmation = confirm('Are you sure you want to delete this category?');
+    if (prompt === true) {
+    	var confirmation = confirm('Are you sure you want to delete this category?');
+		if (confirmation === false) {
+			return false;
+		}
+	}
 
-    // Check and make sure the user confirmed
-    if (confirmation === true) {
-
-        // If they did, do our delete
-        $.ajax({
-            type: 'DELETE',
-            url: '/services/categories/deletecategory/' + rowId,
-            beforeSend: function (request)
-            {
-                document.getElementById("divSpinner").style.display = 'inline';
-                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
-            },
+    $.ajax({
+        type: 'DELETE',
+        url: baseUrl + 'categories/delete/' + rowId +'/'+env+'/'+ pwd,
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
         }).done(function( response ) {
 
     		document.getElementById("divSpinner").style.display = 'none';
@@ -155,19 +218,9 @@ function deleteCategory(rowId) {
             else {
                 alert('Error: ' + response.msg);
             }
+		  populateTable();
 
-            // Update the table
-            populateTable();
-
-        });
-
-    }
-    else {
-
-        // If they said no to the confirm, do nothing
-        return false;
-
-    }
+    	});
 
 };
  

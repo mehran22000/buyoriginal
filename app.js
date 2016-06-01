@@ -30,7 +30,7 @@ var appInfo_v1 = require('./routes/v1/appInfo');
 var dev_users_v1 = require('./routes/v1/dev/users');
 var dev_brands_v1 = require('./routes/v1/dev/brands');
 var dev_stores_v1 = require('./routes/v1/dev/stores');
-var dev_categories_v1 = require('./routes/v1/categories');
+var dev_categories_v1 = require('./routes/v1/dev/categories');
 var dev_appInfo_v1 = require('./routes/v1/dev/appInfo');
 
 
