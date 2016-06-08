@@ -24,7 +24,7 @@
 	<div id="blackSection" >
 	
 	
-	<form id="uploadForm" enctype="multipart/form-data"  action="/brands/v1/addverification"  method="post">
+	<form id="uploadForm" enctype="multipart/form-data" method="post">
 	
 	<p>
 	Brand Id: <input type="text" name="bId" value="" id="bId" placeholder="(Unique Namber)">
@@ -61,7 +61,19 @@
 	
 	
 	</form>
-
+	
+	<hr>	
+	Environment:
+	<select onchange="envChanged(this.value)" id="envSelector">
+  		<option value="sandbox">sandbox</option>
+  		<option value="prod">production</option>
+ 	</select>
+ 	<p></p>
+ 	Master Password: 
+ 	<input type="password" name="masterPassword" id="masterPassword">
+ 	<p></p>
+	
+	
 	<p></p>
 	<p></p>
 	<p></p>
@@ -79,6 +91,23 @@
 		
 
 <script>
+
+var baseUrl = '/services/v1/';
+var insecureBaseUrl = '/v1/insecure/';
+var token = "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==";
+
+document.getElementById("uploadForm").setAttribute("action",insecureBaseUrl+"brands/verification/sandbox")
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+  
+function envChanged(env) {
+	populateTable();
+}
+
+
 $( document ).ready(function() {
     console.log( "ready!" );
     populateTable();
@@ -111,25 +140,31 @@ $("#uploadForm").bind('ajax:complete', function() {
         
 function populateTable() {
 
+	var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl + 'brands/verifications';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'brands/verifications/sandbox';
+	}
+
     // Empty content string
     var tableContent = '<tr><td>BRAND ID</td><td>Title</td><td>Short Description</td><td>Small Image</td><td>Long Description</td><td>Large Image</td></tr>';
     // jQuery AJAX call for JSON
     
     $.ajax({
     	    type: 'GET',
-        	url: '/services/brands/v1/verifications',
+        	url: routeUrl,
         	dataType: 'JSON',
         	beforeSend: function (request)
             {
                 document.getElementById("divSpinner").style.display = 'inline';
-                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+                request.setRequestHeader("token", token);
             },
             success: function(data) {
             
     			document.getElementById("divSpinner").style.display = 'none';
     		//	$('loader').hide();
         	// For each item in our JSON, add a table row and cells to the content string
-    	    $.each(data, function(){
+    	    $.each(data, function(i,item){
         	    tableContent += '<tr>';
             	tableContent += '<td>' + this.bId + '</td>';
             	tableContent += '<td>' + this.title + '</td>';
@@ -137,7 +172,12 @@ function populateTable() {
             	tableContent += '<td>' + '<a href=/images/verifications/'+this.smallImage +'> link </a>' + '</td>';
             	tableContent += '<td>' + this.longDesc + '</td>';
             	tableContent += '<td>' + '<a href=/images/verifications/'+this.largeImage +'> link </a>' + '</td>';
-            	tableContent += '<td> <a href="#" onclick=deleteVerification("'+this._id+'");>delete</a></td>';
+            	tableContent += '<td> <a href="#" onclick=deleteVerification(true,"'+this._id+'");>delete</a></td>';
+            	
+            	if (env === "sandbox") {
+					tableContent += '<td> <a href="#" onclick=promoteVerification("'+this._id+'","'+ this.bId+'","'+encodeURIComponent(this.title)+'","'+ encodeURIComponent(this.shortDesc) +'","'+ encodeURIComponent(this.smallImage) + '","' + encodeURIComponent(this.longDesc) +'","'+encodeURIComponent(this.largeImage)+'");>promote</a></td>';
+				}
+            	
             	tableContent += '</tr>';         
         	});
         	document.getElementById("myTable").innerHTML= tableContent;
@@ -146,103 +186,66 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table;
     });
 };
-  
-function addVerification() {
+
+function promoteVerification(recId, bId,title, shortDesc,smallImage,longDesc,largeImage)  {
     event.preventDefault();
-
-    // Super basic validation - increase errorCount variable if any fields are blank
-    var errorCount = 0;
-  
-
-    // If it is, compile all user info into one object
-    var bId = document.getElementById("bId").value;
-    var shortDesc = document.getElementById("shortDesc").value;
-    var smallImagePath = document.getElementById("smallImage").value;
-    var smallImage = document.getElementById("smallImage");
-    var longDesc = document.getElementById("longDesc").value;
-    var largeImagePath = document.getElementById("largeImage").value;
-    var largeImage = document.getElementById("largeImage");
-    
-    var smallImageName = getFileName(smallImagePath);
-    var largeImageName = getFileName(largeImagePath);
-     
-    if (!isNumeric(bId))
-   		alert ("Brand Id must be numeric");
-   	else if (shortDesc.length == 0)
-   		alert ("ShortDesc can not be empty");
-   	else {
-    	var newVerification = {
-        	'bId': bId,
-        	'shortDesc': shortDesc,
-        	'smallImage':smallImage,
-        	'smallImagePath':smallImageName,
-        	'longDesc':longDesc,
-        	'largeImage':largeImage,
-        	'largeImagePath':largeImageName,
-    	}
+	var errorCount = 0;
+	var masterPassword = document.getElementById("masterPassword").value;
+  	var newVerification = {
+        'bId': bId,
+        'title': decodeURIComponent(title),
+        'shortDesc': decodeURIComponent(shortDesc),
+        'smallImage':decodeURIComponent(smallImage),
+        'longDesc':decodeURIComponent(longDesc),
+        'largeImage':decodeURIComponent(largeImage),
+        'masterPassword':masterPassword
+    }
     	
-    	
-    	var formData = new FormData();
-    	formData.append("bId",bId);
-    	formData.append("shortDesc",shortDesc);
-    	formData.append("smallImage",smallImage.files[0]);
-    	formData.append("smallImagePath",smallImageName);
-    	formData.append("longDesc",longDesc);
-    	
-    	
-    	// var formDataJson = JSON.stringify(formData).serializeArray();
-    	
-		// Use AJAX to post the object to our addstore service
-    	$.ajax({
-        	    type: 'POST',
-           	    data: formData,
-                url: '/services/brands/v1/addverification',
-                dataType: 'JSON',
-            	beforeSend: function (request)
-            	{
-                	document.getElementById("divSpinner").style.display = 'inline';
-                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
-            	},
+    $.ajax({
+        type: 'POST',
+        data: newVerification,
+        url: baseUrl+'brands/verification/prod',
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
     	}).done(function( response ) {
 		
 			document.getElementById("divSpinner").style.display = 'none';
     		// Check for successful (blank) response
     		if (response.msg === '') {
-    			document.getElementById("bId").value = "";
-    			document.getElementById("shortDesc").value="";
-    			document.getElementById("smallImage").value="";
-    			document.getElementById("longDesc").value="";
-         		document.getElementById("largeImage").value="";
-         		// Update the table
-        		//	populateTable();
+    			deleteVerification(false,recId);
 			}
     		else {
 				// If something goes wrong, alert the error message that our service returned
         		alert('Error: ' + response.msg);
     		}
     	})
-    }
 };
 
-function deleteVerification(rowId) {
+function deleteVerification(prompt, recId) {
 
+	var env = document.getElementById("envSelector").value;
+	var pwd = document.getElementById("masterPassword").value;
+    
     event.preventDefault();
-
+	if (prompt === true) {
+    	var confirmation = confirm('Are you sure you want to delete this category?');
+		if (confirmation === false) {
+			return false;
+		}
+	}
     // Pop up a confirmation dialog
-    var confirmation = confirm('Are you sure you want to delete this category?');
-
-    // Check and make sure the user confirmed
-    if (confirmation === true) {
-
-        // If they did, do our delete
-        $.ajax({
-            type: 'DELETE',
-            url: '/services/brands/v1/deleteVerification/' + rowId,
-            beforeSend: function (request)
-        	{
-            	document.getElementById("divSpinner").style.display = 'inline';
-            	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
-        	},
+    $.ajax({
+        type: 'DELETE',
+        url: baseUrl+ 'brands/verification/delete/'+ recId +'/'+env+'/'+ pwd,
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
         }).done(function( response ) {
 			
 			document.getElementById("divSpinner").style.display = 'none';
@@ -257,15 +260,6 @@ function deleteVerification(rowId) {
             populateTable();
 
         })
-
-    }
-    else {
-
-        // If they said no to the confirm, do nothing
-        return false;
-
-    }
-
 };
 
 function isNumeric(n) {

@@ -64,13 +64,23 @@
 	<hr>
 	<p></p><p></p><p></p><p></p><p></p><p></p>
 	<div>
+	Environment:
+	<select onchange="envChanged(this.value)" id="envSelector">
+  		<option value="sandbox">sandbox</option>
+  		<option value="prod">production</option>
+ 	</select>
+ 	<p></p>
+ 	Master Password: 
+ 	<input type="password" name="masterPassword" id="masterPassword">
+ 	<p></p>
+	
 	<p> Brand Id:<input type="text" name="search.bId" value="" id="search.bId" size="4"> 
 	 <a href="#" class="myButton" onclick="searchBtnClicked()">Search</a> </p>
 	</div>
 	<hr>
 	
 	<div id="divSpinner"><img src="images/spinner.gif"/></div>
-
+	
 	
 	<div id="boList">
 	<table id="myTable"></table>
@@ -78,6 +88,13 @@
 	
 
 <script>
+var baseUrl = '/services/v1/dev/';
+var token = "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==";
+
+function envChanged(env) {
+	populateTable();
+}
+
 $(document).ready(function() {
     console.log( "ready!" );
     document.getElementById("divSpinner").style.display = 'none';
@@ -97,23 +114,28 @@ function searchBtnClicked() {
 
 function populateTable(bId) {
 
-    // Empty content string
+    var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl + 'stores/storelist/'+bId;
+    if (env === "sandbox") {
+		routeUrl =  routeUrl +'/sandbox/';
+	}
+	
     var tableContent = '<tr><td>BRAND ID</td><td>STORE ID</td><td>STORE NAME</td><td>BRAND NAME</td><td>BRAND CATEGORY</td><td>CITY</td><td>ADDRESS</td><td>HOURS</td><td>AREA CODE</td><td>TEL 1</td><td>TEL 2</td><td>DISTRIBUTOR</td><td>LAT</td><td>LONG</td><td>VARIFIED?</td><td></td></tr>';
     // jQuery AJAX call for JSON
     
     
     $.ajax({
     	    type: 'GET',
-        	url: '/services/stores/storelist/'+bId,
+        	url: routeUrl,
         	dataType: 'JSON',
         	beforeSend: function (request)
             {
                 document.getElementById("divSpinner").style.display = 'inline';
-                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+                request.setRequestHeader("token", token);
             },
             success: function(data) {
 				document.getElementById("divSpinner").style.display = 'none';
-        		            
+        		
         		// For each item in our JSON, add a table row and cells to the content string
         		$.each(data, function(){
             		tableContent += '<tr>';
@@ -132,10 +154,14 @@ function populateTable(bId) {
             		tableContent += '<td> <input type="input" id="'+ this._id +'.sLat" value="' + this.sLat + '" size="10"></input></td>';
             		tableContent += '<td> <input type="input" id="'+ this._id +'.sLong" value="' + this.sLong + '" size="10"></input></td>';
             		tableContent += '<td> <input type="input" id="'+ this._id +'.sVerified" value="' + this.sVerified + '" size="4"></input></td>';
-            		tableContent += '<td> <a href="#" onclick=deleteStore("'+this._id+'");>delete</a></td>';
+            		tableContent += '<td> <a href="#" onclick=deleteStore("'+env+'","' + this._id+'",'+true+');>delete</a></td>';
             		tableContent += '<td> <a href="#" onclick=saveStoreBtnClicked("'+this._id+'");>save</a></td>';
+            		if (env === "sandbox") {
+						tableContent += '<td> <a href="#" onclick=promoteBtnClicked("'+this._id+'");>promote</a></td>';
+					}
             		tableContent += '</tr>';
-            })         
+				});
+            		        
           document.getElementById("myTable").innerHTML= tableContent;
         }
         
@@ -144,8 +170,9 @@ function populateTable(bId) {
 };
 
 
-function addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified){
+function addStore(type, _Id, bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified){
 	
+	var pwd = document.getElementById("masterPassword").value;
 	var newStore = {
         	'bId': bId,
         	'sId':sId,
@@ -159,24 +186,33 @@ function addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTe
         	'sTel2':sTel2,
         	'sLat':sLat,
         	'sLong':sLong,
-        	'sVerified':sVerified
+        	'sVerified':sVerified,
+        	'masterPassword':pwd
     	}
 		// Use AJAX to post the object to our addstore service
+    	var routeUrl;
+    	if ((type === "promote") || (type === "prod")) {
+			routeUrl =  baseUrl + 'stores/addstore';
+		}
+		else {
+			routeUrl = baseUrl + 'stores/addstore/sandbox';;
+		}
+    	
     	$.ajax({
         	    type: 'POST',
            	 	data: newStore,
-           	 	url: 'services/stores/addstore',
+           	 	url: routeUrl,
            	 	dataType: 'JSON',
         	 	beforeSend: function (request)
              	{
                     document.getElementById("divSpinner").style.display = 'inline';
-                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+                	request.setRequestHeader("token", token);
              	}
     			}).done(function(response) {
 
 				document.getElementById("divSpinner").style.display = 'none';
     		    // Check for successful (blank) response
-    			if (response.msg === '') {
+    			if ((type === 'sandbox') && (response.msg === '')) {
     				document.getElementById("bId").value = "";
     				document.getElementById("sId").value="";
         			document.getElementById("sName").value = "";
@@ -190,12 +226,15 @@ function addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTe
     				document.getElementById("sLat").value="";
     				document.getElementById("sLong").value="";
     				document.getElementById("sVerified").checked=false;
-    				// Update the table
         			document.getElementById("search.bId").value=bId;
         			populateTable(bId);
         			}
-				else {
-					// If something goes wrong, alert the error message that our service returned
+				else if ((type === 'promote')  && (response.msg === '')) {
+	 	  			deleteStore('sandbox',_Id,false);
+	    		}
+	    		else if ((type === 'prod')  && (response.msg === '')) {
+	    		}
+        		else {
         			alert('Error: ' + response.msg);
         		}
     	})
@@ -245,15 +284,48 @@ function addStoreBtnClicked() {
    	else if (!isNumeric(sLong))
    		alert ("Longitude must be numeric");
    	else {
-    	addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified);
+    	addStore('sandbox','',bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified);
     }
 }
 
+function promoteBtnClicked(rowId) {
+	var bIdElem=rowId+".bId";
+	var sIdElem = rowId+".sId";
+    var sNameElem = rowId+".sName";
+    var bDistributorElem = rowId+".bDistributor";
+    var sCityElem = rowId+".sCity";
+    var sAddressElem = rowId+".sAddress";
+    var sHoursElem = rowId+".sHours";
+    var sAreaCodeElem = rowId+".sAreaCode";
+    var sTel1Elem = rowId+".sTel1";
+    var sTel2Elem = rowId+".sTel2";
+    var sLatElem = rowId+".sLat";
+    var sLongElem = rowId+".sLong";
+    var sVerifiedElem = rowId+".sVerified";
+    
+    var bId = document.getElementById(bIdElem).value;
+    var sId = document.getElementById(sIdElem).value;
+    var sName = document.getElementById(sNameElem).value;
+    var bDistributor = document.getElementById(bDistributorElem).value;
+    var sCity = document.getElementById(sCityElem).value;
+    var sAddress = document.getElementById(sAddressElem).value;
+    var sHours = document.getElementById(sHoursElem).value;
+    var sAreaCode = document.getElementById(sAreaCodeElem).value;
+    var sTel1 = document.getElementById(sTel1Elem).value;
+    var sTel2 = document.getElementById(sTel2Elem).value;
+    var sLat = document.getElementById(sLatElem).value;
+    var sLong = document.getElementById(sLongElem).value;
+    var sVerified = document.getElementById(sVerifiedElem).value;
+
+    event.preventDefault();
+    
+    addStore('promote',rowId,bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified);
+	
+}
 
 function saveStoreBtnClicked(rowId) {
 
 	var bIdElem=rowId+".bId";
-	
 	var sIdElem = rowId+".sId";
     var sNameElem = rowId+".sName";
     var bDistributorElem = rowId+".bDistributor";
@@ -286,59 +358,74 @@ function saveStoreBtnClicked(rowId) {
 	
 	event.preventDefault();
 
-    // Pop up a confirmation dialog
-    var confirmation = confirm('Are you sure you want to update this store?');
-    // Check and make sure the user confirmed
-    if (confirmation === true) {
 
-        // If they did, do our delete
-        $.ajax({
-            type: 'DELETE',
-            url: '/services/stores/deletestore/' + rowId,
-        	beforeSend: function (request)
-            {
-                document.getElementById("divSpinner").style.display = 'inline';
-                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
-            },
+    var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to change this item?');
+		if (confirmation === false) {
+			return false;
+	}
+	   
+   	var routeUrl = '';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'stores/delete/sandbox/'+rowId;
+	}
+	else {
+		routeUrl = baseUrl + 'stores/delete/prod/'+rowId+'/'+pwd;
+	}
+
+    // If they did, do our delete
+    $.ajax({
+        type: 'DELETE',
+        url: routeUrl,
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
         }).done(function( response ) {
 			document.getElementById("divSpinner").style.display = 'none';
             // Check for a successful (blank) response
             if (response.msg === '') {
-            	addStore(bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified);
+            	addStore(env,rowId,bId,sId,sName,bDistributor,sCity,sAddress,sHours,sAreaCode,sTel1,sTel2,sLat,sLong,sVerified);
             }
             else {
                 alert('Error: ' + response.msg);
             }
-        });
-
-    }
-    else {
-
-        // If they said no to the confirm, do nothing
-        return false;
-
-    }   
+    }); 
 }
 
-function deleteStore(rowId) {
+function deleteStore(env,_Id,prompt) {
 
     event.preventDefault();
 
+    var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
     // Pop up a confirmation dialog
-    var confirmation = confirm('Are you sure you want to delete this store?');
-
-    // Check and make sure the user confirmed
-    if (confirmation === true) {
-
-        // If they did, do our delete
-        $.ajax({
-            type: 'DELETE',
-            url: '/services/stores/deletestore/' + rowId,
-        	beforeSend: function (request)
-            {
-                document.getElementById("divSpinner").style.display = 'inline';
-                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
-            },
+    if (prompt === true) {
+    	var confirmation = confirm('Are you sure you want to delete this discount?');
+		if (confirmation === false) {
+			return false;
+		}
+	}
+   
+   	var routeUrl = '';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'stores/delete/sandbox/'+_Id;
+	}
+	else {
+		routeUrl = baseUrl + 'stores/delete/prod/'+_Id+'/'+pwd;
+	}
+    
+    $.ajax({
+    	type: 'DELETE',
+        url: routeUrl,
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
         }).done(function( response ) {
 			document.getElementById("divSpinner").style.display = 'none';
             // Check for a successful (blank) response
@@ -351,18 +438,9 @@ function deleteStore(rowId) {
             // Update the table
             var bId = document.getElementById("search.bId").value;
             populateTable(bId);
+    });
+};    
 
-        });
-
-    }
-    else {
-
-        // If they said no to the confirm, do nothing
-        return false;
-
-    }
-
-};
    
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);

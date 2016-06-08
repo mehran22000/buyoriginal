@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var masterPassword = 'AslNakhar';
+
 
 /*
  * GET storelist.
@@ -16,18 +18,23 @@ router.get('/storelist', function(req, res) {
 /*
  * GET storelist by Id.
  */
-router.get('/storelist/:id', function(req, res) {
+router.get('/storelist/:id/:env?', function(req, res) {
     var db = req.db;
     console.log(req.params.id);
-    db.collection('stores').find({bId:req.params.id}).toArray(function (err, items) {
+    var env = req.params.env;
+    var col = 'stores';
+	if (env === 'sandbox'){
+		col = 'new_stores';    	
+    }
+    db.collection(col).find({bId:req.params.id}).toArray(function (err, items) {
         res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
 
 /*
- * GET storelist by Area Code.
- */
+* GET storelist by Area Code.
+*/
 
 
 router.get('/storelist/city/:areacode', function(req, res) {
@@ -53,10 +60,16 @@ router.get('/storelist/city/:areacode/:id', function(req, res) {
     });
 });
 
-router.get('/storelist/discounts/all', function(req, res) {
+router.get('/storelist/discounts/all/:env?', function(req, res) {
     console.log("/storelist/discounts");
     var db = req.db;
-    db.collection('stores_backup').find({dPrecentage:{ $gte: 0 }}).toArray(function (err, items) {
+    var env = req.params.env;
+    var col = 'stores';
+	if (env === 'sandbox'){
+		col = 'new_discounts';    	
+    }
+    db.collection(col).find({dPrecentage:{ $gte: 0 }}).toArray(function (err, items) {
+        console.log(items);
         res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
@@ -279,9 +292,23 @@ function isNumeric(n) {
 /*
  * POST to adduser.
  */
-router.post('/addstore', function(req, res) {
+router.post('/addstore/:env?', function(req, res) {
     console.log('/addstore');
     var db = req.db;
+    
+    var env = req.params.env;
+    var pwd = req.body.masterPassword;
+    var col = 'stores';
+	if (env === 'sandbox'){
+		col = 'new_stores';    	
+    }
+	else {
+		if (pwd !== masterPassword) {
+			res.send({ msg: 'Invalid Password' });
+			return;
+		}
+	}
+  	
     
     // Find CategoryId
     var _bId = req.body.bId;
@@ -315,7 +342,7 @@ router.post('/addstore', function(req, res) {
         		'sVerified':req.body.sVerified
     		}
         	
-        	db.collection('stores').insert(newStore, function(err, result){
+        	db.collection(col).insert(newStore, function(err, result){
         	if (err === null) {
         		console.log('new store doc added');
         	}
@@ -337,10 +364,21 @@ router.post('/addstore', function(req, res) {
 });
 
 
-router.post('/adddiscount', function(req, res) {
+router.post('/adddiscount/:env?', function(req, res) {
     console.log('/adddiscount');
     var db = req.db;
     
+    var env = req.params.env;
+    var pwd = req.body.masterPassword;
+    
+    console.log('pwd'+pwd);
+  	if (env === 'dashboard') {
+  		if (pwd !== masterPassword){
+			res.send([{ "result": "err:Invalid Password" }]);
+			return false;
+		}
+	}
+	
     // Find CategoryId
     var _bId = req.body.bId;
     var _sId = req.body.sId;
@@ -408,9 +446,70 @@ router.post('/adddiscount', function(req, res) {
     });
 });
 
-router.post('/deletediscount', function(req, res) {
+
+router.post('/discounts/add/sandbox', function(req, res) {
+    console.log('/discounts/add/sandbox');
+    var db = req.db;
+    
+  	db.collection('stores').findOne({bId:req.body.bId,sId:req.body.sId},function (err,doc) {
+    if (doc){
+    	req.body.bName = doc.bName;
+    	req.body.sName = doc.sName;
+    	req.body.dPrecentage = parseInt(req.body.dPrecentage);
+    	if (!req.body.dNote) {
+  			req.body.dNote=' ';
+  		}
+    	db.collection('new_discounts').remove({bId:req.body.bId,sId:req.body.sId}, function(err, result) {
+        	if (err == null) {
+        		db.collection('new_discounts').insert(req.body, function(err, result){
+        			if (err === null) {
+        				console.log('new store discount added to sandbox');
+        			}
+        			res.set({'Access-Control-Allow-Origin': '*'});
+        			res.send(
+            			(err === null) ? [{ "result": "success"}] : [{ "result": "err"}]
+        			);
+    			});
+        	}
+    	});
+	}
+	else {
+		res.send([{"result":"err: Brand or Store Not Found"}]);
+	}
+	});
+});
+
+
+router.post('/discounts/delete/sandbox', function(req, res) {
+    console.log('/discounts/delete/sandbox');
+    var db = req.db;
+    
+    var _bId = req.body.bId;
+    var _sId = req.body.sId;
+  	
+  	db.collection('new_discounts').remove({bId:_bId,sId:_sId}, function(err, result) {
+        res.set({'Access-Control-Allow-Origin': '*'});
+        res.send((err === null) ? { "result": "success"} : { "err": err});
+    });
+});
+
+
+
+router.post('/deletediscount/:env?', function(req, res) {
     console.log('/deletediscount');
     var db = req.db;
+    
+    var env = req.params.env;
+    var pwd = req.body.masterPassword;
+    
+    console.log(env);
+    console.log(pwd);
+  	if (env === 'dashboard') {
+  		if (pwd !== masterPassword){
+		res.send([{ "result": "err:Invalid Password" }]);
+		return false;
+		}
+	}
     
     // Find CategoryId
     var _bId = req.body.bId;
@@ -462,17 +561,27 @@ router.post('/deletediscount', function(req, res) {
 });
 
 
-
-
-    
-
 /*
  * DELETE to deleteuser.
  */
-router.delete('/deletestore/:id', function(req, res) {
+router.delete('/delete/:env/:id/:pwd?', function(req, res) {
     var db = req.db;
+    var env = req.params.env;
+    var pwd = req.params.pwd;
+    var col = 'stores';
+	
+	if (env === 'sandbox'){
+		col = 'new_stores';    	
+    }
+	else {
+		if (pwd !== masterPassword) {
+			res.send({ msg: 'Invalid Password' });
+			return;
+		}
+	}
+   
     var storeToDelete = req.params.id;
-    db.collection('stores').removeById(storeToDelete, function(err, result) {
+    db.collection(col).removeById(storeToDelete, function(err, result) {
         res.set({'Access-Control-Allow-Origin': '*'});
         res.send((result === 1) ? { msg: '' } : { msg:'error: ' + err });
     });

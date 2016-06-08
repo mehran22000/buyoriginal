@@ -40,9 +40,21 @@
 	<p>
 	Note: <input type="text" name="note" value="" id="note" size="93"> 
 	</p>
-    <a href="#" class="myButton" onclick="addDiscount()">Submit</a>	
+    <a href="#" class="myButton" onclick="addDiscount('sandbox',0)">Submit</a>	
     <p></p>
 	</div>
+	
+	<hr>	
+	Environment:
+	<select onchange="envChanged(this.value)" id="envSelector">
+  		<option value="sandbox">sandbox</option>
+  		<option value="prod">production</option>
+ 	</select>
+ 	<p></p>
+ 	Master Password: 
+ 	<input type="password" name="masterPassword" id="masterPassword">
+ 	<p></p>
+	
 	
 	<div id="divSpinner"><img src="images/spinner.gif"/></div>
 	
@@ -52,26 +64,39 @@
 		
 
 <script>
+var baseUrl = '/services/v1/dev/stores/';
+var token = "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==";
+var selectedDiscount = null;
+
 $( document ).ready(function() {
     console.log( "ready!" );
     populateTable();
 });
         
-        
+function envChanged(env) {
+	populateTable();
+}
+
+
 function populateTable() {
 
-    // Empty content string
+    var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl + 'storelist/discounts/all';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'storelist/discounts/all/sandbox';
+	}
+	
+    
     var tableContent = '<tr><td>BRAND ID</td><td>BRAND NAME</td><td>STORE ID</td><td>STORE NAME</td><td>DISCOUNT</td> <td>START DATE(En)</td> <td>END DATE(En)</td> <td>START DATE(Fa)</td> <td>END DATE(Fa)</td> <td>NOTE</td><td></td></tr>';
-    // jQuery AJAX call for JSON
     
     $.ajax({
     	    type: 'GET',
-        	url: '/services/stores/storelist/discounts/all',
+        	url: routeUrl,
         	dataType: 'JSON',
         	beforeSend: function (request)
             {
                 document.getElementById("divSpinner").style.display = 'inline';
-                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+                request.setRequestHeader("token", token);
             },
             success: function(data) {
     		    // For each item in our JSON, add a table row and cells to the content string
@@ -88,7 +113,26 @@ function populateTable() {
             		tableContent += '<td>' + this.dStartDateFa + '</td>';
             		tableContent += '<td>' + this.dEndDateFa + '</td>';
             		tableContent += '<td>' + this.dNote + '</td>';
-            		tableContent += '<td> <a href="#" onclick=deleteDiscount("'+this.bId+'","'+this.sId+'");>delete</a></td>';
+            		tableContent += '<td> <a href="#" onclick=deleteDiscount("'+this.bId+'","'+this.sId+'",true);>delete</a></td>';
+            		
+            		if (env === "sandbox") {
+            			var pwd = document.getElementById("masterPassword").value;
+   
+            			selectedDiscount = {
+        					'bId': this.bId,
+        					'sId': this.sId,
+        					'startDate': this.dStartDate,
+        					'endDate' : this.dEndDate,
+        					'startDateFa': this.dStartDateFa,
+        					'endDateFa' : this.dEndDateFa,
+        					'precentage':this.dPrecentage,
+        					'note' : this.dNote,
+        					'masterPassword':pwd
+ 						}
+            		
+						tableContent += '<td> <a href="#" onclick=addDiscount("promote","'+this._id+'");>promote</a></td>';
+					}
+            		
             		tableContent += '</tr>';
             	})         
         	  document.getElementById("myTable").innerHTML= tableContent;
@@ -98,13 +142,10 @@ function populateTable() {
     });
 };
   
-function addDiscount() {
-    event.preventDefault();
 
-    // Super basic validation - increase errorCount variable if any fields are blank
-    var errorCount = 0;
-
-    // If it is, compile all user info into one object
+function validateInput() {
+    
+    var newDiscount = null;
     var bId = document.getElementById("bId").value;
     var sId = document.getElementById("sId").value;
     
@@ -122,15 +163,13 @@ function addDiscount() {
     var eDateFaMonth = document.getElementById("eDateFa.month").value;
     var eDateFaDay = document.getElementById("eDateFa.day").value;
     
-    
     var startDate = '20' + sDateEnYear + '/' + sDateEnMonth + '/' + sDateEnDay;
     var endDate = '20' + eDateEnYear + '/' + eDateEnMonth + '/' + eDateEnDay;;    
     var startDateFa = '13' + sDateFaYear + '/' + sDateFaMonth + '/' + sDateFaDay;
     var endDateFa = '13' + eDateFaYear + '/' + eDateFaMonth + '/' + eDateFaDay;
     var percentage = document.getElementById("sDiscount").value;
     var note = document.getElementById("note").value;
-
-
+    
     if (!isNumeric(bId))
    		alert ("Brand Id must be numeric");
    	else if (!isNumeric(sId))
@@ -168,83 +207,134 @@ function addDiscount() {
 	else {
     	var newDiscount = {
         	'bId': bId,
+        	'bName':'',
         	'sId': sId,
-        	'startDate': startDate,
-        	'endDate' : endDate,
-        	'startDateFa': startDateFa,
-        	'endDateFa' : endDateFa,
-        	'precentage':percentage,
-        	'note' : note
+        	'sName':'',
+        	'dStartDate': startDate,
+        	'dEndDate' : endDate,
+        	'dStartDateFa': startDateFa,
+        	'dEndDateFa' : endDateFa,
+        	'dPrecentage':percentage,
+        	'dNote' : note
  		}
-		// Use AJAX to post the object to our addstore service
-    	$.ajax({
-        	    type: 'POST',
-           	    data: newDiscount,
-                url: '/services/stores/adddiscount',
-                dataType: 'JSON',
-        		beforeSend: function (request)
-            	{
-                    document.getElementById("divSpinner").style.display = 'inline';
-                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
-            	},
+	}
+	
+	return newDiscount;
+
+}
+function addDiscount(type,rowId) {
+    event.preventDefault();
+	
+	var pwd = document.getElementById("masterPassword").value;
+   
+    if (type === "sandbox"){
+   		discount =  validateInput();
+   	}
+   	else if (selectedDiscount === null) {
+   		return false;
+   	}
+   	else {
+   		discount = selectedDiscount;
+   		discount.masterPassword=pwd;
+   	}
+   	
+    var routeUrl = '';
+    
+    if (type === "sandbox") {
+	    routeUrl = baseUrl + 'discounts/add/sandbox';
+	}
+	else {
+		routeUrl = baseUrl + 'adddiscount/dashboard';
+	}
+    $.ajax({
+        type: 'POST',
+        data: discount,
+        url: routeUrl,
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
     	}).done(function( response ) {
 
     	// Check for successful (blank) response
     		document.getElementById("divSpinner").style.display = 'none';
-    		if (response.result !== "success") {
-    			document.getElementById("bId").value = "";
-    			document.getElementById("sId").value="";
-    			document.getElementById("sDiscount").value="";
-    			document.getElementById("sDateEn.year").value = "";
-    			document.getElementById("sDateEn.month").value = "";
-    			document.getElementById("sDateEn.day").value = "";
-    			document.getElementById("eDateEn.year").value = "";
-    			document.getElementById("eDateEn.month").value = "";
-    			document.getElementById("eDateEn.day").value = "";
-    			document.getElementById("sDateFa.year").value = "";
-    			document.getElementById("sDateFa.month").value = "";
-    			document.getElementById("sDateFa.day").value = "";
-    			document.getElementById("eDateFa.year").value = "";
-    			document.getElementById("eDateFa.month").value = "";
-    			document.getElementById("eDateFa.day").value = "";
-    			document.getElementById("note").value = "";
-         		// Update the table
-        	populateTable();
-		}
-    	else {
-			// If something goes wrong, alert the error message that our service returned
-        	alert('Error: ' + response.msg);
+    		if (response[0].result === "success") {
+   			
+         		if (type === "promote") {
+         			deleteDiscount(discount.bId,discount.sId,false);
+         		}
+         		else {
+         			clearFields(); 			
+         			populateTable();
+         		}
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert(response[0].result);
     		}
-    	});
-    }
-};
+    });
+}
+function clearFields() {
+	document.getElementById("bId").value = "";
+    document.getElementById("sId").value="";
+    document.getElementById("sDiscount").value="";
+    document.getElementById("sDateEn.year").value = "";
+    document.getElementById("sDateEn.month").value = "";
+    document.getElementById("sDateEn.day").value = "";
+    document.getElementById("eDateEn.year").value = "";
+    document.getElementById("eDateEn.month").value = "";
+	document.getElementById("eDateEn.day").value = "";
+    document.getElementById("sDateFa.year").value = "";
+    document.getElementById("sDateFa.month").value = "";
+    document.getElementById("sDateFa.day").value = "";
+    document.getElementById("eDateFa.year").value = "";
+    document.getElementById("eDateFa.month").value = "";
+    document.getElementById("eDateFa.day").value = "";
+    document.getElementById("note").value = "";
+}
 
-function deleteDiscount(bId,sId) {
+
+
+function deleteDiscount(bId,sId,prompt) {
 
     event.preventDefault();
-
+	var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
     // Pop up a confirmation dialog
-    var confirmation = confirm('Are you sure you want to delete this discount?');
-
-    // Check and make sure the user confirmed
-    if (confirmation === true) {
-
-        var newDiscount = {
-        	'bId': bId,
-        	'sId': sId,
-        	'sDiscount':0
-    	}
-		// Use AJAX to post the object to our addstore service
-    	$.ajax({
-        	    type: 'POST',
-           	    data: newDiscount,
-                url: '/services/stores/deletediscount',
-                dataType: 'JSON',
-        		beforeSend: function (request)
-            	{
-                    document.getElementById("divSpinner").style.display = 'inline';
-                	request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
-            	},
+    if (prompt === true) {
+    	var confirmation = confirm('Are you sure you want to delete this discount?');
+		if (confirmation === false) {
+			return false;
+		}
+	}
+   
+   	var routeUrl = '';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'discounts/delete/sandbox';
+	}
+	else {
+		routeUrl = baseUrl + 'deletediscount/dashboard';
+	}
+   
+    var newDiscount = {
+        'bId': bId,
+        'sId': sId,
+        'sDiscount':0,
+        'masterPassword':pwd
+    }
+	// Use AJAX to post the object to our addstore service
+    $.ajax({
+        type: 'POST',
+        data: newDiscount,
+        url: routeUrl,
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
     	}).done(function( response ) {
 		
     		document.getElementById("divSpinner").style.display = 'none';
@@ -254,18 +344,10 @@ function deleteDiscount(bId,sId) {
 		}
     	else {
 			// If something goes wrong, alert the error message that our service returned
-        	alert('Error: ' + response.msg);
+        	alert(response.result);
     		}
     	});
-    }
-    else {
-
-        // If they said no to the confirm, do nothing
-        return false;
-
-    }
-
-};
+}
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);

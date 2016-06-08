@@ -20,18 +20,19 @@ var devServerToken = 'emFuYmlsZGFyYW5naGVybWV6DQo=';
 var pushComm = require('./routes/apnsComm.js');
 var utilities = require('./routes/utilities.js');
 
-
 var users_v1 = require('./routes/v1/users');
 var brands_v1 = require('./routes/v1/brands');
 var stores_v1 = require('./routes/v1/stores');
 var categories_v1 = require('./routes/v1/categories');
 var appInfo_v1 = require('./routes/v1/appInfo');
+var insecure_v1 = require('./routes/v1/insecure.js');
 
 var dev_users_v1 = require('./routes/v1/dev/users');
 var dev_brands_v1 = require('./routes/v1/dev/brands');
 var dev_stores_v1 = require('./routes/v1/dev/stores');
 var dev_categories_v1 = require('./routes/v1/dev/categories');
 var dev_appInfo_v1 = require('./routes/v1/dev/appInfo');
+var dev_insecure_v1 = require('./routes/v1/dev/insecure.js');
 
 
 
@@ -190,12 +191,14 @@ app.use('/services/v1/brands',brands_v1);
 app.use('/services/v1/stores',stores_v1);
 app.use('/services/v1/categories',categories_v1);
 app.use('/services/v1/appInfo',appInfo_v1);
+app.use('/v1/insecure',insecure_v1);
 
 app.use('/services/v1/dev/users', dev_users_v1);
 app.use('/services/v1/dev/brands', dev_brands_v1);
 app.use('/services/v1/dev/stores', dev_stores_v1);
 app.use('/services/v1/dev/categories', dev_categories_v1);
 app.use('/services/v1/dev/appInfo',dev_appInfo_v1);
+app.use('/v1/dev/insecure',dev_insecure_v1);
 
 
 /// catch 404 and forwarding to error handler
