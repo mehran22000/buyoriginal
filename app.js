@@ -184,7 +184,7 @@ app.use('/services/users', users);
 app.use('/services/brands',brands);
 app.use('/services/stores',stores);
 app.use('/services/categories',categories);
-app.use('/services/utilities',utilities);
+app.use('/utilities',utilities);
 
 app.use('/services/v1/users', users_v1);
 app.use('/services/v1/brands',brands_v1);
