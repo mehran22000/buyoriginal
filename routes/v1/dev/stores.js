@@ -18,19 +18,28 @@ router.get('/storelist', function(req, res) {
 /*
  * GET storelist by Id.
  */
-router.get('/storelist/:id/:env?', function(req, res) {
+router.get('/storelist/:id', function(req, res) {
+	console.log('/storelist/:id');
     var db = req.db;
     console.log(req.params.id);
-    var env = req.params.env;
-    var col = 'stores';
-	if (env === 'sandbox'){
-		col = 'new_stores';    	
-    }
-    db.collection(col).find({bId:req.params.id}).toArray(function (err, items) {
+    db.collection('stores').find({bId:req.params.id}).toArray(function (err, items) {
         res.set({'Access-Control-Allow-Origin': '*'});
         res.json(items);
     });
 });
+
+
+router.get('/storelist/:id/sandbox', function(req, res) {
+	console.log('/storelist/:id/sandbox?');
+    var db = req.db;
+    console.log(req.params.id);
+    db.collection('new_stores').find({bId:req.params.id}).toArray(function (err, items) {
+        res.set({'Access-Control-Allow-Origin': '*'});
+        res.json(items);
+    });
+});
+
+
 
 /*
 * GET storelist by Area Code.
