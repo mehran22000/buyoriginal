@@ -78,4 +78,39 @@ function copyCollection(col,req,res,len){
     });
 }
 
+
+router.get('/addCatIdtoStores', function(req, res) {
+    
+    console.log('utility addCatIdtoStores invoked');
+    
+    var db = req.db_dev;
+    var storeIndex = 0;
+	db.collection('stores').find().toArray(function (err, stores) {
+		var size = stores.length;
+		console.log(stores);
+    	stores.forEach(function(store) {
+    		db.collection('categories').findOne({cName:store.bCategory.toString()},function (err,cat) {
+    			console.log('cId='+ cat.cId);
+    			store['bCategoryId'] = cat.cId;
+    			console.log(store);
+    			db.collection('stores').remove({_id:store._id}, function(err, result) {
+        			if (err == null) {
+        				db.collection('stores').insert(store, function(err, result){
+        				if (err === null) {
+        					console.log('cat ID added to store id' + store._id);
+        					}
+        				})
+        				storeIndex = storeIndex + 1;
+        				if (storeIndex === size) {
+        					res.set({'Access-Control-Allow-Origin': '*'});
+    						res.send((err === null) ? [{ "result": "success"}] : [{ "err": err}]);
+        				}
+        			}
+        		})
+        	})
+    	});
+ 	});
+ });
+
+
 module.exports = router;
