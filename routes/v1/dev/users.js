@@ -416,14 +416,17 @@ router.post('/interests/:encoding?', function(req, res) {
 	// console.log(recArrayStr);
 	
 	var recArrayStr;
+	var collectionName;
 	var encoding = req.params.encoding;
 	if (encoding === 'base64'){
 		var b64string = req.body.interests;
 		var b = new Buffer(b64string,'base64');
 		recArrayStr = b.toString();
+		collectionName = 'users_interests_android'
 	}
 	else {
 		recArrayStr = req.body.interests;
+		collectionName = 'users_interests'
 	}
 	
 	var recArray = eval('(' + recArrayStr + ')');
@@ -431,7 +434,7 @@ router.post('/interests/:encoding?', function(req, res) {
 	var counter = 0;
 	 
 	recArray.forEach(function(rec) {
-    	db.collection('users_interests').insert(rec, function(err, result) {
+    	db.collection(collectionName).insert(rec, function(err, result) {
     		if (err === null) {
         			console.log('Rec '+String(counter) + ' added.' );
         		}
