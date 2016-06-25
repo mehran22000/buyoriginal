@@ -439,14 +439,27 @@ router.post('/business/ad/displays', function(req, res) {
 });
 
 
-router.post('/interests', function(req, res) {
+router.post('/interests/:encoding?', function(req, res) {
     console.log('post: /users/interests');
 	var error=null;
     var db = req.db;
     console.log(db);
 	res.set({'Access-Control-Allow-Origin': '*'});
 	
-	var recArrayStr = req.body.interests;
+	// var recArrayStr = req.body.interests;
+	// console.log(recArrayStr);
+	
+	var recArrayStr;
+	var encoding = req.params.encoding;
+	if (encoding === 'base64'){
+		var b64string = req.body.interests;
+		var b = new Buffer(b64string,'base64');
+		recArrayStr = b.toString();
+	}
+	else {
+		recArrayStr = req.body.interests;
+	}
+	
 	var recArray = eval('(' + recArrayStr + ')');
 	var recNo = recArray.length;
 	var counter = 0;
