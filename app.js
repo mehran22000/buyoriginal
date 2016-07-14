@@ -196,7 +196,7 @@ app.use('/services/v1/stores',stores_v1);
 app.use('/services/v1/categories',categories_v1);
 app.use('/services/v1/appInfo',appInfo_v1);
 app.use('/v1/insecure',insecure_v1);
-app.use('/v1/cities',cities_v1);
+app.use('/services/v1/cities',cities_v1);
 
 
 app.use('/services/v1/dev/users', dev_users_v1);
@@ -205,7 +205,7 @@ app.use('/services/v1/dev/stores', dev_stores_v1);
 app.use('/services/v1/dev/categories', dev_categories_v1);
 app.use('/services/v1/dev/appInfo',dev_appInfo_v1);
 app.use('/v1/dev/insecure',dev_insecure_v1);
-app.use('/v1/dev/cities',dev_cities_v1);
+app.use('/services/v1/dev/cities',dev_cities_v1);
 
 
 
