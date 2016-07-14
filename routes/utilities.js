@@ -83,7 +83,7 @@ router.get('/addCatIdtoStores', function(req, res) {
     
     console.log('utility addCatIdtoStores invoked');
     
-    var db = req.db_dev;
+    var db = req.db;
     var storeIndex = 0;
 	db.collection('stores').find().toArray(function (err, stores) {
 		var size = stores.length;
