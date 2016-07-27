@@ -464,7 +464,7 @@ router.post('/business/ad/displays', function(req, res) {
     console.log('post: /business/ad/displays');
 	var error=null;
     var db = req.db;
-    console.log(db);
+    // console.log(db);
 	res.set({'Access-Control-Allow-Origin': '*'});
 	
 	var date = (new Date()).toISOString()
@@ -479,6 +479,8 @@ router.post('/business/ad/displays', function(req, res) {
         'date':date	
     }
 	
+	console.log('body and rec');
+	console.log(req.body);
 	console.log(rec);
 	
 	db.collection('ad_displays').insert(rec, function(err, result) {
