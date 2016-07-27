@@ -417,7 +417,7 @@ router.post('/business/ad/displays', function(req, res) {
         'type':req.body.type,
         'device':req.body.device,
         'lat':req.body.lat,
-        'long':req.body.long,
+        'lon':req.body.long,
         'date':date	
     }
 	

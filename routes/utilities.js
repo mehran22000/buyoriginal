@@ -41,7 +41,7 @@ router.get('/copytodev', function(req, res) {
     var db = req.db;
     var db_dev = req.db_dev;
     
-    var cols = ["ad_displays","analytics_city_sessions","app_version","brand_verification","brands","business_users","categories","new_brand_verification","new_brands","new_categories","new_discounts","new_stores","stats","stores","user_device","users_analytics","users_interests"];
+    var cols = ["ad_displays","analytics_city_sessions","app_version","brand_verification","brands","business_users","categories","new_brand_verification","new_brands","new_categories","new_discounts","new_stores","stats","stores","user_device","users_analytics","users_interests","cities"];
     var counter = 0;
     var len = cols.length;
     console.log(len);
