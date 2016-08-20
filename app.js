@@ -83,7 +83,7 @@ app.all('/*', function(req, res, next) {
    			console.log('dev authorized');
     		next();
     	}
-   		else if (token === serverToken) {
+   		else if ((token === serverToken) || (token === devServerToken)) {
    			console.log('prod authorized');
     		next();
    		}
