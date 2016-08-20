@@ -531,7 +531,46 @@ router.post('/analytics', function(req, res) {
 	});
 });
 
-
+router.post('/register/android', function(req, res) {
+    console.log('post: /users/register/android');
+	var error=null;
+    var db = req.db;
+    var deviceToken = req.body.device;
+    var city = req.body.city;
+    res.set({'Access-Control-Allow-Origin': '*'});
+	 
+	db.collection('user_device').remove({device:deviceToken}, function(err, result) {
+        	if (err == null) {
+        		console.log('old device info deleted');
+        	
+        		var newUser = {
+        			'device': deviceToken,
+        			'city':city,
+        			'type':'android'	
+        		}
+    			
+    			db.collection('user_device').insert(newUser, function(err, result){
+        		if (err === null) {
+        			console.log('new device info added');
+        		}
+        		else {
+        			error = err;
+        		}	
+        	});
+    	}
+    	else {
+    		error = err;
+    	}});
+    	
+    	if (error != null){
+    		var array = [{ "result": "failed"}];
+    		res.json(array);
+    	}
+    	else {
+    		var array = [{ "result": "success"}];
+        	res.json(array); 
+        }
+    }); 
 
 
 
@@ -576,46 +615,7 @@ router.post('/register', function(req, res) {
     }); 
 	 
 	 
-router.post('/register/android', function(req, res) {
-    console.log('post: /users/register/android');
-	var error=null;
-    var db = req.db;
-    var deviceToken = req.body.device;
-    var city = req.body.city;
-    res.set({'Access-Control-Allow-Origin': '*'});
-	 
-	db.collection('user_device').remove({device:deviceToken}, function(err, result) {
-        	if (err == null) {
-        		console.log('old device info deleted');
-        	
-        		var newUser = {
-        			'device': deviceToken,
-        			'city':city,
-        			'type':'android'	
-        		}
-    			
-    			db.collection('user_device').insert(newUser, function(err, result){
-        		if (err === null) {
-        			console.log('new device info added');
-        		}
-        		else {
-        			error = err;
-        		}	
-        	});
-    	}
-    	else {
-    		error = err;
-    	}});
-    	
-    	if (error != null){
-    		var array = [{ "result": "failed"}];
-    		res.json(array);
-    	}
-    	else {
-    		var array = [{ "result": "success"}];
-        	res.json(array); 
-        }
-    }); 
+
 	 
 	 
 
