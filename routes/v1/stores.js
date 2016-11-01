@@ -4,6 +4,99 @@ var masterPassword = 'AslNakhar';
 
 
 /*
+ * GET Complete Search.
+ */
+router.get('/search/:sAreaCode/:bCategoryId/:bId/:onlyDiscount/:onlyVerified/:distance?/:lat?/:lon?', function(req, res) {
+    var db = req.db;
+    res.set({'Access-Control-Allow-Origin': '*'});
+    console.log("store search");
+    
+    
+    var query = {};
+    var sAreaCode = req.params.sAreaCode;
+    var bCategoryId = req.params.bCategoryId;
+    var bId = req.params.bId;
+    var onlyDiscount = req.params.onlyDiscount;
+    var onlyVerified = req.params.onlyVerified;
+    
+    
+    var distance = req.params.distance;
+    var lat = req.params.lat;
+    var lon = req.params.lon;
+    console.log("sAreaCode="+sAreaCode + ", bCategoryId=" + bCategoryId + ", bId=" + bId + ", onlyDiscount=" + onlyDiscount + ", onlyVerified=" + onlyVerified + ", distance=" + distance + ", lat=" + lat + ", lon=" + lon);
+    
+	// check categoryId
+	if (bCategoryId != 'all') {
+    	var field = 'bCategoryId';
+		var operator = {};
+		operator['$eq'] = bCategoryId;
+    	query[field] = operator;
+    }
+    
+    // check brandId
+	if (bId != 'all') {
+    	var field = 'bId';
+	    var operator = {};
+    	operator['$eq'] = bId;
+    	query[field] = operator;
+    }
+    
+	// check discounts
+    if (onlyDiscount == 'true') {
+    	var field = 'dPrecentage';
+    	var operator = {};
+    	operator['$gte'] = 0;
+    	query[field] = operator;
+    }
+    
+	// check verified
+    if (onlyVerified == 'true') {
+    	var field = 'sVerified';
+		var operator = {};
+    	operator['$eq'] = 'YES';
+    	query[field] = operator;
+    }
+    
+    // if 'distance', 'lat' and 'lon' are available use them otherwise set the search to city 
+    var filterByDist = true;
+    if ((lat == 'null') || (lon == 'null') || (distance == 'null')) {
+    	var field = 'sAreaCode';
+		var operator = {};
+		operator['$eq'] = sAreaCode;
+		query[field] = operator;
+		filterByDist = false;
+    }
+     
+    db.collection('stores').find(query).toArray(function (err, items) {
+			if (err == null){
+			var results = [];
+			items.forEach(function(store) {
+    			var d = calDistance(lat,lon,store.sLat,store.sLong,"K");
+    			var distNum = d.toFixed(2);
+    		    store.distance=distNum.toString();	
+    			if (filterByDist == true){
+					if (d < distance){
+    		    		results.push(store);
+    				}
+    			}
+    			else {
+    				results.push(store);
+    			}
+    		});	
+			// sort based on distance
+			results.sort(function(a,b) {return (a.distance > b.distance) ? 1 : ((b.distance > a.distance) ? -1 : 0);} ); 
+			res.json(results);
+		}
+		else {
+			res.send({ "successful":false,"errCode": err});
+		}
+	
+	});
+    
+});
+
+
+/*
  * GET storelist.
  */
 router.get('/storelist', function(req, res) {
@@ -105,7 +198,7 @@ router.get('/storelist/discounts/:lat/:lon/:km', function(req, res) {
     			// console.log("lat"+req.params.lat);
     			// console.log("lon"+req.params.lon);
     			// if (counter < maxResults) {
-    				var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    				var dist = calDistance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
     				if (dist < req.params.km){
     			    	var distNum = dist.toFixed(2);
     			    	store.distance=distNum.toString();
@@ -186,7 +279,7 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     var items = [];
     var bId = req.params.bId;
 	console.log(bId);
-	var maxResults = 25;
+	var maxResults = 100;
     var counter = 0;
    
     
@@ -195,7 +288,7 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     	db.collection('stores').find({bId:req.params.bId}).toArray(function (err, stores) {
 			stores.forEach(function(store) {
 				if (counter < maxResults) {
-    				var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    				var dist = calDistance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
     				if (dist < req.params.km){
     					counter = counter + 1;
     			    	var distNum = dist.toFixed(2);
@@ -215,7 +308,7 @@ router.get('/storelist/:bId/:lat/:lon/:km', function(req, res) {
     				// console.log("lat"+req.params.lat);
     				// console.log("lon"+req.params.lon);
     				// console.log("counter="+String(counter));
-    				var dist = distance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
+    				var dist = calDistance(req.params.lat,req.params.lon,store.sLat,store.sLong,"K");
     				if (dist < req.params.km){
     					counter = counter + 1;
     			    	var distNum = dist.toFixed(2);
@@ -277,7 +370,7 @@ function reportSession(db,areacode) {
 }
 
 
-function distance(lat1, lon1, lat2, lon2, unit) {
+function calDistance(lat1, lon1, lat2, lon2, unit) {
 	var radlat1 = Math.PI * lat1/180
 	var radlat2 = Math.PI * lat2/180
 	var radlon1 = Math.PI * lon1/180
@@ -451,7 +544,7 @@ router.post('/adddiscount/:env?', function(req, res) {
     			});
         	}
     	});
-    	}
+    }
     else {
     	res.set({'Access-Control-Allow-Origin': '*'});
         		res.send([{ "err": err}]);
