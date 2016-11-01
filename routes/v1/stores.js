@@ -452,6 +452,10 @@ router.post('/adddiscount/:env?', function(req, res) {
         	}
     	});
     	}
+    else {
+    	res.set({'Access-Control-Allow-Origin': '*'});
+        		res.send([{ "err": err}]);
+    	};
     });
 });
 

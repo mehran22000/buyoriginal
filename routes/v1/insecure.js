@@ -67,4 +67,23 @@ router.post('/brands/verification/sandbox', function(req, res) {
 });    
 
 
+router.post('/upload/photo', function(req, res) {
+    console.log('- insecure/upload/photo');
+    var db = req.db;
+    res.set({'Access-Control-Allow-Origin': '*'});
+    
+    var form = new formidable.IncomingForm();
+    form.uploadDir = './public/images/uploads';
+    form.parse(req, function(err, fields, files) {
+        if (err) next(err);
+		fs.rename(files.file.path, form.uploadDir + "/" + files.file.name, function(err) {
+            if (err) next(err);
+            res.end();
+        });
+    });     
+});    
+
+
+
+
 module.exports = router;
