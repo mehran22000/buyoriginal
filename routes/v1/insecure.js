@@ -30,8 +30,13 @@ router.post('/brands/verification/sandbox', function(req, res) {
       if (files['largeImage']) {
       	largeImage = files['largeImage'].name; 
       }
+      
+      var tags = ""; 
+      if (files['tags']) {
+      	tags = files.tags; 
+      }
                
-      var record = {bId:fields.bId, title:fields.title, shortDesc:fields.shortDesc, longDesc:longDesc, smallImage:smallImage, largeImage:largeImage};
+      var record = {bId:fields.bId, title:fields.title, tags:fields.tags, shortDesc:fields.shortDesc, longDesc:longDesc, smallImage:smallImage, largeImage:largeImage};
       console.log('Verification Record'+record);
       
       db.collection('new_brand_verification').insert(record, function(err, result){

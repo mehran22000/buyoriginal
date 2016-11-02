@@ -35,6 +35,11 @@
 	<textarea name="title" value="" id="title" rows="1" cols="100"></textarea> 
 	</p>
 	
+	Tags: 
+	<p> 
+	<textarea name="tags" value="" id="tags" rows="1" cols="100"></textarea> 
+	</p>
+	
 	
 	Short Description: 
 	<p> 
@@ -147,7 +152,7 @@ function populateTable() {
 	}
 
     // Empty content string
-    var tableContent = '<tr><td>BRAND ID</td><td>Title</td><td>Short Description</td><td>Small Image</td><td>Long Description</td><td>Large Image</td></tr>';
+    var tableContent = '<tr><td>BRAND ID</td><td>Title</td><td>Tags</td><td>Short Description</td><td>Small Image</td><td>Long Description</td><td>Large Image</td></tr>';
     // jQuery AJAX call for JSON
     
     $.ajax({
@@ -166,16 +171,18 @@ function populateTable() {
         	// For each item in our JSON, add a table row and cells to the content string
     	    $.each(data, function(i,item){
         	    tableContent += '<tr>';
-            	tableContent += '<td>' + this.bId + '</td>';
-            	tableContent += '<td>' + this.title + '</td>';
-            	tableContent += '<td>' + this.shortDesc + '</td>';
+        	    tableContent += '<td> <input type="input" id="'+ this._id +'.bId" value="'+ this.bId + '" size="4"></input></td>';		
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.title" value="'+ this.title + '" size="10"></input></td>';		
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.tags" value="'+ this.tags + '" size="10"></input></td>';		
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.shortDesc" value="'+ this.shortDesc + '" size="30"></input></td>';		
             	tableContent += '<td>' + '<a href=/images/verifications/'+this.smallImage +'> link </a>' + '</td>';
-            	tableContent += '<td>' + this.longDesc + '</td>';
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.longDesc" value="'+ this.longDesc + '" size="30"></input></td>';		         
             	tableContent += '<td>' + '<a href=/images/verifications/'+this.largeImage +'> link </a>' + '</td>';
             	tableContent += '<td> <a href="#" onclick=deleteVerification(true,"'+this._id+'");>delete</a></td>';
-            	
+            	tableContent += '<td> <a href="#" onclick=saveVerificationBtnClicked("'+this._id+'");>save</a></td>';
+            		
             	if (env === "sandbox") {
-					tableContent += '<td> <a href="#" onclick=promoteVerification("'+this._id+'","'+ this.bId+'","'+encodeURIComponent(this.title)+'","'+ encodeURIComponent(this.shortDesc) +'","'+ encodeURIComponent(this.smallImage) + '","' + encodeURIComponent(this.longDesc) +'","'+encodeURIComponent(this.largeImage)+'");>promote</a></td>';
+					tableContent += '<td> <a href="#" onclick=promoteVerification("'+this._id+'","'+ this.bId+'","'+encodeURIComponent(this.title)+'","'+ encodeURIComponent(this.tags)+'","'+encodeURIComponent(this.shortDesc) +'","'+ encodeURIComponent(this.smallImage) + '","' + encodeURIComponent(this.longDesc) +'","'+encodeURIComponent(this.largeImage)+'");>promote</a></td>';
 				}
             	
             	tableContent += '</tr>';         
@@ -187,13 +194,14 @@ function populateTable() {
     });
 };
 
-function promoteVerification(recId, bId,title, shortDesc,smallImage,longDesc,largeImage)  {
+function promoteVerification(recId, bId, title, tags, shortDesc,smallImage,longDesc,largeImage)  {
     event.preventDefault();
 	var errorCount = 0;
 	var masterPassword = document.getElementById("masterPassword").value;
   	var newVerification = {
         'bId': bId,
         'title': decodeURIComponent(title),
+        'tags': decodeURIComponent(tags),
         'shortDesc': decodeURIComponent(shortDesc),
         'smallImage':decodeURIComponent(smallImage),
         'longDesc':decodeURIComponent(longDesc),
@@ -261,6 +269,90 @@ function deleteVerification(prompt, recId) {
 
         })
 };
+
+
+function saveVerificationBtnClicked(recId) {
+
+	var bIdElem=recId+".bId";
+	var titleElem = recId+".title";
+    var tagsElem = recId+".tags";
+    var shortDescElem = recId+".shortDesc";
+    var smallImageElem = recId+".smallImage";
+    var longDescElem = recId+".longDesc";
+    var largeImageElem = recId+".largeImage";
+    
+	var bId = decodeURIComponent(document.getElementById(bIdElem).value);
+    var title = decodeURIComponent(document.getElementById(titleElem).value);
+    var tags = decodeURIComponent(document.getElementById(tagsElem).value);
+    var shortDesc = decodeURIComponent(document.getElementById(shortDescElem).value);
+    var smallImage = decodeURIComponent(document.getElementById(smallImageElem));
+    var longDesc = decodeURIComponent(document.getElementById(longDescElem).value);
+    var largeImage = decodeURIComponent(document.getElementById(largeImageElem));
+    
+	event.preventDefault();
+	
+    var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to change this item?');
+		if (confirmation === false) {
+			return false;
+	}
+	
+	replaceVerification(recId, bId, title, tags, shortDesc,smallImage,longDesc,largeImage);
+}
+
+
+function replaceVerification(recId, bId, title, tags, shortDesc,smallImage,longDesc,largeImage)  {
+    event.preventDefault();
+	
+	var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl+'brands/verification';
+    if (env === "sandbox") {
+		routeUrl =  routeUrl +'/sandbox';
+	}
+	else {
+		routeUrl =  routeUrl +'/prod';
+	}
+	
+	var errorCount = 0;
+	var masterPassword = document.getElementById("masterPassword").value;
+  	var newVerification = {
+        'bId': bId,
+        'title': decodeURIComponent(title),
+        'tags': decodeURIComponent(tags),
+        'shortDesc': decodeURIComponent(shortDesc),
+        'smallImage':decodeURIComponent(smallImage),
+        'longDesc':decodeURIComponent(longDesc),
+        'largeImage':decodeURIComponent(largeImage),
+        'masterPassword':masterPassword
+    }
+    	
+    $.ajax({
+        type: 'POST',
+        data: newVerification,
+        url: routeUrl,
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
+    	}).done(function( response ) {
+		
+			document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.msg === '') {
+    			deleteVerification(false,recId);
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
+    		}
+    	})
+};
+
+
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);

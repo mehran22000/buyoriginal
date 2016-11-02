@@ -82,6 +82,7 @@ router.get('/v1/verification/:bId', function(req, res) {
     }); 
 });
 
+/*
 router.post('/v1/addverification', function(req, res) {
     console.log('/v1/addverification/ called');
     var db = req.db;
@@ -92,9 +93,14 @@ router.post('/v1/addverification', function(req, res) {
 
     form.parse(req, function(err, fields, files) {
     
-     var longDesc = "";
+      var longDesc = "";
       if (fields.longDesc) {
       	 longDesc = fields.longDesc;
+      }
+      
+      var tags = "";
+      if (fields.tags) {
+      	 tags = fields.tags;
       }	
        
       var smallImage = ""; 
@@ -107,7 +113,7 @@ router.post('/v1/addverification', function(req, res) {
       	largeImage = files['largeImage'].name; 
       }
                
-      var record = {bId:fields.bId, title:fields.title, shortDesc:fields.shortDesc, longDesc:longDesc, smallImage:smallImage, largeImage:largeImage};
+      var record = {bId:fields.bId, title:fields.title, tags:fields.tags, shortDesc:fields.shortDesc, longDesc:longDesc, smallImage:smallImage, largeImage:largeImage};
       console.log('Verification Record'+record);
       
       db.collection('brand_verification').insert(record, function(err, result){
@@ -139,7 +145,7 @@ router.post('/v1/addverification', function(req, res) {
 		res.end();
         });      
 });
-
+*/
 
 
 /*
