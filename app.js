@@ -8,7 +8,11 @@ var mongo = require('mongoskin');
 var db = mongo.db("mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797", {native_parser:true});
 var db_dev = mongo.db("mongodb://mehran22000:mehrdad781@ds015962.mlab.com:15962/heroku_0v6b8bfg", {native_parser:true});
 // var db = mongo.db("mongodb://localhost:27017/local", {native_parser:true});
+var db_prod_url = "mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797";
+var db_dev_url = "mongodb://mehran22000:mehrdad781@ds015962.mlab.com:15962/heroku_0v6b8bfg";
+
 var multer  =   require('multer');
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -168,9 +172,11 @@ app.use(function(req,res,next){
 
 	if (req.originalUrl.indexOf('/dev/') > -1) {
 		req.db= db_dev;
+		req.dburl = db_dev_url
 	}
 	else{
 		req.db = db;
+		req.dburl = db_prod_url
 	}
     req.db_dev = db_dev;
     next();
