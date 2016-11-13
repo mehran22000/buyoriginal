@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var apnsComm = require('./apnsComm');
+var gcm = require('node-gcm');
+var Promise = require('bluebird');
+var mongoClient = Promise.promisifyAll(require('mongodb')).MongoClient;
 
 /*
  * Business Users
@@ -241,59 +244,83 @@ router.get('/business/deleteuser/:email/:sid', function(req, res) {
 		}
     });       
 });
-    		
+	
 router.post('/business/updateuser', function(req, res) {
-    console.log('/business/updateuser');
-	var error=null;
-    var db = req.db;
-	res.set({'Access-Control-Allow-Origin': '*'});
-	    
-	db.collection('business_users').remove({buId:req.body.buId}, function(err, result) {
-        	if (err == null) {
-        		console.log('old user info deleted');
-        		var newUser = {
-        			'buId': req.body.buId,
-        			'buEmail':req.body.buEmail,
-        			'buPassword':req.body.buPassword,
-        			'buCityName':req.body.buCityName,
-        			'buCityNameFa':req.body.buCityNameFa,
-        			'buBrandId':req.body.buBrandId,
-        			'buBrandName':req.body.buBrandName,
-        			'buBrandCategory':req.body.buBrandCategory,
-        			'buStoreName':req.body.buStoreName,
-        			'buStoreAddress':req.body.buStoreAddress,
-        			'buStoreHours':req.body.buStoreHours,
-        			'buDistributor':req.body.buDistributor,
-        			'buStoreLat':req.body.buStoreLat,
-        			'buStoreLon':req.body.buStoreLon,
-        			'buAreaCode':req.body.buAreaCode,
-        			'buTel':req.body.buTel,
-        			'buStoreId':req.body.buStoreId,
-        			'buBrandLogoName':req.body.buBrandLogoName
-    			}
-    			
-    			db.collection('business_users').insert(newUser, function(err, result){
-        		if (err === null) {
-        			console.log('updated user info added');
-        		}
-        		else {
-        			error = err;
-        		}	
-        	});
+    
+    var _db;
+    var _store;
+    
+    mongoClient.connectAsync(req.dburl)  
+    .then(function(db) {       // Delete the user
+        _db = db;
+        return _db.collection('business_users').removeAsync({buId:req.body.buId})
+    })
+    .then(function(result) {
+    	if (result){
+    		console.log('user '+ req.body.buId + ' deleted')
+    		return _db.collection('business_users').insertAsync(req.body) // Insert the modified user
     	}
-    	else {
-    		error = err;
-    	}});
+    	else return false;
+    })
+    .then(function(result) {
+    	if (result) {
+    		console.log('user '+ req.body.buId + ' inserted')
+    		return _db.collection('stores').findOneAsync({sId:req.body.buStoreId})
+    	}
+    	else return false;
+    })
+    .then(function(store) {
+    	if (!store) {
+    		console.log('store '+ req.body.buStoreId + ' not found')
+    		res.status(404).send('Store Not Found');
+    		return false;
+    	}
+    	console.log('store '+ req.body.buStoreId + ' found')
     	
-    	if (error != null){
-    		var array = [{ "result": "failed"}];
-    		res.json(array);
+    	// Modify store data
+		_store = store;
+		_store.bId = req.body.buBrandId;
+		_store.sName = req.body.buStoreName;
+        _store.bName = req.body.buBrandName,
+        _store.bCategory = req.body.buBrandCategory,
+        _store.bDistributor = req.body.buDistributor,
+        _store.sCity = req.body.buCityNameFa,
+        _store.sAddress = req.body.buStoreAddress,
+        _store.sHours = req.body.buStoreHours,
+        _store.sAreaCode = req.body.buAreaCode,
+        _store.sTel1 = req.body.buTel,
+        _store.sLat = req.body.buStoreLat,
+        _store.sLong = req.body.buStoreLon,
+        _store.bLogo = req.body.buBrandLogoName
+        
+        // Delete store record
+        return _db.collection('stores').removeAsync({sId:req.body.buStoreId})  	
+    })
+    .then(function(result) {
+    	if (result){
+    		console.log('store '+ req.body.buStoreId + ' deleted')
+    		return _db.collection('stores').insertAsync(_store) // Insert the modified store
     	}
-    	else {
-    		var array = [{ "result": "success"}];
-        	res.json(array); 
-        }
-    });
+    	else return false;
+    })
+    .then(function(result) {
+    	if (result){
+    		console.log('store '+ req.body.buStoreId + ' inserted')
+    		res.json([{ "result": "success"}]);
+    	}
+    	else return res.status(404).send([{ "result": "failed"}]);
+    })
+    .catch(function(err) {
+        throw err;
+        return res.status(404).send([{ "result": "failed"}]);
+    })
+    .finally(function() {
+    	if (_db) 
+    		_db.close();
+	});
+});				
+				
+   
 
  
 router.post('/business/adduser', function(req, res) {
@@ -360,7 +387,8 @@ router.post('/business/adduser', function(req, res) {
         			    'sLat':req.body.buStoreLat,
         			    'sLong':req.body.buStoreLon,
         			    'sVerified':'No',
-        			    'bLogo':req.body.buBrandLogoName
+        			    'bLogo':req.body.buBrandLogoName,
+        			    'buId': buId
     				}
         	
         			db.collection('stores').insert(newStore, function(err, result){
@@ -402,41 +430,6 @@ router.post('/business/adduser', function(req, res) {
     }
 });
 
-router.post('/business/ad/displays', function(req, res) {
-    console.log('post: /business/ad/displays');
-	var error=null;
-    var db = req.db;
-    console.log(db);
-	res.set({'Access-Control-Allow-Origin': '*'});
-	
-	var date = (new Date()).toISOString()
-	
-	var rec = {
-        'name': req.body.name,
-        'screen':req.body.screen,
-        'type':req.body.type,
-        'device':req.body.device,
-        'lat':req.body.lat,
-        'lon':req.body.long,
-        'date':date	
-    }
-	
-	console.log(rec);
-	
-	db.collection('ad_displays').insert(rec, function(err, result) {
-    	if (err === null) {
-    			console.log(req.body + ' added.' );
-    			var array = [{ "result": "success"}];
-        		res.json(array);
-    		}
-       		else {
-        		console.log('Error: '+ err.name + ': ' + err.message);
-    			error = err;
-    			var array = [{ "result": "failed","err":error.message}];
-    			res.json(array);
-        }	  
-	});
-});
 
 
 router.post('/interests/:encoding?', function(req, res) {
@@ -493,41 +486,42 @@ router.post('/interests/:encoding?', function(req, res) {
 	});
 });
 
-router.post('/analytics', function(req, res) {
-    console.log('post: /users/analytics');
+
+router.post('/business/ad/displays', function(req, res) {
+    console.log('post: /business/ad/displays');
 	var error=null;
     var db = req.db;
-    console.log(db);
+    // console.log(db);
 	res.set({'Access-Control-Allow-Origin': '*'});
 	
-	var recArrayStr = req.body.analytics;
-	var recArray = eval('(' + recArrayStr + ')');
-	var recNo = recArray.length;
-	var counter = 0;
-	 
-	recArray.forEach(function(rec) {
-    	db.collection('users_analytics').insert(rec, function(err, result) {
-    		if (err === null) {
-        			console.log('Rec '+String(counter) + ' added.' );
-        		}
-        		else {
-        			console.log('Error: rec'+String(counter) + ' ' + err.name + ': ' + err.message);
-        			error = err;
-        		}	
-    		
-    		counter = counter + 1;
-    		if (counter === recNo){
-    			if (error != null){
-    				var array = [{ "result": "failed","err":error.message}];
-    				res.json(array);
-    			}
-    			else {
-    				var array = [{ "result": "success"}];
-        			res.json(array); 
-        		}
+	var date = (new Date()).toISOString()
+	
+	var rec = {
+        'name': req.body.name,
+        'screen':req.body.screen,
+        'type':req.body.type,
+        'device':req.body.device,
+        'lat':req.body.lat,
+        'lon':req.body.lon,
+        'date':date	
+    }
+	
+	console.log('body and rec');
+	console.log(req.body);
+	console.log(rec);
+	
+	db.collection('ad_displays').insert(rec, function(err, result) {
+    	if (err === null) {
+    			console.log(req.body + ' added.' );
+    			var array = [{ "result": "success"}];
+        		res.json(array);
     		}
-    	}
-	  )  
+       		else {
+        		console.log('Error: '+ err.name + ': ' + err.message);
+    			error = err;
+    			var array = [{ "result": "failed","err":error.message}];
+    			res.json(array);
+        }	  
 	});
 });
 
@@ -572,8 +566,6 @@ router.post('/register/android', function(req, res) {
         }
     }); 
 
-
-
 router.post('/register', function(req, res) {
     console.log('post: /users/register');
 	var error=null;
@@ -613,13 +605,9 @@ router.post('/register', function(req, res) {
         	res.json(array); 
         }
     }); 
-	 
-	 
+	 	 
 
-	 
-	 
-
-router.get('/testNotification', function(req, res)
+router.get('/testNotification/ios', function(req, res)
 {
 	var pushTokens = ['<9c4adf5d ac790fbb d5929bd6 016b825e 3cc4c3e7 82debdeb 567c640c 360169d2>'];
 	var messageDetails = {
@@ -637,6 +625,30 @@ router.get('/testNotification', function(req, res)
     apnsComm.pushNotification(pushTokens, messageDetails, options);
     res.send('Notification sent at ' + new Date() + '!');
 });
+
+router.get('/testNotification/android/:token', function(req, res)
+{
+	var token = req.params.token;
+	var message = new gcm.Message({
+    	data: { key1: 'Hello asl bekhar' }
+	});
+ 
+	// Set up the sender with you API key, prepare your recipients' registration tokens. 
+	var sender = new gcm.Sender('472796603076');
+	var regTokens = [token];
+ 
+	sender.send(message, { registrationTokens: regTokens }, function (err, response) {
+		if (err) {
+			console.error(err);
+			res.send({'err':err});
+		}
+		else {
+		 	console.log(response);
+		 	res.send({'msg':'success'});
+		 }
+	});
+});
+
 
 /*
 router.get('/business/testPushNotification', function(req, res) {
@@ -675,5 +687,107 @@ router.get('/business/testPushNotification', function(req, res) {
 });
 */
 
+/*  		
+router.post('/business/updateuser', function(req, res) {
+    console.log('/business/updateuser');
+	var error=null;
+    var db = req.db;
+	res.set({'Access-Control-Allow-Origin': '*'});
+	    
+	db.collection('business_users').remove({buId:req.body.buId}, function(err, result) {
+        console.log('old user info deleted from users database');
+        db.collection('stores').remove({bId:req.body.buBrandId,sId:req.body.buStoreId}, function(err, result) {
+        	if (err === null) {
+        		console.log('old store info deleted from stores database');
+				db.collection('stats').findOne({},function (err,doc) {
+        			if (err === null)
+        				if (doc){
+            				sId=(parseInt(doc.numStores)+1).toString();
+            				buId=(parseInt(doc.numBusinessUsers)+1).toString();
+            				console.log('add user: sId'+sId + ' business user id'+buId);
+        					// Add new user	
+        					var newUser = {
+        						'buId': buId,
+        						'buEmail':req.body.buEmail,
+        						'buPassword':req.body.buPassword,
+        						'buCityName':req.body.buCityName,
+        						'buCityNameFa':req.body.buCityNameFa,
+        						'buBrandId':req.body.buBrandId,
+        						'buBrandName':req.body.buBrandName,
+        						'buBrandCategory':req.body.buBrandCategory,
+        						'buStoreName':req.body.buStoreName,
+        						'buStoreAddress':req.body.buStoreAddress,
+        						'buStoreHours':req.body.buStoreHours,
+        						'buDistributor':req.body.buDistributor,
+        						'buStoreLat':req.body.buStoreLat,
+        						'buStoreLon':req.body.buStoreLon,
+        						'buAreaCode':req.body.buAreaCode,
+        						'buTel':req.body.buTel,
+        						'buStoreId':sId,
+        						'buBrandLogoName':req.body.buBrandLogoName
+    						}
+    
+    						db.collection('business_users').insert(newUser, function(err, result){
+        					if (err === null) {
+        						console.log('new user doc added');
+        		    			// Add store
+        						var newStore = {
+        							'bId':req.body.buBrandId,
+        							'sId':sId,
+        							'sName':req.body.buStoreName,
+        							'bName':req.body.buBrandName,
+        			    			'bCategory':req.body.buBrandCategory,
+        			    			'bDistributor':req.body.buDistributor,
+        			    			'sCity':req.body.buCityNameFa,
+        			    			'sAddress':req.body.buStoreAddress,
+        			    			'sHours':req.body.buStoreHours,
+        			    			'sAreaCode':req.body.buAreaCode,
+        			    			'sTel1':req.body.buTel,
+        			    			'sTel2':'',
+        			    			'sLat':req.body.buStoreLat,
+        			    			'sLong':req.body.buStoreLon,
+        			    			'sVerified':req.body.sVerified,
+        			    			'bLogo':req.body.buBrandLogoName
+    						}
+        					db.collection('stores').insert(newStore, function(err, result){
+        					if (err === null) {
+        						console.log('new store doc added');
+        						// Update Stats
+        						doc.numBusinessUsers=buId;
+        						doc.numStores=sId;
+        						db.collection('stats').update({},doc, function (err,result){
+        							if (err === null) {
+        								console.log('stats updated');
+        							}
+        							else {
+        								error = err;
+        							}
+        						});
+        					}
+        				});
+        					}
+        					});
+        				}
+        			else {
+        				error=err;
+        			}
+    			});	
+        	}
+        	else {
+        		error = err;
+        	}
+        });
+      });
+      if (error != null){
+    		var array = [{ "result": "failed"}];
+    		res.json(array);
+      }
+      else {
+    		var array = [{ "result": "success"}];
+        	res.json(array); 
+      }
+});	
+	
+*/
 
 module.exports = router;
