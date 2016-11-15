@@ -292,7 +292,7 @@ router.post('/business/updateuser', function(req, res) {
         _store.sLat = req.body.buStoreLat,
         _store.sLong = req.body.buStoreLon,
         _store.bLogo = req.body.buBrandLogoName
-        console.log(_store);
+        console.log('Store Name='+req.body.buStoreName+'Distributor='+req.body.buDistributor );
         // Delete store record
         return _db.collection('stores').removeAsync({sId:req.body.buStoreId})  	
     })
