@@ -1,6 +1,24 @@
 var express = require('express');
 var router = express.Router();
 var masterPassword = 'AslNakhar';
+var utilityFunc = require('./utilityFunc.js');
+
+
+/*
+ * GET categories.
+ */
+
+router.get('/areacode/:code', function(req, res) {
+	var areaCode = req.params.code;
+	console.log('/categories/areacode/'+areaCode);
+    res.set({'Access-Control-Allow-Origin': '*'});
+    
+    var db = req.db;
+    db.collection('stores').find({sAreaCode:areaCode},{bCategory:1,bCategoryId:1,_id:0}).toArray(function (err, items) {
+        res.json(utilityFunc.unique(items,'bCategoryId'));
+    });
+});
+
 
 
 /*
