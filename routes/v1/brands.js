@@ -5,6 +5,25 @@ var formidable = require('formidable'),
     util = require('util');
 var fs = require('fs');
 var masterPassword = 'AslNakhar';
+var utilityFunc = require('./utilityFunc.js');
+
+
+/*
+ * GET brands for a city and a category
+ */
+
+router.get('/areacode/:code/category/:cId', function(req, res) {
+	var areaCode = req.params.code;
+	var cId = req.params.cId;
+	
+	console.log('/categories/areacode/'+areaCode+'/category'+cId);
+    res.set({'Access-Control-Allow-Origin': '*'});
+    
+    var db = req.db;
+    db.collection('stores').find({sAreaCode:areaCode,bCategoryId:cId},{bId:1,bName:1,_id:0}).toArray(function (err, items) {
+        res.json(utilityFunc.unique(items,'bId'));
+    });
+});
 
 
 /*
@@ -120,6 +139,7 @@ router.post('/verification/prod', function(req, res) {
     });
 });
 
+
 router.post('/verification/sandbox', function(req, res) {
     var db = req.db;
     res.set({'Access-Control-Allow-Origin': '*'});
@@ -191,6 +211,9 @@ router.post('/addverification', function(req, res) {
 		res.end();
         });      
 });
+
+
+
 
 
 /*
