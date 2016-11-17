@@ -111,6 +111,52 @@ router.get('/addCatIdtoStores', function(req, res) {
     	});
  	});
  });
+ 
+
+router.get('/addLocationtoStores', function(req, res) {
+    
+    console.log('utility addLocation invoked');
+    
+    var db = req.db;
+    var storeIndex = 0;
+	db.collection('stores').find().toArray(function (err, stores) {
+		var size = stores.length;
+		console.log(stores);
+    	stores.forEach(function(store) {
+    		var coordinates = [store.sLong,store.sLat];
+    		var location = {"type":"Point","coordinates":coordinates};
+    		store['location'] = location;
+    		db.collection('stores').remove({_id:store._id}, function(err, result) {
+        			if (err == null) {
+        				db.collection('stores').insert(store, function(err, result){
+        				if (err === null) {
+        					console.log('Location added to store id' + store._id);
+        					}
+        				})
+        				storeIndex = storeIndex + 1;
+        				if (storeIndex === size) {
+        					res.set({'Access-Control-Allow-Origin': '*'});
+    						res.send((err === null) ? [{ "result": "success"}] : [{ "err": err}]);
+        				}
+        			}
+        		})
+        	})
+    	});
+    });
+    				
+
+
+router.get('/missingCatId', function(req, res) {
+    
+    console.log('missing categoryID invoked');
+    
+    var db = req.db;
+    var storeIndex = 0;
+	db.collection('stores').find({ "bCategoryId": { $exists: false} }).toArray(function (err, stores) {
+		res.set({'Access-Control-Allow-Origin': '*'});
+		res.send(stores);
+ 	});
+ });
 
 
 module.exports = router;
