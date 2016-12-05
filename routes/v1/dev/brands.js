@@ -63,6 +63,18 @@ router.get('/brandlist/:env?', function(req, res) {
 });
 
 
+router.get('/categoryId/:cId', function(req, res) {
+    res.setHeader('Content-Type', 'text/json; charset=utf-8')
+    res.set({'Access-Control-Allow-Origin': '*'});
+    var db = req.db;
+    var cId = req.params.cId;
+    db.collection('brands').find({'bCategoryId':cId}).toArray(function (err, brands) {   
+        res.json(brands);
+    });
+});
+
+
+
 /*
 * add brand - Dashboard
 */
@@ -121,6 +133,34 @@ router.get('/verification/:bId', function(req, res) {
         res.json(items);
     }); 
 });
+
+router.get('/verification/bId/:bId/tag/:tag', function(req, res) {
+    console.log('/v1/verification/bId/'+req.params.bId+'/tag/'+req.params.tag);
+    var db = req.db;
+    var bId=String(req.params.bId)
+    var tag=String(req.params.tag)
+    res.set({'Access-Control-Allow-Origin': '*'});
+    var results = [];   
+    db.collection('brand_verification').find({bId:bId}).toArray(function (err, items) {
+        items.forEach(function(item) {
+ 		 	var itemTags = String(item.tags);
+ 		 	if (itemTags.indexOf(tag) !== -1) {
+        		 console.log('matched');
+        		results[results.length] = item;
+        	}
+		});
+        if (results.length === 0){    		
+    		console.log('verification for brand '+ bId + ' not found')
+    		res.send({"status":"failed","errorCode":"601","error":"verifications not found"});
+    	}
+        else {
+        	console.log('verifications found for brand '+ bId )
+    		res.send({"status":"success","verifications":results});
+        }
+    }); 
+});
+
+
 
 
 router.post('/verification/prod', function(req, res) {
