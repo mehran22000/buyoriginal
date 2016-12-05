@@ -5,7 +5,7 @@ var utilityFunc = require('./utilityFunc.js');
 
 
 /*
- * GET categories.
+ * GET categories for a city
  */
 
 router.get('/areacode/:code', function(req, res) {

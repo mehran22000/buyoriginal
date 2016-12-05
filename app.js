@@ -11,6 +11,7 @@ var db_dev = mongo.db("mongodb://mehran22000:mehrdad781@ds015962.mlab.com:15962/
 var db_prod_url = "mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797";
 var db_dev_url = "mongodb://mehran22000:mehrdad781@ds015962.mlab.com:15962/heroku_0v6b8bfg";
 
+
 var multer  =   require('multer');
 
 
@@ -31,7 +32,7 @@ var categories_v1 = require('./routes/v1/categories');
 var appInfo_v1 = require('./routes/v1/appInfo');
 var insecure_v1 = require('./routes/v1/insecure.js');
 var cities_v1 = require('./routes/v1/cities.js');
-
+var profiles_v1 = require('./routes/v1/profiles.js');
 
 var dev_users_v1 = require('./routes/v1/dev/users');
 var dev_brands_v1 = require('./routes/v1/dev/brands');
@@ -40,6 +41,7 @@ var dev_categories_v1 = require('./routes/v1/dev/categories');
 var dev_appInfo_v1 = require('./routes/v1/dev/appInfo');
 var dev_insecure_v1 = require('./routes/v1/dev/insecure.js');
 var dev_cities_v1 = require('./routes/v1/dev/cities.js');
+var dev_profiles_v1 = require('./routes/v1/dev/profiles.js');
 
 
 
@@ -162,6 +164,9 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
@@ -203,6 +208,7 @@ app.use('/services/v1/categories',categories_v1);
 app.use('/services/v1/appInfo',appInfo_v1);
 app.use('/v1/insecure',insecure_v1);
 app.use('/services/v1/cities',cities_v1);
+app.use('/services/v1/profiles',profiles_v1);
 
 
 app.use('/services/v1/dev/users', dev_users_v1);
@@ -212,6 +218,7 @@ app.use('/services/v1/dev/categories', dev_categories_v1);
 app.use('/services/v1/dev/appInfo',dev_appInfo_v1);
 app.use('/v1/dev/insecure',dev_insecure_v1);
 app.use('/services/v1/dev/cities',dev_cities_v1);
+app.use('/services/v1/dev/profiles',dev_profiles_v1);
 
 
 

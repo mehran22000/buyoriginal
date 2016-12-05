@@ -79,11 +79,13 @@ function copyCollection(col,req,res,len){
 }
 
 
+
+
 router.get('/addCatIdtoStores', function(req, res) {
     
     console.log('utility addCatIdtoStores invoked');
     
-    var db = req.db;
+    var db = req.db_dev;
     var storeIndex = 0;
 	db.collection('stores').find().toArray(function (err, stores) {
 		var size = stores.length;
@@ -111,6 +113,43 @@ router.get('/addCatIdtoStores', function(req, res) {
     	});
  	});
  });
+ 
+ 
+ router.get('/addVerificationFlagToStores', function(req, res) {
+    
+    console.log('addVerificationFlagToStores invoked');
+    
+    var db = req.db_dev;
+    var verIndex = 0;
+    
+	db.collection('brand_verification').find().toArray(function (err, verArray) {
+		var verSize = verArray.length;
+    	verArray.forEach(function(ver) {
+    		verIndex = verIndex + 1;
+    		console.log('=======verification'+ verIndex);
+    		db.collection('stores').find({bId:ver.bId}).toArray(function (err,strArray) {
+    			strArray.forEach(function(str) {
+    				console.log('sId='+ str.sId);
+    				str['verifiationHints'] = 'true';
+    				
+    				db.collection('stores').remove({_id:str._id}, function(err, result) {
+        			if (err == null) {
+        				db.collection('stores').insert(str, function(err, result){
+        				if (err === null) {
+        					console.log(str);
+        					console.log('new str is added' + str._id);
+        					}
+        				})
+        				}
+        			})
+    			});	
+    		});
+ 		});
+ 	});
+ 	res.set({'Access-Control-Allow-Origin': '*'});
+    res.send({ "result": "success"});
+ });
+ 
  
 
 router.get('/addLocationtoStores', function(req, res) {
