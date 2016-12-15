@@ -175,9 +175,9 @@ function populateTable() {
             	tableContent += '<td> <input type="input" id="'+ this._id +'.title" value="'+ this.title + '" size="10"></input></td>';		
             	tableContent += '<td> <input type="input" id="'+ this._id +'.tags" value="'+ this.tags + '" size="10"></input></td>';		
             	tableContent += '<td> <input type="input" id="'+ this._id +'.shortDesc" value="'+ this.shortDesc + '" size="30"></input></td>';		
-            	tableContent += '<td>' + '<a href=/images/verifications/'+this.smallImage +'> link </a>' + '</td>';
+            	tableContent += '<td>' + '<a id="' + this._id + '.smallImage" href=/images/verifications/'+this.smallImage +'> link </a>' + '</td>';
             	tableContent += '<td> <input type="input" id="'+ this._id +'.longDesc" value="'+ this.longDesc + '" size="30"></input></td>';		         
-            	tableContent += '<td>' + '<a href=/images/verifications/'+this.largeImage +'> link </a>' + '</td>';
+            	tableContent += '<td>' + '<a id="' + this._id + '.largeImage" href=/images/verifications/'+this.largeImage +'> link </a>' + '</td>';
             	tableContent += '<td> <a href="#" onclick=deleteVerification(true,"'+this._id+'");>delete</a></td>';
             	tableContent += '<td> <a href="#" onclick=saveVerificationBtnClicked("'+this._id+'");>save</a></td>';
             		
