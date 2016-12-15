@@ -285,9 +285,9 @@ function saveVerificationBtnClicked(recId) {
     var title = decodeURIComponent(document.getElementById(titleElem).value);
     var tags = decodeURIComponent(document.getElementById(tagsElem).value);
     var shortDesc = decodeURIComponent(document.getElementById(shortDescElem).value);
-    var smallImage = decodeURIComponent(document.getElementById(smallImageElem).value);
+    var smallImage = decodeURIComponent(document.getElementById(smallImageElem));
     var longDesc = decodeURIComponent(document.getElementById(longDescElem).value);
-    var largeImage = decodeURIComponent(document.getElementById(largeImageElem).value);
+    var largeImage = decodeURIComponent(document.getElementById(largeImageElem));
     
 	event.preventDefault();
 	
@@ -299,7 +299,7 @@ function saveVerificationBtnClicked(recId) {
 			return false;
 	}
 	
-	replaceVerification(recId, bId, title, tags, shortDesc,smallImage,longDesc,largeImage);
+	replaceVerification(recId, bId, title, tags, shortDesc,smallImage.substring(46),longDesc,largeImage.substring(46));
 }
 
 
