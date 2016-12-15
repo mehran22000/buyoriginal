@@ -299,7 +299,7 @@ function saveVerificationBtnClicked(recId) {
 			return false;
 	}
 	
-	replaceVerification(recId, bId, title, tags, shortDesc,smallImage,longDesc,largeImage);
+	replaceVerification(recId, bId, title, tags, shortDesc,smallImage.substring(45),longDesc,largeImage.substring(45));
 }
 
 
