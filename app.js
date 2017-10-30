@@ -44,6 +44,10 @@ var dev_cities_v1 = require('./routes/v1/dev/cities.js');
 var dev_profiles_v1 = require('./routes/v1/dev/profiles.js');
 
 
+// Better Investor
+var bi_dev_v1_stocks = require('./betterinvestor/dev/v1/stocks');
+var bi_qa_v1_stocks = require('./betterinvestor/qa/v1/stocks');
+var bi_prod_v1_stocks = require('./betterinvestor/prod/v1/stocks');
 
 
 var app = express();
@@ -221,9 +225,9 @@ app.use('/services/v1/dev/cities',dev_cities_v1);
 app.use('/services/v1/dev/profiles',dev_profiles_v1);
 
 
-app.use('/bi/dev/v1/stocks/quotes',);
-app.use('/bi/qa/v1/stocks/quotes',);
-app.use('/bi/prod/v1/stocks/quotes',);
+app.use('/bi/dev/v1/stocks/quotes',bi_dev_v1_stocks);
+app.use('/bi/qa/v1/stocks/quotes',bi_qa_v1_stocks);
+app.use('/bi/prod/v1/stocks/quotes',bi_prod_v1_stocks);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
