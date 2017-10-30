@@ -221,6 +221,9 @@ app.use('/services/v1/dev/cities',dev_cities_v1);
 app.use('/services/v1/dev/profiles',dev_profiles_v1);
 
 
+app.use('/bi/dev/v1/stocks/quotes',);
+app.use('/bi/qa/v1/stocks/quotes',);
+app.use('/bi/prod/v1/stocks/quotes',);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
