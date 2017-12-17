@@ -10,7 +10,7 @@ var db_dev = mongo.db("mongodb://mehran22000:mehrdad781@ds015962.mlab.com:15962/
 // var db = mongo.db("mongodb://localhost:27017/local", {native_parser:true});
 var db_prod_url = "mongodb://mehran22000:mehrdad781@ds039020.mongolab.com:39020/heroku_app37328797";
 var db_dev_url = "mongodb://mehran22000:mehrdad781@ds015962.mlab.com:15962/heroku_0v6b8bfg";
-
+var stock = require('./routes/stock');
 
 var multer  =   require('multer');
 
@@ -33,6 +33,7 @@ var appInfo_v1 = require('./routes/v1/appInfo');
 var insecure_v1 = require('./routes/v1/insecure.js');
 var cities_v1 = require('./routes/v1/cities.js');
 var profiles_v1 = require('./routes/v1/profiles.js');
+
 
 var dev_users_v1 = require('./routes/v1/dev/users');
 var dev_brands_v1 = require('./routes/v1/dev/brands');

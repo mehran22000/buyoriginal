@@ -18,7 +18,11 @@
     "morgan": "~1.0.0",
     "multer": "1.1.0",
     "postmark": "^1.2.1",
-    "serve-favicon": "*"
+    "serve-favicon": "*",
+    "node-schedule": "^1.2.5",
+    "cli-color": "*",
+    "apn": "1.7.8",
+    "node-gcm": "*"
   },
   "devDependencies": {
     "should": "~7.1.0",
