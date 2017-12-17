@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+	<div id="header">
+	<h1> Buy Original </h1>
+	<a href="/dashboard_brands.html">Brands</a>
+	<a href="/dashboard_stores.html">Stores</a>
+	<a href="/dashboard_categories.html">Categories</a>	
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>
+	<a href="/dashboard_original_fake.html">Original/Fake</a>
+	</div>
+	
+	<div id="blankSection" >
+	<p></p>
+	<p></p>
+	<p></p>
+	</div>
+	
+	<div id="blackSection" >
+	<p>
+	Brand Id: <input type="text" name="bId" value="" id="bId" placeholder="(Unique Namber)">
+	Name: <input type="text" name="bName" value="" id="bName">
+	Category Id: <input type="text" name="cId" value="" id="cId" placeholder="(Unique Namber)">
+	Logo: <input type="text" name="bLogo" value="" id="bLogo" placeholder="(all letters lowercase)">
+	</p>
+    <a href="#" class="myButton" onclick="addBrand()">Add</a>	
+    <p></p>
+	</div>
+	
+	<hr>	
+	Environment:
+	<select onchange="envChanged(this.value)" id="envSelector">
+  		<option value="sandbox">sandbox</option>
+  		<option value="prod">production</option>
+ 	</select>
+ 	<p></p>
+ 	Master Password: 
+ 	<input type="password" name="masterPassword" id="masterPassword">
+ 	<p></p>
+ 	<div id="divSpinner"><img src="images/spinner.gif"/></div>
+	
+	<div id="boList">
+	<table id="myTable"></table>
+	</div>
+		
+
+<script>
+
+var baseUrl = '/services/v1/';
+var token = "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==";
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+  
+function envChanged(env) {
+	populateTable();
+}
+   
+        
+function populateTable() {
+
+	var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl + 'brands/brandlist';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'brands/brandlist/sandbox';
+	}
+	
+    var tableContent = '<tr><td>BRAND ID</td><td>BRAND NAME</td><td>BRAND CATEGORY</td><td>LOGO NAME</td><td></td></tr>';
+    
+    $.ajax({
+    	    type: 'GET',
+        	url: routeUrl,
+        	dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", token);
+            },
+            success: function(data) {
+            
+    			document.getElementById("divSpinner").style.display = 'none';
+    	    	$.each(data, function(){
+        	    	tableContent += '<tr>';
+            		tableContent += '<td>' + this.bId + '</td>';
+            		tableContent += '<td>' + this.bName + '</td>';
+            		tableContent += '<td>' + this.cName + '</td>';
+            		tableContent += '<td>' + this.bLogo + '</td>';
+            		tableContent += '<td> <a href="#" onclick=deleteBrand("'+this._id+'",true);>delete</a></td>';
+            	
+            		if (env === "sandbox") {
+						tableContent += '<td> <a href="#" onclick=promoteBrand("'+this._id+'","'+this.bId+'","'+this.bName +'","'+ this.cId +'","'+this.bLogo +'");>promote</a></td>';
+					}
+            	
+            		tableContent += '</tr>';         
+        		});
+        		document.getElementById("myTable").innerHTML= tableContent;
+        	}
+    });
+};
+  
+function promoteBrand(rowId, bId,bName,cId, bLogo) {
+    event.preventDefault();
+    var masterPassword = document.getElementById("masterPassword").value;
+    var newBrand = {
+        	'bId': bId,
+        	'bName': bName,
+        	'bCategoryId':cId,
+        	'bLogo':bLogo,
+        	'masterPassword':masterPassword
+    	}
+  	$.ajax({
+        	type: 'POST',
+           	data: newBrand,
+            url: baseUrl + 'brands/add',
+            dataType: 'JSON',
+            beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", token);
+            },
+    	}).done(function( response ) {
+		
+			document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.msg === '') {
+        		deleteBrand(rowId,false);
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
+    		}
+    	})
+	};
+
+
+function addBrand() {
+    event.preventDefault();
+
+    // Super basic validation - increase errorCount variable if any fields are blank
+    var errorCount = 0;
+  
+    // If it is, compile all user info into one object
+    var bId = document.getElementById("bId").value;
+    var bName = document.getElementById("bName").value;
+    var cId = document.getElementById("cId").value;
+    var bLogo = document.getElementById("bLogo").value;
+    
+    if (!isNumeric(bId))
+   		alert ("Brand Id must be numeric");
+   	else if (bName=='')
+   		alert ("Brand name can not be empty");
+   	else if (!isNumeric(cId))
+   		alert ("Category Id must be numeric");
+   	else if (bLogo=='')
+   		alert ("Logo name can not be empty");
+	else {
+    	var newBrand = {
+        	'bId': bId,
+        	'bName': bName,
+        	'bCategoryId':cId,
+        	'bLogo':bLogo
+    	}
+		// Use AJAX to post the object to our addstore service
+    	$.ajax({
+        	    type: 'POST',
+           	    data: newBrand,
+                url: baseUrl + 'brands/add/sandbox',
+                dataType: 'JSON',
+            	beforeSend: function (request)
+            	{
+                	document.getElementById("divSpinner").style.display = 'inline';
+                	request.setRequestHeader("token", token);
+            	},
+    	}).done(function( response ) {
+		
+			document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.msg === '') {
+    			document.getElementById("bId").value = "";
+    			document.getElementById("bName").value="";
+    			document.getElementById("cId").value="";
+    			document.getElementById("bLogo").value="";
+         		// Update the table
+        		populateTable();
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
+    		}
+    	})
+    }
+};
+
+function deleteBrand(rowId,prompt) {
+
+    event.preventDefault();
+	var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
+    // Pop up a confirmation dialog
+    if (prompt === true) {
+    	var confirmation = confirm('Are you sure you want to delete this category?');
+		if (confirmation === false) {
+			return false;
+		}
+	}
+    $.ajax({
+        type: 'DELETE',
+        url: baseUrl + 'brands/deletebrand/' + rowId +'/'+env+'/'+ pwd,
+        beforeSend: function (request)
+        {
+        	document.getElementById("divSpinner").style.display = 'inline';
+        	request.setRequestHeader("token", token);
+        },
+    }).done(function( response ) {
+			
+		document.getElementById("divSpinner").style.display = 'none';
+        // Check for a successful (blank) response
+        if (response.msg === '') {
+        }
+        else {
+            alert('Error: ' + response.msg);
+        }
+
+        // Update the table
+        populateTable();
+
+    })
+};
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+        
+                
+</script>
+</body>
+</html>

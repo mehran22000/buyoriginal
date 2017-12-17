@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+	<div id="header">
+	<h1> Buy Original </h1>
+	<a href="/dashboard_brands.html">Brands</a>
+	<a href="/dashboard_stores.html">Stores</a>
+	<a href="/dashboard_categories.html">Categories</a>
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>
+	<a href="/dashboard_original_fake.html">Original/Fake</a>		
+	</div>
+	
+	<div id="blankSection" >
+	<p></p>
+	<p></p>
+	<p></p>
+	</div>
+	
+	<div id="divSpinner"><img src="images/spinner.gif"/></div>
+	
+	<div id="boList">
+	<table id="myTable"></table>
+	</div>
+		
+
+<script>
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+
+        
+function populateTable() {
+
+    // Empty content string
+    var tableContent = '<tr><td>USER ID</td><td>EMAIL</td><td>STORE ID</td><td>STORE NAME</td><td>BRAND ID</td><td>BRAND NAME</td><td>CITY</td><td>CITY(FA)</td><td>CATEGORY</td><td>ADDRESS</td><td>HOURS</td><td>DISTRIBUTOR</td><td>LAT</td><td>LON</td><td>AREA CODE</td><td>TEL</td><td></td></tr>';
+    // jQuery AJAX call for JSON
+    
+    $.ajax({
+    	    type: 'GET',
+        	url: '/services/users/business/userlist',
+        	dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            },
+            success: function(data) {
+    		
+    			document.getElementById("divSpinner").style.display = 'none';
+    	    	// For each item in our JSON, add a table row and cells to the content string
+        		$.each(data, function(){
+            		tableContent += '<tr>';
+            		tableContent += '<td>' + this.buId + '</td>';
+            		tableContent += '<td>' + this.buEmail + '</td>';
+            		tableContent += '<td>' + this.buStoreId + '</td>';
+            		tableContent += '<td>' + this.buStoreName + '</td>';
+            		tableContent += '<td>' + this.buBrandId + '</td>';
+            		tableContent += '<td>' + this.buBrandName + '</td>'; 
+            		tableContent += '<td>' + this.buCityName + '</td>';
+            		tableContent += '<td>' + this.buCityNameFa + '</td>';
+            		tableContent += '<td>' + this.buBrandCategory + '</td>'; 
+            		tableContent += '<td>' + this.buStoreAddress + '</td>';
+            		tableContent += '<td>' + this.buStoreHours + '</td>';
+            		tableContent += '<td>' + this.buDistributor + '</td>';
+            		tableContent += '<td>' + this.buStoreLat + '</td>';
+            		tableContent += '<td>' + this.buStoreLon + '</td>';
+            		tableContent += '<td>' + this.buAreaCode + '</td>';
+            		tableContent += '<td>' + this.buTel + '</td>';
+            
+            		tableContent += '<td> <a href="#" onclick=deleteUser("'+this.buEmail+'","'+this.buStoreId+'");>delete</a></td>';
+            		tableContent += '</tr>';         
+        	});
+        	document.getElementById("myTable").innerHTML= tableContent;
+		}
+        // Inject the whole content string into our existing HTML table;
+    });
+};
+         
+function deleteUser(email,sId) {
+
+    event.preventDefault();
+
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to delete this user?');
+
+    // Check and make sure the user confirmed
+    if (confirmation === true) {
+
+        // If they did, do our delete
+        $.ajax({
+            type: 'GET',
+            url: '/services/users/business/deleteuser/'+email+'/'+sId,
+            dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==");
+            },
+        }).done(function( response ) {
+
+    		document.getElementById("divSpinner").style.display = 'none';
+            // Check for a successful (blank) response
+            if (response.result === "success") {
+            	populateTable();
+            }
+            else {
+                alert('Error: ' + response.msg);
+            }
+
+            // Update the table
+
+        });
+
+    }
+    else {
+
+        // If they said no to the confirm, do nothing
+        return false;
+
+    }
+
+};
+ 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+                
+</script>
+</body>
+</html>

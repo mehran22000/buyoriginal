@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+	<div id="header">
+	<h1> Buy Original </h1>
+	<a href="/dashboard_brands.html">Brands</a>
+	<a href="/dashboard_stores.html">Stores</a>
+	<a href="/dashboard_categories.html">Categories</a>
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>
+	<a href="/dashboard_original_fake.html">Original/Fake</a>
+			
+	</div>
+	
+	<div id="blankSection" >
+	<p></p>
+	<p></p>
+	<p></p>
+	</div>
+	
+	<div id="blackSection" >
+	<p>
+	Brand Id:    <input type="text" name="bId" value="" id="bId" placeholder="" size="4"> &nbsp;&nbsp;&nbsp;
+	Store Id:    <input type="text" name="sId" value="" id="sId" size="4"> &nbsp;&nbsp;&nbsp;
+	Percentage:     <input type="text" name="sDiscount" value="" id="sDiscount" placeholder="5,10,...,100" size="10">
+	</p>
+	<p>
+	Start Date (English): 20 <input type="text" name="sDateEn.year" value="" id="sDateEn.year" size="2">/<input type="text" name="sDateEn.month" value="" id="sDateEn.month" size="2">/<input type="text" name="sDateEn.day" value="" id="sDateEn.day" size="2"> &nbsp;&nbsp;&nbsp;  
+	End Date (English):  20 <input type="text" name="eDateEn.year" value="" id="eDateEn.year" size="2">/<input type="text" name="eDateEn.month" value="" id="eDateEn.month" size="2">/<input type="text" name="eDateEn.day" value="" id="eDateEn.day" size="2">
+	</P>
+	<p>
+	Start Date (Persian): 13 <input type="text" name="sDateFa.year" value="" id="sDateFa.year" size="2">/<input type="text" name="sDateFa.month" value="" id="sDateFa.month" size="2">/<input type="text" name="sDateFa.day" value="" id="sDateFa.day" size="2"> &nbsp;&nbsp;&nbsp;  
+	End Date (Persian):  13 <input type="text" name="eDateFa.year" value="" id="eDateFa.year" size="2">/<input type="text" name="eDateFa.month" value="" id="eDateFa.month" size="2">/<input type="text" name="eDateFa.day" value="" id="eDateFa.day" size="2">
+	</p>
+	<p>
+	Note: <input type="text" name="note" value="" id="note" size="93"> 
+	</p>
+    <a href="#" class="myButton" onclick="addDiscount('sandbox',0)">Submit</a>	
+    <p></p>
+	</div>
+	
+	<hr>	
+	Environment:
+	<select onchange="envChanged(this.value)" id="envSelector">
+  		<option value="sandbox">sandbox</option>
+  		<option value="prod">production</option>
+ 	</select>
+ 	<p></p>
+ 	Master Password: 
+ 	<input type="password" name="masterPassword" id="masterPassword">
+ 	<p></p>
+	
+	
+	<div id="divSpinner"><img src="images/spinner.gif"/></div>
+	
+	<div id="boList">
+	<table id="myTable"></table>
+	</div>
+		
+
+<script>
+var baseUrl = '/services/v1/stores/';
+var token = "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==";
+var selectedDiscount = null;
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+        
+function envChanged(env) {
+	populateTable();
+}
+
+
+function populateTable() {
+
+    var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl + 'storelist/discounts/all';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'storelist/discounts/all/sandbox';
+	}
+	
+    
+    var tableContent = '<tr><td>BRAND ID</td><td>BRAND NAME</td><td>STORE ID</td><td>STORE NAME</td><td>DISCOUNT</td> <td>START DATE(En)</td> <td>END DATE(En)</td> <td>START DATE(Fa)</td> <td>END DATE(Fa)</td> <td>NOTE</td><td></td></tr>';
+    
+    $.ajax({
+    	    type: 'GET',
+        	url: routeUrl,
+        	dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", token);
+            },
+            success: function(data) {
+    		    // For each item in our JSON, add a table row and cells to the content string
+	    		document.getElementById("divSpinner").style.display = 'none';
+        		$.each(data, function(){
+            		tableContent += '<tr>';
+            		tableContent += '<td>' + this.bId + '</td>';
+            		tableContent += '<td>' + this.bName + '</td>';
+            		tableContent += '<td>' + this.sId + '</td>';
+            		tableContent += '<td>' + this.sName + '</td>';
+            		tableContent += '<td>' + this.dPrecentage + '%' + '</td>';
+            		tableContent += '<td>' + this.dStartDate + '</td>';
+            		tableContent += '<td>' + this.dEndDate + '</td>';
+            		tableContent += '<td>' + this.dStartDateFa + '</td>';
+            		tableContent += '<td>' + this.dEndDateFa + '</td>';
+            		tableContent += '<td>' + this.dNote + '</td>';
+            		tableContent += '<td> <a href="#" onclick=deleteDiscount("'+this.bId+'","'+this.sId+'",true);>delete</a></td>';
+            		
+            		if (env === "sandbox") {
+            			var pwd = document.getElementById("masterPassword").value;
+   
+            			selectedDiscount = {
+        					'bId': this.bId,
+        					'sId': this.sId,
+        					'startDate': this.dStartDate,
+        					'endDate' : this.dEndDate,
+        					'startDateFa': this.dStartDateFa,
+        					'endDateFa' : this.dEndDateFa,
+        					'precentage':this.dPrecentage,
+        					'note' : this.dNote,
+        					'masterPassword':pwd
+ 						}
+            		
+						tableContent += '<td> <a href="#" onclick=addDiscount("promote","'+this._id+'");>promote</a></td>';
+					}
+            		
+            		tableContent += '</tr>';
+            	})         
+        	  document.getElementById("myTable").innerHTML= tableContent;
+        	}
+        	
+        // Inject the whole content string into our existing HTML table;
+    });
+};
+  
+
+function validateInput() {
+    
+    var newDiscount = null;
+    var bId = document.getElementById("bId").value;
+    var sId = document.getElementById("sId").value;
+    
+    var sDateEnYear = document.getElementById("sDateEn.year").value;
+    var sDateEnMonth = document.getElementById("sDateEn.month").value;
+    var sDateEnDay = document.getElementById("sDateEn.day").value;
+    var eDateEnYear = document.getElementById("eDateEn.year").value;
+    var eDateEnMonth = document.getElementById("eDateEn.month").value;
+    var eDateEnDay = document.getElementById("eDateEn.day").value;
+    
+    var sDateFaYear = document.getElementById("sDateFa.year").value;
+    var sDateFaMonth = document.getElementById("sDateFa.month").value;
+    var sDateFaDay = document.getElementById("sDateFa.day").value;
+    var eDateFaYear = document.getElementById("eDateFa.year").value;
+    var eDateFaMonth = document.getElementById("eDateFa.month").value;
+    var eDateFaDay = document.getElementById("eDateFa.day").value;
+    
+    var startDate = '20' + sDateEnYear + '/' + sDateEnMonth + '/' + sDateEnDay;
+    var endDate = '20' + eDateEnYear + '/' + eDateEnMonth + '/' + eDateEnDay;;    
+    var startDateFa = '13' + sDateFaYear + '/' + sDateFaMonth + '/' + sDateFaDay;
+    var endDateFa = '13' + eDateFaYear + '/' + eDateFaMonth + '/' + eDateFaDay;
+    var percentage = document.getElementById("sDiscount").value;
+    var note = document.getElementById("note").value;
+    
+    if (!isNumeric(bId))
+   		alert ("Brand Id must be numeric");
+   	else if (!isNumeric(sId))
+   		alert ("Category Id must be numeric");
+   	else if (!isNumeric(sDateEnYear) || sDateEnYear > 99 || sDateEnYear < 16)
+   		alert ("Start Date - Year (English) is incorrect");
+	else if (!isNumeric(sDateEnMonth) || sDateEnMonth > 12 || sDateEnMonth < 0)
+   		alert ("Start Date - Month (English) is incorrect");
+   	else if (!isNumeric(sDateEnDay) || sDateEnDay > 31 || sDateEnDay < 0)
+   		alert ("Start Date - Day (English) is incorrect");
+   	else if (!isNumeric(eDateEnYear) || eDateEnYear > 99 || eDateEnYear < 16)
+   		alert ("End Date - Year (English) is incorrect");
+	else if (!isNumeric(eDateEnMonth) || eDateEnMonth > 12 || eDateEnMonth < 0)
+   		alert ("Etart Date - Month (English) is incorrect");
+   	else if (!isNumeric(eDateEnDay) || eDateEnDay > 31 || eDateEnDay < 0)
+   		alert ("Etart Date - Day (English) is incorrect");
+   		
+   	else if (!isNumeric(sDateFaYear) || sDateFaYear > 99 || sDateFaYear < 94)
+   		alert ("Start Date - Year (Farsi) is incorrect");
+	else if (!isNumeric(sDateFaMonth) || sDateFaMonth > 12 || sDateFaMonth < 0)
+   		alert ("Start Date - Month (Farsi) is incorrect");
+   	else if (!isNumeric(sDateFaDay) || sDateFaDay > 31 || sDateFaDay < 0)
+   		alert ("Start Date - Day (Farsi) is incorrect");
+   	else if (!isNumeric(eDateFaYear) || eDateFaYear > 99 || eDateFaYear < 94)
+   		alert ("End Date - Year (Farsi) is incorrect");
+	else if (!isNumeric(eDateFaMonth) || eDateFaMonth > 12 || eDateFaMonth < 0)
+   		alert ("End Date - Month (Farsi) is incorrect");
+   	else if (!isNumeric(eDateFaDay) || eDateFaDay > 31 || eDateFaDay < 0)
+   		alert ("End Date - Day (Farsi) is incorrect");
+	else if (!isNumeric(percentage) || percentage < 0 || percentage > 100 || percentage % 5 !== 0) 
+   		alert ("Percentage is incorrect - Divisible by 5");
+   	else if ((percentage === 0) && note.length <= 0)
+   		alert ("Both percentage and note can not be empty");
+	
+	else {
+    	var newDiscount = {
+        	'bId': bId,
+        	'bName':'',
+        	'sId': sId,
+        	'sName':'',
+        	'dStartDate': startDate,
+        	'dEndDate' : endDate,
+        	'dStartDateFa': startDateFa,
+        	'dEndDateFa' : endDateFa,
+        	'dPrecentage':percentage,
+        	'dNote' : note
+ 		}
+	}
+	
+	return newDiscount;
+
+}
+function addDiscount(type,rowId) {
+    event.preventDefault();
+	
+	var pwd = document.getElementById("masterPassword").value;
+   
+    if (type === "sandbox"){
+   		discount =  validateInput();
+   	}
+   	else if (selectedDiscount === null) {
+   		return false;
+   	}
+   	else {
+   		discount = selectedDiscount;
+   		discount.masterPassword=pwd;
+   	}
+   	
+    var routeUrl = '';
+    
+    if (type === "sandbox") {
+	    routeUrl = baseUrl + 'discounts/add/sandbox';
+	}
+	else {
+		routeUrl = baseUrl + 'adddiscount/dashboard';
+	}
+    $.ajax({
+        type: 'POST',
+        data: discount,
+        url: routeUrl,
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
+    	}).done(function( response ) {
+
+    	// Check for successful (blank) response
+    		document.getElementById("divSpinner").style.display = 'none';
+    		if (response[0].result === "success") {
+   			
+         		if (type === "promote") {
+         			deleteDiscount(discount.bId,discount.sId,false);
+         		}
+         		else {
+         			clearFields(); 			
+         			populateTable();
+         		}
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert(response[0].result);
+    		}
+    });
+}
+function clearFields() {
+	document.getElementById("bId").value = "";
+    document.getElementById("sId").value="";
+    document.getElementById("sDiscount").value="";
+    document.getElementById("sDateEn.year").value = "";
+    document.getElementById("sDateEn.month").value = "";
+    document.getElementById("sDateEn.day").value = "";
+    document.getElementById("eDateEn.year").value = "";
+    document.getElementById("eDateEn.month").value = "";
+	document.getElementById("eDateEn.day").value = "";
+    document.getElementById("sDateFa.year").value = "";
+    document.getElementById("sDateFa.month").value = "";
+    document.getElementById("sDateFa.day").value = "";
+    document.getElementById("eDateFa.year").value = "";
+    document.getElementById("eDateFa.month").value = "";
+    document.getElementById("eDateFa.day").value = "";
+    document.getElementById("note").value = "";
+}
+
+
+
+function deleteDiscount(bId,sId,prompt) {
+
+    event.preventDefault();
+	var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
+    // Pop up a confirmation dialog
+    if (prompt === true) {
+    	var confirmation = confirm('Are you sure you want to delete this discount?');
+		if (confirmation === false) {
+			return false;
+		}
+	}
+   
+   	var routeUrl = '';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'discounts/delete/sandbox';
+	}
+	else {
+		routeUrl = baseUrl + 'deletediscount/dashboard';
+	}
+   
+    var newDiscount = {
+        'bId': bId,
+        'sId': sId,
+        'sDiscount':0,
+        'masterPassword':pwd
+    }
+	// Use AJAX to post the object to our addstore service
+    $.ajax({
+        type: 'POST',
+        data: newDiscount,
+        url: routeUrl,
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
+    	}).done(function( response ) {
+		
+    		document.getElementById("divSpinner").style.display = 'none';
+    	// Check for successful (blank) response
+    	if (response.result === "success") {
+    		populateTable();
+		}
+    	else {
+			// If something goes wrong, alert the error message that our service returned
+        	alert(response.result);
+    		}
+    	});
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+        
+                
+</script>
+</body>
+</html>

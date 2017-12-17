@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+
+	<div id="header">
+	<h1> Buy Original </h1>
+	<a href="/dashboard_brands.html">Brands</a>
+	<a href="/dashboard_stores.html">Stores</a>
+	<a href="/dashboard_categories.html">Categories</a>	
+	<a href="/dashboard_discounts.html">Discounts</a>
+	<a href="/dashboard_business_users.html">Users</a>
+	<a href="/dashboard_original_fake.html">Original/Fake</a>	
+	</div>
+	
+	<div id="blankSection" >
+	<p></p>
+	<p></p>
+	<p></p>
+	</div>
+	<div id="blackSection" >
+	
+	
+	<form id="uploadForm" enctype="multipart/form-data" method="post">
+	
+	<p>
+	Brand Id: <input type="text" name="bId" value="" id="bId" placeholder="(Unique Namber)">
+	</p>
+	
+	Title: 
+	<p> 
+	<textarea name="title" value="" id="title" rows="1" cols="100"></textarea> 
+	</p>
+	
+	Tags: 
+	<p> 
+	<textarea name="tags" value="" id="tags" rows="1" cols="100"></textarea> 
+	</p>
+	
+	
+	Short Description: 
+	<p> 
+	<textarea name="shortDesc" value="" id="shortDesc" rows="1" cols="150"></textarea> 
+	</p>
+	
+	Small Image: 
+	<p>
+	<input type="file" name="smallImage" id="smallImage" accept="image/*" />
+	</p>
+	
+	Long Description (Optional):
+	<p> 
+	<textarea name="longDesc" value="" id="longDesc" rows="4" cols="150" placeholder="(optional)"></textarea> 
+	</p>
+	
+	Large Image (Optional):
+	<p> 
+	<input type="file" id="largeImage" name="largeImage" accept="image/*"> 
+	</p>
+	<p>
+	<input style="background-color:lightgreen" type="submit"  value="        Add        " name="Add">
+	</p>
+	
+	
+	</form>
+	
+	<hr>	
+	Environment:
+	<select onchange="envChanged(this.value)" id="envSelector">
+  		<option value="sandbox">sandbox</option>
+  		<option value="prod">production</option>
+ 	</select>
+ 	<p></p>
+ 	Master Password: 
+ 	<input type="password" name="masterPassword" id="masterPassword">
+ 	<p></p>
+	
+	
+	<p></p>
+	<p></p>
+	<p></p>
+	<p></p>
+	<p></p>
+	<p></p>
+	<p></p>
+	<p></p>
+	
+	<div id="divSpinner"><img src="images/spinner.gif"/></div>
+	
+	<div id="boList">
+	<table id="myTable"></table>
+	</div>
+		
+
+<script>
+
+var baseUrl = '/services/v1/';
+var insecureBaseUrl = '/v1/insecure/';
+var token = "YnV5b3JpZ2luYWxicmFuZHNieWFzbGJla2hhcg==";
+
+document.getElementById("uploadForm").setAttribute("action",insecureBaseUrl+"brands/verification/sandbox")
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+  
+function envChanged(env) {
+	populateTable();
+}
+
+
+$( document ).ready(function() {
+    console.log( "ready!" );
+    populateTable();
+});
+
+$("#uploadForm").submit(function(event) {
+      /* stop form from submitting normally */
+      event.preventDefault();
+      
+       var bId = document.getElementById("bId").value;
+       var shortDesc = document.getElementById("shortDesc").value;
+       
+       $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+       
+       
+       if (!isNumeric(bId))
+   		  alert ("Brand Id must be numeric");
+   	   else if (shortDesc.length == 0)
+   		  alert ("ShortDesc can not be empty");
+   	   else
+      		this.submit();
+       
+});
+        
+$("#uploadForm").bind('ajax:complete', function() {
+		console.log('ajax:complete');
+    	window.location.replace('/dashboard_original_fake.html')
+   }); 
+ 
+        
+function populateTable() {
+
+	var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl + 'brands/verifications';
+    if (env === "sandbox") {
+		routeUrl =  baseUrl +'brands/verifications/sandbox';
+	}
+
+    // Empty content string
+    var tableContent = '<tr><td>BRAND ID</td><td>Title</td><td>Tags</td><td>Short Description</td><td>Small Image</td><td>Long Description</td><td>Large Image</td></tr>';
+    // jQuery AJAX call for JSON
+    
+    $.ajax({
+    	    type: 'GET',
+        	url: routeUrl,
+        	dataType: 'JSON',
+        	beforeSend: function (request)
+            {
+                document.getElementById("divSpinner").style.display = 'inline';
+                request.setRequestHeader("token", token);
+            },
+            success: function(data) {
+            
+    			document.getElementById("divSpinner").style.display = 'none';
+    		//	$('loader').hide();
+        	// For each item in our JSON, add a table row and cells to the content string
+    	    $.each(data, function(i,item){
+        	    tableContent += '<tr>';
+        	    tableContent += '<td> <input type="input" id="'+ this._id +'.bId" value="'+ this.bId + '" size="4"></input></td>';		
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.title" value="'+ this.title + '" size="10"></input></td>';		
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.tags" value="'+ this.tags + '" size="10"></input></td>';		
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.shortDesc" value="'+ this.shortDesc + '" size="30"></input></td>';		
+            	tableContent += '<td>' + '<a id="' + this._id + '.smallImage" value="' + this.smallImage + '" href=/images/verifications/'+this.smallImage +'> link </a>' + '</td>';
+            	tableContent += '<td> <input type="input" id="'+ this._id +'.longDesc" value="'+ this.longDesc + '" size="30"></input></td>';		         
+            	tableContent += '<td>' + '<a id="' + this._id + '.largeImage" value="' + this.largeImage + '" href=/images/verifications/'+this.largeImage +'> link </a>' + '</td>';
+            	tableContent += '<td> <a href="#" onclick=deleteVerification(true,"'+this._id+'");>delete</a></td>';
+            	tableContent += '<td> <a href="#" onclick=saveVerificationBtnClicked("'+this._id+'");>save</a></td>';
+            		
+            	if (env === "sandbox") {
+					tableContent += '<td> <a href="#" onclick=promoteVerification("'+this._id+'","'+ this.bId+'","'+encodeURIComponent(this.title)+'","'+ encodeURIComponent(this.tags)+'","'+encodeURIComponent(this.shortDesc) +'","'+ encodeURIComponent(this.smallImage) + '","' + encodeURIComponent(this.longDesc) +'","'+encodeURIComponent(this.largeImage)+'");>promote</a></td>';
+				}
+            	
+            	tableContent += '</tr>';         
+        	});
+        	document.getElementById("myTable").innerHTML= tableContent;
+        	}
+
+        // Inject the whole content string into our existing HTML table;
+    });
+};
+
+function promoteVerification(recId, bId, title, tags, shortDesc,smallImage,longDesc,largeImage)  {
+    event.preventDefault();
+	var errorCount = 0;
+	var masterPassword = document.getElementById("masterPassword").value;
+  	var newVerification = {
+        'bId': bId,
+        'title': decodeURIComponent(title),
+        'tags': decodeURIComponent(tags),
+        'shortDesc': decodeURIComponent(shortDesc),
+        'smallImage':decodeURIComponent(smallImage),
+        'longDesc':decodeURIComponent(longDesc),
+        'largeImage':decodeURIComponent(largeImage),
+        'masterPassword':masterPassword
+    }
+    	
+    $.ajax({
+        type: 'POST',
+        data: newVerification,
+        url: baseUrl+'brands/verification/prod',
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
+    	}).done(function( response ) {
+		
+			document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.msg === '') {
+    			deleteVerification(false,recId);
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
+    		}
+    	})
+};
+
+function deleteVerification(prompt, recId) {
+
+	var env = document.getElementById("envSelector").value;
+	var pwd = document.getElementById("masterPassword").value;
+    
+    event.preventDefault();
+	if (prompt === true) {
+    	var confirmation = confirm('Are you sure you want to delete this category?');
+		if (confirmation === false) {
+			return false;
+		}
+	}
+    // Pop up a confirmation dialog
+    $.ajax({
+        type: 'DELETE',
+        url: baseUrl+ 'brands/verification/delete/'+ recId +'/'+env+'/'+ pwd,
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
+        }).done(function( response ) {
+			
+			document.getElementById("divSpinner").style.display = 'none';
+            // Check for a successful (blank) response
+            if (response.msg === '') {
+            }
+            else {
+                alert('Error: ' + response.msg);
+            }
+
+            // Update the table
+            populateTable();
+
+        })
+};
+
+
+function saveVerificationBtnClicked(recId) {
+
+	var bIdElem=recId+".bId";
+	var titleElem = recId+".title";
+    var tagsElem = recId+".tags";
+    var shortDescElem = recId+".shortDesc";
+    var smallImageElem = recId+".smallImage";
+    var longDescElem = recId+".longDesc";
+    var largeImageElem = recId+".largeImage";
+    
+	var bId = decodeURIComponent(document.getElementById(bIdElem).value);
+    var title = decodeURIComponent(document.getElementById(titleElem).value);
+    var tags = decodeURIComponent(document.getElementById(tagsElem).value);
+    var shortDesc = decodeURIComponent(document.getElementById(shortDescElem).value);
+    var smallImage = decodeURIComponent(document.getElementById(smallImageElem));
+    var longDesc = decodeURIComponent(document.getElementById(longDescElem).value);
+    var largeImage = decodeURIComponent(document.getElementById(largeImageElem));
+    
+	event.preventDefault();
+	
+    var pwd = document.getElementById("masterPassword").value;
+    var env = document.getElementById("envSelector").value;
+    // Pop up a confirmation dialog
+    var confirmation = confirm('Are you sure you want to change this item?');
+		if (confirmation === false) {
+			return false;
+	}
+	
+	replaceVerification(recId, bId, title, tags, shortDesc,smallImage.substring(46),longDesc,largeImage.substring(46));
+}
+
+
+function replaceVerification(recId, bId, title, tags, shortDesc,smallImage,longDesc,largeImage)  {
+    event.preventDefault();
+	
+	var env = document.getElementById("envSelector").value;
+    var routeUrl = baseUrl+'brands/verification';
+    if (env === "sandbox") {
+		routeUrl =  routeUrl +'/sandbox';
+	}
+	else {
+		routeUrl =  routeUrl +'/prod';
+	}
+	
+	var errorCount = 0;
+	var masterPassword = document.getElementById("masterPassword").value;
+  	var newVerification = {
+        'bId': bId,
+        'title': decodeURIComponent(title),
+        'tags': decodeURIComponent(tags),
+        'shortDesc': decodeURIComponent(shortDesc),
+        'smallImage':decodeURIComponent(smallImage),
+        'longDesc':decodeURIComponent(longDesc),
+        'largeImage':decodeURIComponent(largeImage),
+        'masterPassword':masterPassword
+    }
+    	
+    $.ajax({
+        type: 'POST',
+        data: newVerification,
+        url: routeUrl,
+        dataType: 'JSON',
+        beforeSend: function (request)
+        {
+            document.getElementById("divSpinner").style.display = 'inline';
+            request.setRequestHeader("token", token);
+        },
+    	}).done(function( response ) {
+		
+			document.getElementById("divSpinner").style.display = 'none';
+    		// Check for successful (blank) response
+    		if (response.msg === '') {
+    			deleteVerification(false,recId);
+			}
+    		else {
+				// If something goes wrong, alert the error message that our service returned
+        		alert('Error: ' + response.msg);
+    		}
+    	})
+};
+
+
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+     
+function getFileName(path) {
+	if (path) {
+		var startIndex = (path.indexOf('\\') >= 0 ? path.lastIndexOf('\\') : path.lastIndexOf('/'));
+		var filename = path.substring(startIndex);
+		if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+			filename = filename.substring(1);
+		}	
+		return filename;
+	}
+	else {
+		return "";
+	}
+}   
+                
+</script>
+</body>
+</html>
