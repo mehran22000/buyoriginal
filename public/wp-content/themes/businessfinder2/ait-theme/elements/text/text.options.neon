@@ -1,9 +1,0 @@
-@include: common.neon
-
-text:
-	type: editor
-	settings:
-		media_buttons: true
-		teeny: false
-	basic: true
-
